@@ -359,7 +359,8 @@ async function resolvePromptSource(
   manager: Pick<AgentManager, "getAgent">,
   storage: AgentStorage,
 ): Promise<AgentPromptSource | undefined> {
-  if (!source || source.kind === "change-request-update" || source.title) return source;
+  // Only another agent's message is titled; a change request or a person passes as it came.
+  if (!source || !("agentId" in source) || source.title) return source;
   const title = (
     manager.getAgent(source.agentId)?.config.title ?? (await storage.get(source.agentId))?.title
   )?.trim();

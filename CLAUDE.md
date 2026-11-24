@@ -56,6 +56,12 @@ How it runs under Kumo:
   skill changes into the renamed files. Four
   usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/` as fixtures for
   the usage-source tests, out of the built-in list.
+- Several people can share a computer. Kumo's gate names the visitor on every request with
+  `X-Kumo-User` and a percent-encoded `X-Kumo-Name`; the daemon keeps that person on the
+  connection (`packages/server/src/server/kumo-person.ts`), with no peer check because only the gate
+  reaches a box port. Once two people have written in a chat it is shared, and each message carries
+  its author in a `person-message` envelope (`agent-messages/thread.ts`). The `kumo` plugin tells
+  every agent about shared chats on open.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 

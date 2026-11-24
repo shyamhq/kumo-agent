@@ -5,6 +5,7 @@ import {
   type PromptDispatchResult,
 } from "../agent-prompt.js";
 import { randomUUID } from "node:crypto";
+import { isSlashCommand } from "@getpaseo/protocol/shared-chat";
 import type { AgentPromptInput, AgentPromptContentBlock } from "../agent-sdk-types.js";
 import { envelopeMessage, prepareAgentMessage, type AgentPromptSource } from "./envelope.js";
 import { describeAgentMessage, type AgentMessageBehavior } from "./guidance.js";
@@ -150,15 +151,10 @@ const isUrgent = (message: Admitted): boolean => isQueued(message) && message.ur
 const isOfferable = (message: Admitted): boolean =>
   isQueued(message) && !message.outOfBandDeclined && message.sessionMode === undefined;
 
-/**
- * Providers read a command from the raw start of the prompt: a slash and a name with no
- * second slash in it. A path such as `/tmp/build.log` is plain text.
- */
 function isCommand(prompt: AgentPromptInput): boolean {
   const first = typeof prompt === "string" ? prompt : prompt[0];
   if (typeof first !== "string" && first?.type !== "text") return false;
-  const text = typeof first === "string" ? first : first.text;
-  return /^\/[^\s/]+(\s|$)/.test(text.trim());
+  return isSlashCommand(typeof first === "string" ? first : first.text);
 }
 
 function combine(prompts: AgentPromptInput[]): AgentPromptInput {

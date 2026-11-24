@@ -137,6 +137,8 @@ import type { BrowserToolsBroker } from "./browser-tools/broker.js";
 import type { DaemonRuntimeConfig } from "./session/daemon/daemon-session.js";
 import { DirectorySyncService } from "./directory-sync/index.js";
 import { OWNER_PERMISSIONS, type DaemonPermission } from "./authorization/index.js";
+import type { MessageAuthor } from "@getpaseo/protocol/agent-types";
+import { readKumoPerson } from "./kumo-person.js";
 import type { WorkspaceLabelService } from "./workspace-labels/index.js";
 import {
   APPLICATION_SOCKET_LEASE_CHECK_INTERVAL_MS,
@@ -171,6 +173,8 @@ interface PendingConnection {
   identity: WebSocketConnectionIdentity;
   admission: SessionAdmission | null;
   authenticating: boolean;
+  /** Who Kumo's gate says is connecting: attribution, not authority. */
+  person: MessageAuthor | undefined;
 }
 
 interface WebSocketConnectionIdentity {
@@ -519,6 +523,7 @@ interface SocketSessionOptions {
   onLifecycleIntent?: (intent: SessionLifecycleIntent) => void;
   hubExecutionAgents?: HubExecutionAgents;
   hubRelationships?: HubRelationshipManagement;
+  person?: MessageAuthor;
 }
 
 interface ClosePhysicalSocketParams {
@@ -1561,6 +1566,7 @@ export class VoiceAssistantWebSocketServer {
       identity,
       admission,
       authenticating: false,
+      person: requestMetadata.person,
     };
     const timeout = setTimeout(() => {
       if (this.pendingConnections.get(ws) !== pending) {
@@ -1603,9 +1609,18 @@ export class VoiceAssistantWebSocketServer {
     connectionLogger: pino.Logger;
     lifecycle: { kind: "reconnectable" } | { kind: "ephemeral-plugin"; pluginId: string };
     admission: SessionAdmission;
+    person: MessageAuthor | undefined;
   }): SessionConnection {
-    const { ws, clientId, appVersion, clientCapabilities, connectionLogger, lifecycle, admission } =
-      params;
+    const {
+      ws,
+      clientId,
+      appVersion,
+      clientCapabilities,
+      connectionLogger,
+      lifecycle,
+      admission,
+      person,
+    } = params;
     let connection: SessionConnection | null = null;
 
     const session = this.createSocketSession({
@@ -1663,13 +1678,14 @@ export class VoiceAssistantWebSocketServer {
       },
       hubExecutionAgents: admission.hubExecutionAgents,
       hubRelationships: this.hubRelationships ?? undefined,
+      person,
     });
 
     const base: SessionConnectionBase = {
       session,
       principalId: admission.principalId,
       hubExecutionAgents: admission.hubExecutionAgents,
-      sessionKey: sessionConnectionKey(admission.principalId, clientId),
+      sessionKey: sessionConnectionKey(admission.principalId, person, clientId),
       clientId,
       appVersion,
       clientCapabilities,
@@ -1751,6 +1767,7 @@ export class VoiceAssistantWebSocketServer {
       providerSnapshotManager: this.providerSnapshotManager,
       hubExecutionAgents: options.hubExecutionAgents,
       hubRelationships: options.hubRelationships,
+      person: options.person,
       serviceProxy: this.serviceProxy ?? undefined,
       scriptRuntimeStore: this.scriptRuntimeStore ?? undefined,
       workspaceSetupObservation: this.workspaceSetupObservation,
@@ -1871,7 +1888,7 @@ export class VoiceAssistantWebSocketServer {
     if (message.appVersion) {
       pending.identity.appVersion = message.appVersion;
     }
-    const sessionKey = sessionConnectionKey(admitted.principalId, clientId);
+    const sessionKey = sessionConnectionKey(admitted.principalId, pending.person, clientId);
     const existing = pluginId ? undefined : this.externalSessionsByKey.get(sessionKey);
     if (existing) {
       this.resumeSession({ ws, message, pending, existing });
@@ -1888,6 +1905,7 @@ export class VoiceAssistantWebSocketServer {
       connectionLogger,
       lifecycle: pluginId ? { kind: "ephemeral-plugin", pluginId } : { kind: "reconnectable" },
       admission: admitted,
+      person: pending.person,
     });
     connection.permissionCeiling = message.sessionPermissions;
     connection.session.setRouted(message.routed === true);
@@ -3178,6 +3196,7 @@ interface SocketRequestMetadata {
   origin?: string;
   userAgent?: string;
   remoteAddress?: string;
+  person?: MessageAuthor;
 }
 
 function createWebSocketConnectionIdentity(
@@ -3199,8 +3218,13 @@ function createWebSocketConnectionIdentity(
   };
 }
 
-function sessionConnectionKey(principalId: string, clientId: string): string {
-  return JSON.stringify([principalId, clientId]);
+/** A person is part of the key, so a hello never resumes the session of someone else. */
+function sessionConnectionKey(
+  principalId: string,
+  person: MessageAuthor | undefined,
+  clientId: string,
+): string {
+  return JSON.stringify([principalId, person?.id ?? null, clientId]);
 }
 
 function toConnectionLogFields(identity: WebSocketConnectionIdentity): Record<string, string> {
@@ -3247,6 +3271,8 @@ function extractSocketRequestMetadata(request: unknown): SocketRequestMetadata {
       host?: unknown;
       origin?: unknown;
       "user-agent"?: unknown;
+      "x-kumo-user"?: unknown;
+      "x-kumo-name"?: unknown;
     };
     url?: unknown;
     socket?: {
@@ -3260,12 +3286,14 @@ function extractSocketRequestMetadata(request: unknown): SocketRequestMetadata {
     typeof record.headers?.["user-agent"] === "string" ? record.headers["user-agent"] : undefined;
   const remoteAddress =
     typeof record.socket?.remoteAddress === "string" ? record.socket.remoteAddress : undefined;
+  const person = record.headers ? readKumoPerson(record.headers) : null;
 
   return {
     ...(host ? { host } : {}),
     ...(origin ? { origin } : {}),
     ...(userAgent ? { userAgent } : {}),
     ...(remoteAddress ? { remoteAddress } : {}),
+    ...(person ? { person } : {}),
   };
 }
 

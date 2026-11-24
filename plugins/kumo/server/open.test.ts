@@ -4,6 +4,7 @@ import { join } from "node:path";
 import type { PluginSessionOpenRequest } from "@getpaseo/plugin/server";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { withKumo } from "./open.js";
+import { THREAD_INSTRUCTIONS } from "./thread.js";
 
 let home: string;
 
@@ -47,7 +48,7 @@ describe("withKumo", () => {
   it.each(["claude", "codex"])("gives stock %s the instructions and the keys", async (provider) => {
     expect(await withKumo(request(provider), home)).toEqual(
       request(provider, {
-        appendSystemPrompt: ["COMPUTER"],
+        appendSystemPrompt: ["COMPUTER", THREAD_INSTRUCTIONS],
         env: { ANTHROPIC_API_KEY: "kumo-key", OPENAI_API_KEY: "kumo-openai" },
       }),
     );
@@ -55,7 +56,7 @@ describe("withKumo", () => {
 
   it("gives stock OpenCode the instructions but no keys", async () => {
     expect(await withKumo(request("opencode"), home)).toEqual(
-      request("opencode", { appendSystemPrompt: ["COMPUTER"] }),
+      request("opencode", { appendSystemPrompt: ["COMPUTER", THREAD_INSTRUCTIONS] }),
     );
   });
 
@@ -71,7 +72,7 @@ describe("withKumo", () => {
 
     expect(await withKumo(opened, home)).toEqual(
       request("claude", {
-        appendSystemPrompt: ["EARLIER", "COMPUTER"],
+        appendSystemPrompt: ["EARLIER", "COMPUTER", THREAD_INSTRUCTIONS],
         env: { ANTHROPIC_API_KEY: "mine", OPENAI_API_KEY: "kumo-openai" },
       }),
     );

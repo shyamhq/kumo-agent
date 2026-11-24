@@ -19,6 +19,11 @@ const sourceSchema = z.discriminatedUnion("kind", [
     serverId: z.string().min(1).optional(),
     title: z.string().min(1).optional(),
   }),
+  // A person writing in a shared chat, named by Kumo's gate (MessageAuthor), never by the text.
+  z.object({
+    kind: z.literal("person-message"),
+    author: z.object({ id: z.string().min(1), name: z.string() }),
+  }),
   z.object({
     kind: z.literal("agent-notification"),
     agentId: agentIdSchema,
@@ -75,6 +80,9 @@ export function formatAgentMessage(message: AgentMessage): string {
   if (source?.kind === "change-request-update") {
     return `<paseo-system version="1" kind="change-request-update" source-url="${escapeXml(source.url)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
   }
+  if (source?.kind === "person-message") {
+    return `<paseo-system version="1" kind="${source.kind}" author-id="${escapeXml(source.author.id)}" author-name="${escapeXml(source.author.name)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
+  }
   const attributes = source
     ? `kind="${source.kind}" source-agent-id="${escapeXml(source.agentId)}"`
     : 'kind="user-message"';
@@ -110,6 +118,7 @@ export function parseAgentMessage(text: string): AgentMessage | null {
     event: attributes.get("event"),
     title: attributes.get("source-agent-title"),
     url: attributes.get("source-url"),
+    author: { id: attributes.get("author-id"), name: attributes.get("author-name") },
   });
   if (!source.success) return null;
   return { id, source: source.data, text: body };
@@ -210,6 +219,9 @@ function projectAgentMessage(item: AgentTimelineItem): AgentTimelineItem | null 
   const { source } = message;
   if (!source) {
     return { ...item, text: message.text, clientMessageId: message.id };
+  }
+  if (source.kind === "person-message") {
+    return { ...item, text: message.text, clientMessageId: message.id, author: source.author };
   }
   if (source.kind === "change-request-update") {
     return {
