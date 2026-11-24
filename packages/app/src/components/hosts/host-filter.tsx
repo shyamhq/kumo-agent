@@ -40,8 +40,8 @@ export interface HostFilterProps {
 }
 
 /**
- * The "All hosts / <host>" host picker shared by History, Schedules, Usage, the label manager and
- * plugin screens: an anchored HostPicker, hidden by the caller when only one host exists. Without
+ * The "All hosts / <host>" host picker shared by History, Schedules, the label manager and plugin
+ * screens: an anchored HostPicker, hidden by the caller when only one host exists. Without
  * `includeAllHost` it picks the one host a surface shows. Its trigger is the Settings host
  * trigger; a long host name truncates instead of pushing the row.
  */

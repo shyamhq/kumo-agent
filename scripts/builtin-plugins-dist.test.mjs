@@ -68,13 +68,6 @@ test("built output compiles and starts every listed built-in", async () => {
       assert.ok(bundles.serverBundle, `${id} must compile a server bundle`);
       await runtime.startBuiltinPlugin({ id, directory });
       assert.ok(runtime.catalog().some((plugin) => plugin.id === id));
-      if (id.endsWith("-usage-source")) {
-        const sourceId = id.slice(0, -"-usage-source".length);
-        assert.ok(
-          runtime.getUsageSourceRegistrations(id).some((source) => source.id === sourceId),
-          `${id} must register usage source ${sourceId}`,
-        );
-      }
     }
   } finally {
     await runtime.stopAll();

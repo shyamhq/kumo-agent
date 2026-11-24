@@ -127,7 +127,7 @@ const darkDiffColors = {
 
 // Status colors — semantic signals for success/danger/warning/merged. There is exactly one
 // token per signal, and every status surface uses it: PR state icons, CI check icons and
-// pies, diff stats, file-change icons, status badges, usage bars. Status *dots* are the
+// pies, diff stats, file-change icons, status badges. Status *dots* are the
 // exception and have their own band below. A surface does not otherwise get a quieter or
 // louder variant of a status color because of where it sits — if a dense list feels loud,
 // that is a density or weight problem, not a color problem.

@@ -50,8 +50,7 @@ export function DetailsSheet({
     <ThemedBottomSheetModal
       ref={sheetRef}
       contextBridge={null}
-      // Content-sized rather than fixed snap points: a few rows of details, or usage cards that
-      // stream in one at a time.
+      // Content-sized rather than fixed snap points: the details are a few rows.
       enableDynamicSizing
       maxDynamicContentSize={height * 0.8}
       onChange={handleSheetChange}
