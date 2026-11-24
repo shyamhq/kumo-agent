@@ -49,6 +49,7 @@ interface TestPaseoDaemonOptions {
   pushNotificationSender?: PushNotificationSender;
   serviceProxy?: PaseoDaemonConfig["serviceProxy"];
   webUi?: PaseoDaemonConfig["webUi"];
+  kumoWorkspace?: string;
   trustedProxies?: PaseoDaemonConfig["trustedProxies"];
   agentProfiles?: AgentProfile[];
   autoArchiveAfterMerge?: boolean;
@@ -213,6 +214,7 @@ async function prepareTestDaemonConfig(
     pushNotificationSender: options.pushNotificationSender,
     serviceProxy: options.serviceProxy,
     webUi: options.webUi,
+    kumoWorkspace: options.kumoWorkspace,
     trustedProxies: options.trustedProxies,
     openai: options.openai,
     speech: options.speech
