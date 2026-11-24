@@ -1,8 +1,9 @@
 import { useState, useCallback, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
-import { View, type LayoutChangeEvent, type ViewStyle } from "react-native";
+import { Text, View, type LayoutChangeEvent, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useTranslation } from "react-i18next";
 import type { AgentMessage } from "@getpaseo/protocol/agent-message";
+import type { MessageAuthor } from "@getpaseo/protocol/agent-types";
 import { Button } from "@/components/ui/button";
 import { EdgeFade } from "@/components/ui/edge-fade";
 import { useProviderIcon } from "@/components/provider-icons";
@@ -109,8 +110,56 @@ export function MessageSender({
   );
 }
 
+/** Who wrote a message in a shared chat: their initials in a circle, then their name. */
+export function MessageAuthorLine({ author }: { author: MessageAuthor }) {
+  return (
+    <View style={styles.author} testID="message-author">
+      <View style={styles.authorAvatar}>
+        <Text style={styles.authorInitials}>{initialsOf(author.name)}</Text>
+      </View>
+      <Text style={styles.authorName} numberOfLines={1}>
+        {author.name}
+      </Text>
+    </View>
+  );
+}
+
+/** "Alice Ng" → "AN"; one word gives one letter. By code point, so an emoji stays whole. */
+function initialsOf(name: string): string {
+  const words = name.trim().split(/\s+/).slice(0, 2);
+  return words
+    .map((word) => Array.from(word)[0] ?? "")
+    .join("")
+    .toUpperCase();
+}
+
 const styles = StyleSheet.create((theme) => ({
   body: { flexShrink: 0 },
+  author: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing[2],
+    maxWidth: "100%",
+    marginBottom: theme.spacing[1],
+  },
+  authorAvatar: {
+    width: theme.spacing[6],
+    height: theme.spacing[6],
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.surface3,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  authorInitials: {
+    color: theme.colors.foreground,
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+  },
+  authorName: {
+    flexShrink: 1,
+    color: theme.colors.foregroundMuted,
+    fontSize: theme.fontSize.sm,
+  },
   sender: { paddingRight: 0, borderRightWidth: 0, maxWidth: "100%" },
   senderText: { flexShrink: 1 },
   toggle: { alignSelf: "flex-start", paddingHorizontal: 0, minHeight: 0, borderWidth: 0 },

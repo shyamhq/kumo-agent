@@ -1,5 +1,5 @@
 import { useDisclosureHold } from "@/agent-stream/disclosure";
-import { MessagePreview, MessageSender } from "@/components/user-message";
+import { MessageAuthorLine, MessagePreview, MessageSender } from "@/components/user-message";
 import { useStableEvent } from "@/hooks/use-stable-event";
 import { getAgentAttachmentPillContent } from "@/attachments/attachment-pill-content";
 import { AssistantForkMenu, type AssistantForkTarget } from "@/components/assistant-fork-menu";
@@ -40,6 +40,7 @@ import type { AgentMessage } from "@getpaseo/protocol/agent-message";
 import type {
   AgentCapabilityFlags,
   AgentMetric,
+  MessageAuthor,
   ToolCallDetail,
 } from "@getpaseo/protocol/agent-types";
 import type { AgentAttachment } from "@getpaseo/protocol/messages";
@@ -104,6 +105,8 @@ interface UserMessageProps {
   /** The timeline item's id, which keeps the message's expanded state. */
   itemId: string;
   sender?: AgentMessage["sender"];
+  /** The person who wrote it, in a shared chat. */
+  author?: MessageAuthor;
   serverId?: string;
   agentId?: string;
   messageId?: string;
@@ -404,6 +407,7 @@ const MESSAGE_TEXT_DATASET = { messageText: "true" };
 export const UserMessage = memo(function UserMessage({
   itemId,
   sender,
+  author,
   serverId,
   agentId,
   messageId,
@@ -490,6 +494,7 @@ export const UserMessage = memo(function UserMessage({
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
+        {author ? <MessageAuthorLine author={author} /> : null}
         {sender ? <MessageSender sender={sender} serverId={serverId} /> : null}
         <View style={userMessageStylesheet.bubble}>
           <MessagePreview itemId={itemId}>

@@ -267,6 +267,25 @@ describe("user message identity", () => {
     expect(first[0]).toBe(second[0]);
   });
 
+  it("takes the author from the daemon's row, which a local echo never has", () => {
+    const timestamp = new Date("2026-11-25T10:00:00.000Z");
+    const author = { id: "u_bob", name: "Bob" };
+    const local = createUserMessage({ clientMessageId: "client-1", text: "hi", timestamp });
+    const canonical = createUserMessage({
+      id: "client-1",
+      clientMessageId: "client-1",
+      author,
+      text: "hi",
+      timestamp,
+    });
+
+    const first = upsertUserMessage([local], canonical);
+    const second = upsertUserMessage(first, canonical);
+
+    expect(first).toEqual([{ ...local, author }]);
+    expect(first[0]).toBe(second[0]);
+  });
+
   it("keeps local presentation when a later canonical row omits provider identity", () => {
     const timestamp = new Date("2026-07-27T10:00:00.000Z");
     const local = createUserMessage({
