@@ -1,5 +1,6 @@
 {
   "name": "paseo",
+  "version": "0.17.4-kumo.5",
   "private": true,
   "description": "Paseo: voice-controlled development environment for local AI coding agents",
   "keywords": [
@@ -99,7 +100,6 @@
   "devDependencies": {
     "@types/ws": "^8.5.14",
     "@typescript/native-preview": "7.0.0-dev.20260423.1",
-    "@vercel/nft": "^1.5.0",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "44.2.0",

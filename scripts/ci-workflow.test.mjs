@@ -6,7 +6,7 @@ import test from "node:test";
 import { runInNewContext } from "node:vm";
 
 // The seven packages a kumo-agent release packs and attaches (docs/release.md).
-const PUBLISH_WORKSPACES = [
+const RELEASED_WORKSPACES = [
   "@getpaseo/highlight",
   "@getpaseo/relay",
   "@getpaseo/protocol",
@@ -139,9 +139,25 @@ test("change gating allows superseded workflow runs to cancel", () => {
   );
 });
 
+test("the version is X.Y.Z-kumo.N and every released package carries it", () => {
+  const rootManifest = JSON.parse(readFileSync(new URL("package.json", repoRoot), "utf8"));
+  assert.match(rootManifest.version, /^\d+\.\d+\.\d+-kumo\.\d+$/);
+  const workspaces = new Map(
+    rootManifest.workspaces.map((workspace) => {
+      const manifest = JSON.parse(
+        readFileSync(new URL(`${workspace}/package.json`, repoRoot), "utf8"),
+      );
+      return [manifest.name, manifest.version];
+    }),
+  );
+  for (const name of RELEASED_WORKSPACES) {
+    assert.equal(workspaces.get(name), rootManifest.version, name);
+  }
+});
+
 test("released packages declare and ship the repository license", () => {
   const rootManifest = JSON.parse(readFileSync(new URL("package.json", repoRoot), "utf8"));
-  const workspaceArgs = PUBLISH_WORKSPACES.map((workspace) => `--workspace=${workspace}`);
+  const workspaceArgs = RELEASED_WORKSPACES.map((workspace) => `--workspace=${workspace}`);
   const packed = JSON.parse(
     execFileSync("npm", ["pack", "--dry-run", "--ignore-scripts", "--json", ...workspaceArgs], {
       cwd: repoRoot,
@@ -162,7 +178,7 @@ test("released packages declare and ship the repository license", () => {
   }));
   assert.deepEqual(
     licenses,
-    PUBLISH_WORKSPACES.map((workspace) => ({
+    RELEASED_WORKSPACES.map((workspace) => ({
       name: workspace,
       license: "Apache-2.0",
       files: ["LICENSE"],
@@ -545,6 +561,7 @@ test("Windows units and integration run independently with complete routed cover
   }
 });
 
+// GitHub retires macOS 14 on 2026-11-02; brownouts already reject these jobs.
 test("workflows avoid retired macOS 14 runners", () => {
   for (const path of filesUnder(".github/workflows", (candidate) => /\.ya?ml$/.test(candidate))) {
     assert.doesNotMatch(
