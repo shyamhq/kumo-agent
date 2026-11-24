@@ -1299,9 +1299,6 @@ export const en = {
       closeSidebar: "Close sidebar",
       moreActions: "More actions",
     },
-    footer: {
-      usage: "Usage",
-    },
     help: {
       trigger: "Help and support",
       sectionHelp: "Help",
@@ -2270,86 +2267,6 @@ export const en = {
       saveAccessibility: "Save review comment",
     },
   },
-  providerUsage: {
-    checkUsage: "Check usage",
-    checkUsageHint: "Applies to {{host}} on every device",
-    off: "Usage is off on {{host}}.",
-    turnOn: "Turn on",
-
-    options: "Settings",
-    host: "Host",
-    refreshFailed: "Unable to refresh usage",
-    noHosts: "No connected hosts",
-    agentError: "Unable to load usage: {{reason}}",
-    pin: "Pin",
-    unpin: "Unpin",
-    displayAs: "Percentages",
-    displayUsed: "Used",
-    displayRemaining: "Remaining",
-    showInSidebar: "Summary in sidebar",
-    showInSidebarHint: "Pinned windows show in the sidebar footer",
-    runToRefresh: "Run {{command}} to refresh it.",
-    signInAgain: "Sign in again.",
-    loginRejected: "Login rejected (HTTP {{status}}). {{remedy}}",
-    loginExpired: "Login expired {{relativeTime}}. {{remedy}}",
-    title: "Plan usage",
-    refresh: "Refresh",
-    reorderCard: "Reorder {{source}}",
-    sources: "Sources",
-    sourcesCount: "{{shown}} of {{total}}",
-    providerInactive: "Provider inactive",
-    allSourcesHidden: "No usage sources shown",
-    chooseSources: "Choose sources",
-    refreshAll: "Refresh all",
-    refreshing: "Refreshing...",
-    loading: "Loading usage...",
-    empty: "No usage data",
-    errorTitle: "Unable to load usage",
-    hostUnavailable: "Connect to {{host}} to see usage",
-    hostUpgradeRequired: "Update {{host}} to see usage",
-    clientUnavailable: "Host connection is not ready",
-    retry: "Try again",
-    tooltipLoading: "Loading plan usage...",
-    status: {
-      error: "Error",
-      unavailable: "Unavailable",
-    },
-    values: {
-      used: "{{percentage}} used",
-      remaining: "{{amount}} left",
-    },
-    labels: {
-      session: "Session",
-      weekly: "Weekly",
-      monthly: "Monthly",
-      codeReview: "Code review",
-      credits: "Credits",
-      monthlyCredits: "Monthly credits",
-    },
-    duration: {
-      days: "{{value}}d",
-      hours: "{{value}}h",
-      minutes: "{{value}}m",
-      pair: "{{first}} {{second}}",
-    },
-    timing: {
-      lastUpdated: "Last updated {{relativeTime}}",
-      noSuccessfulUpdate: "No successful update",
-      resetTimePassed: "Reset time passed",
-      resettingNow: "resetting now",
-      resetsIn: "resets in {{duration}}",
-      resetsAtWeekday: "{{weekday}} {{time}}",
-      resetsAtDate: "{{date}}, {{time}}",
-      limitReached: "Limit reached",
-      mayHaveRunOut: "May have run out",
-      runsOutAt: "runs out {{time}}",
-      justNow: "just now",
-      daysAgo: "{{value}}d ago",
-      hoursAgo: "{{value}}h ago",
-      minutesAgo: "{{value}}m ago",
-      updated: "Updated {{relativeTime}}",
-    },
-  },
   settings: {
     title: "Settings",
     loading: "Loading settings...",
@@ -2461,7 +2378,6 @@ export const en = {
       voice: "Voice",
       workspaces: "Workspaces",
       providers: "Providers",
-      usage: "Usage",
       terminals: "Terminals",
       plugins: "Plugins",
       host: "Overview",
@@ -3400,18 +3316,4 @@ type WidenStringLeaves<T> = {
   [K in keyof T]: T[K] extends string ? string : WidenStringLeaves<T[K]>;
 };
 
-type TranslationResourcesBase = WidenStringLeaves<typeof en>;
-type PluralCategory = "zero" | "one" | "two" | "few" | "many" | "other";
-type DurationPluralKey = `${"days" | "hours" | "minutes"}_${PluralCategory}`;
-type AgoPluralKey = `${"daysAgo" | "hoursAgo" | "minutesAgo"}_${PluralCategory}`;
-
-// i18next plural categories differ by locale, so locale catalogs may add the
-// explicit v4 suffixes they need while retaining the canonical fallback keys.
-export type TranslationResources = TranslationResourcesBase & {
-  providerUsage: TranslationResourcesBase["providerUsage"] & {
-    duration: TranslationResourcesBase["providerUsage"]["duration"] &
-      Partial<Record<DurationPluralKey, string>>;
-    timing: TranslationResourcesBase["providerUsage"]["timing"] &
-      Partial<Record<AgoPluralKey, string>>;
-  };
-};
+export type TranslationResources = WidenStringLeaves<typeof en>;
