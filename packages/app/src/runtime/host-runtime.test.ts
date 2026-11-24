@@ -5556,29 +5556,25 @@ describe("HostRuntimeStore", () => {
 });
 
 describe("readInitialDaemonConnectionHint", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("returns null when no hint is present", () => {
     expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toBeNull();
   });
 
-  it("parses a valid listen-only hint", () => {
+  it.each([
+    ["https://6868--box.example.com/", { listen: "6868--box.example.com:443", useTls: true }],
+    ["http://192.168.1.20:6767/", { listen: "192.168.1.20:6767", useTls: false }],
+    ["http://[fd00::12]:6767/", { listen: "[fd00::12]:6767", useTls: false }],
+  ])("dials %s, where the page was loaded from, not the Host the daemon saw", (pageUrl, dial) => {
     (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = {
-      listen: "localhost:6767",
-    };
-    expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toEqual({
-      listen: "localhost:6767",
-      useTls: false,
-    });
-  });
-
-  it("preserves useTls when explicitly true", () => {
-    (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = {
-      listen: "paseo.example.com:443",
+      listen: "10.90.0.12:6868",
       useTls: true,
     };
-    expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toEqual({
-      listen: "paseo.example.com:443",
-      useTls: true,
-    });
+    vi.stubGlobal("location", new URL(pageUrl));
+    expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toEqual(dial);
   });
 
   it("ignores invalid shapes", () => {

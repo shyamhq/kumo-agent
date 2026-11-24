@@ -1785,7 +1785,16 @@ export function readInitialDaemonConnectionHint(input?: {
   const result = InitialDaemonConnectionHintSchema.safeParse(
     Reflect.get(globalThis, INITIAL_DAEMON_CONNECTION_HINT_GLOBAL_KEY),
   );
-  return result.success ? result.data : null;
+  if (!result.success) {
+    return null;
+  }
+  // The daemon that served this page answers its WebSocket at the same address, so the page's
+  // own location is the one to dial. The hint is built from the Host the daemon saw, which a
+  // proxy in front (Kumo's gate) rewrites to an address the browser cannot reach.
+  const location = globalThis.location;
+  const useTls = location.protocol === "https:";
+  const port = location.port || (useTls ? "443" : "80");
+  return { listen: `${location.hostname}:${port}`, useTls };
 }
 
 function readConfiguredLocalDaemonOverride(): string | null {
