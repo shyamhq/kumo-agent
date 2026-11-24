@@ -47,10 +47,16 @@ export interface SkillTargets {
 // Names the bundle used to ship. They are never selectable, but every scan still
 // covers them so an older install's copies get cleaned up.
 export const LEGACY_SKILL_NAMES = [
+  "paseo",
+  "paseo-advisor",
   "paseo-chat",
+  "paseo-committee",
   "paseo-epic",
+  "paseo-handoff",
+  "paseo-help",
   "paseo-orchestrate",
   "paseo-orchestrator",
+  "paseo-plugin",
 ] as const;
 
 type SkillFiles = Map<string, string>;
