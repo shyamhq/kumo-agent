@@ -73,6 +73,7 @@ function createApp(options: {
   enabled: boolean;
   distDir: string | null;
   publicDir?: string;
+  frameAncestors?: string;
 }): express.Application {
   const app = express();
   app.use(
@@ -81,7 +82,7 @@ function createApp(options: {
       distDir: options.distDir,
       label: "test-label",
       logger,
-      frameAncestors: "frame-ancestors https://os--box.test",
+      frameAncestors: options.frameAncestors,
     }),
   );
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -288,7 +289,12 @@ describe("daemon web UI route module", () => {
   });
 
   test("sets no-cache headers for index.html", async () => {
-    const app = createApp({ enabled: true, distDir, publicDir });
+    const app = createApp({
+      enabled: true,
+      distDir,
+      publicDir,
+      frameAncestors: "frame-ancestors https://os--box.test",
+    });
 
     const res = await request(app, "GET", "/");
 
@@ -296,6 +302,14 @@ describe("daemon web UI route module", () => {
       "no-store, no-cache, must-revalidate, proxy-revalidate",
     );
     expect(res.headers["content-security-policy"]).toBe("frame-ancestors https://os--box.test");
+  });
+
+  test("lets only its own origin frame the page when config names no one", async () => {
+    const app = createApp({ enabled: true, distDir, publicDir });
+
+    const res = await request(app, "GET", "/");
+
+    expect(res.headers["content-security-policy"]).toBe("frame-ancestors 'self'");
   });
 
   test("sets immutable caching for hashed assets", async () => {

@@ -80,7 +80,7 @@ describe("server config", () => {
       loadConfig(paseoHome, { env: { PUBLIC_URL: "https://6868--deep-badger.mykumo.xyz/" } }).webUi
         ?.frameAncestors,
     ).toBe("frame-ancestors https://os--deep-badger.mykumo.xyz");
-    expect(loadConfig(paseoHome, { env: {} }).webUi?.frameAncestors).toBe("frame-ancestors 'self'");
+    expect(loadConfig(paseoHome, { env: {} }).webUi?.frameAncestors).toBeUndefined();
   });
 
   test("idle runtime cleanup defaults on and supports a host-wide opt-out", async () => {

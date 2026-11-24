@@ -161,12 +161,13 @@ export interface WebUiMiddlewareOptions {
   distDir: string | null;
   label: string;
   logger: Logger;
-  /** The page's `frame-ancestors` policy; `frameAncestors()` derives it. */
-  frameAncestors: string;
+  /** Who may frame the page, from config; without it, only the page's own origin. */
+  frameAncestors?: string;
 }
 
 export function createWebUiMiddleware(options: WebUiMiddlewareOptions): RequestHandler {
-  const { enabled, distDir, label, logger, frameAncestors: framePolicy } = options;
+  const { enabled, distDir, label, logger } = options;
+  const framePolicy = options.frameAncestors ?? "frame-ancestors 'self'";
   const childLogger = logger.child({ module: "web-ui" });
 
   if (!enabled || !distDir) {
@@ -268,16 +269,6 @@ function sendIndexHtml(
   } catch {
     res.status(500).end();
   }
-}
-
-/**
- * Who may frame the UI. On a Kumo computer, `PUBLIC_URL` is this app's own address,
- * `https://<port>--<handle>.<zone>`, and only that computer's OS, `https://os--<handle>.<zone>`,
- * may frame it: every other page in the zone is the same site and could frame a signed-in shell.
- */
-export function frameAncestors(publicUrl: string | undefined): string {
-  const host = /^https:\/\/\d+--([^/]+)\/?$/.exec(publicUrl ?? "")?.[1];
-  return host ? `frame-ancestors https://os--${host}` : "frame-ancestors 'self'";
 }
 
 function serializeInlineScriptJson(value: unknown): string {

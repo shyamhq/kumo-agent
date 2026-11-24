@@ -236,7 +236,7 @@ import {
   type DaemonAuthConfig,
 } from "./auth.js";
 import { deleteLocalCredential, writeLocalCredential } from "./local-credential.js";
-import { createWebUiMiddleware, frameAncestors } from "./web-ui.js";
+import { createWebUiMiddleware } from "./web-ui.js";
 import { WorkspaceAutoName } from "./workspace-auto-name.js";
 import { createGitMutationService } from "./session/git-mutation/git-mutation-service.js";
 import { workspaceIdsOnCheckout } from "./workspace-directory.js";
@@ -466,7 +466,7 @@ export interface PaseoDaemonConfig {
   webUi?: {
     enabled: boolean;
     distDir: string | null;
-    frameAncestors: string;
+    frameAncestors?: string;
   };
   appBaseUrl?: string;
   auth?: DaemonAuthConfig;
@@ -568,7 +568,7 @@ function mountWebUi(app: express.Application, config: PaseoDaemonConfig, logger:
       distDir: config.webUi?.distDir ?? null,
       label: getHostName(),
       logger,
-      frameAncestors: config.webUi?.frameAncestors ?? frameAncestors(undefined),
+      frameAncestors: config.webUi?.frameAncestors,
     }),
   );
 }
