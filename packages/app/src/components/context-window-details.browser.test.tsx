@@ -1,6 +1,5 @@
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AgentMetric } from "@getpaseo/protocol/agent-types";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
@@ -30,17 +29,12 @@ afterEach(() => {
 function renderDetails(sessionMetrics: AgentMetric[]): void {
   act(() =>
     root.render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ContextWindowDetails
-          serverId="server"
-          agentId="agent"
-          context={CONTEXT}
-          sessionCost="$1.20"
-          sessionMetrics={sessionMetrics}
-          showTitle
-          refreshable={false}
-        />
-      </QueryClientProvider>,
+      <ContextWindowDetails
+        context={CONTEXT}
+        sessionCost="$1.20"
+        sessionMetrics={sessionMetrics}
+        showTitle
+      />,
     ),
   );
 }

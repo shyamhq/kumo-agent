@@ -356,3 +356,15 @@ export async function revealSidebarProjectWorkspaces(
     .getByTestId(`sidebar-project-show-more-${projectEquivalenceViewKey(projectKey)}`)
     .click();
 }
+
+/** Opens the compact sidebar drawer. */
+export async function openCompactSidebar(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "Open menu", exact: true }).first().click();
+}
+
+export async function expectCompactSidebarOpen(page: Page): Promise<void> {
+  await expect(page.getByRole("button", { name: "Close menu", exact: true })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+}

@@ -521,7 +521,6 @@ export const HOST_SECTION_SLUGS = [
   "voice",
   "workspaces",
   "providers",
-  "usage",
   "terminals",
   "plugins",
   "host",

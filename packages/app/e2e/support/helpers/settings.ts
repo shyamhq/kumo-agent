@@ -82,7 +82,6 @@ type HostSection =
   | "voice"
   | "workspaces"
   | "providers"
-  | "usage"
   | "terminals"
   | "plugins"
   | "host";

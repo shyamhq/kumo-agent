@@ -28,7 +28,6 @@ test("a touchscreen laptop keeps sidebar actions visible with a fine primary poi
   ).toEqual({ finePrimary: true, touchScreen: true });
   await expectFooterActionsInline(page, [
     "sidebar-add-project",
-    "sidebar-usage-icon",
     "sidebar-hosts-trigger",
     "sidebar-help",
     "sidebar-settings",

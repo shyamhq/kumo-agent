@@ -2,17 +2,12 @@ import path from "node:path";
 import { initializeEnvironmentProxy } from "../../network/index.js";
 import { DaemonClient } from "../../test-utils/daemon-client.js";
 import { createTestPaseoDaemon } from "../../test-utils/paseo-daemon.js";
-import {
-  builtinPlugins,
-  BuiltinPluginLoader,
-  resolveBuiltinPluginsRoot,
-} from "../builtin/index.js";
+import { BuiltinPluginLoader, resolveBuiltinPluginsRoot } from "../builtin/index.js";
 
 const mode = process.argv[2];
 if (mode !== "builtin" && mode !== "directory") throw new Error("Expected builtin or directory");
-const sources = builtinPlugins.filter((id) =>
-  ["claude-usage-source", "codex-usage-source", "openrouter-host-usage-source"].includes(id),
-);
+// Named, not read from the built-in list: Kumo leaves the usage sources out of it.
+const sources = ["claude-usage-source", "codex-usage-source", "openrouter-host-usage-source"];
 // Built-ins run inside the daemon; directory plugins initialize their own subprocess network.
 if (mode === "builtin") initializeEnvironmentProxy();
 const daemon = await createTestPaseoDaemon({

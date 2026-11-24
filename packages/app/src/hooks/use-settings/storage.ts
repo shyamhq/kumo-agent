@@ -5,11 +5,6 @@ import type { DesktopSettings } from "@/desktop/settings/desktop-settings";
 import type { AppLanguage } from "@/i18n/locales";
 import type { SidebarNavPreference } from "@/sidebar-nav/model";
 import {
-  DEFAULT_USAGE_PREFERENCES,
-  UsagePreferencesSchema,
-  type UsagePreferences,
-} from "@/usage/preferences";
-import {
   DEFAULT_SIDEBAR_CHECKS_DISPLAY,
   type SidebarChecksDisplay,
 } from "@/components/sidebar/display-preferences/checks-display";
@@ -105,8 +100,6 @@ export interface AppSettings {
   sidebarNavItems: SidebarNavPreference[];
   /** Sidebar footer items in display order; empty means the default order, all visible. */
   sidebarFooterItems: SidebarNavPreference[];
-  /** How usage reads and which windows the sidebar summary shows. */
-  usage: UsagePreferences;
   autoExpandReasoning: boolean;
   chatDisplay: ChatDisplay;
   chatOutlineEnabled: boolean;
@@ -164,7 +157,6 @@ export const DEFAULT_CLIENT_SETTINGS: AppSettings = {
   sidebarPluginRowBadgeItems: {},
   sidebarNavItems: [],
   sidebarFooterItems: [],
-  usage: DEFAULT_USAGE_PREFERENCES,
   autoExpandReasoning: false,
   chatDisplay: "collapseTurns",
   chatOutlineEnabled: true,
@@ -264,7 +256,6 @@ const StoredAppSettingsSchema = z
     sidebarPluginRowBadgeItems: z.record(z.string(), z.boolean()).catch({}),
     sidebarNavItems: z.array(z.object({ key: z.string(), visible: z.boolean() })).catch([]),
     sidebarFooterItems: z.array(z.object({ key: z.string(), visible: z.boolean() })).catch([]),
-    usage: UsagePreferencesSchema,
     autoExpandReasoning: z.boolean().catch(false),
     chatDisplay: z.enum(["full", "collapseToolCalls", "collapseTurns"]).optional().catch("full"),
     // COMPAT(toolCallDetailLevel): replaced by chatDisplay in v0.13, remove after 2027-04-24.

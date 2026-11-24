@@ -1,14 +1,6 @@
 import { useCallback, useMemo, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ChevronUp,
-  CircleGauge,
-  CircleHelp,
-  FolderPlus,
-  Plus,
-  Server,
-  Settings,
-} from "lucide-react-native";
+import { ChevronUp, CircleHelp, FolderPlus, Plus, Server, Settings } from "lucide-react-native";
 import { withUnistyles } from "react-native-unistyles";
 import { HostStatusDotSlot } from "@/components/hosts/host-picker";
 import type { SidebarFooterAction } from "@/components/sidebar-footer-layout";
@@ -26,19 +18,16 @@ import { useShortcutKeys } from "@/hooks/use-shortcut-keys";
 import { useHosts } from "@/runtime/host-runtime";
 import { ICON_SIZE, type Theme } from "@/styles/theme";
 import { orderHostsLocalFirst } from "@/types/host-connection";
-import { useOpenSidebarUsage } from "@/usage";
 import { SidebarFooterMenuTrigger } from "./sidebar-footer-menu-trigger";
 import { SidebarHelpMenuItems } from "./sidebar-help-menu";
 
 const mutedIconMapping = (theme: Theme) => ({ color: theme.colors.foregroundMuted });
 const ThemedFolderPlus = withUnistyles(FolderPlus);
-const ThemedCircleGauge = withUnistyles(CircleGauge);
 const ThemedServer = withUnistyles(Server);
 const ThemedCircleHelp = withUnistyles(CircleHelp);
 const ThemedSettings = withUnistyles(Settings);
 const ThemedPlus = withUnistyles(Plus);
 const addProjectLeading = <ThemedFolderPlus size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
-const usageLeading = <ThemedCircleGauge size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const hostsLeading = <ThemedServer size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const helpLeading = <ThemedCircleHelp size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const settingsLeading = <ThemedSettings size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
@@ -50,7 +39,7 @@ const HELP_PAGE_ID = "help";
 export interface SidebarFooterOverflowMenuProps {
   /** The footer actions that did not fit in the row, in row order. */
   actions: readonly SidebarFooterAction[];
-  labels: { addProject: string; hosts: string; settings: string; usage: string };
+  labels: { addProject: string; hosts: string; settings: string };
   onAddProject: () => void;
   onSettings: () => void;
   onAddHost: () => void;
@@ -72,7 +61,6 @@ export function SidebarFooterOverflowMenu({
 }: SidebarFooterOverflowMenuProps): ReactElement {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const openUsage = useOpenSidebarUsage();
   const newAgentKeys = useShortcutKeys("new-agent");
   const settingsKeys = useShortcutKeys("toggle-settings");
   const helpLabel = t("sidebar.help.trigger");
@@ -112,17 +100,6 @@ export function SidebarFooterOverflowMenu({
             onSelect={onAddProject}
           >
             {labels.addProject}
-          </DropdownMenuItem>
-        );
-      case "usage":
-        return (
-          <DropdownMenuItem
-            key={action}
-            testID="sidebar-usage-icon"
-            leading={usageLeading}
-            onSelect={openUsage}
-          >
-            {labels.usage}
           </DropdownMenuItem>
         );
       case "hosts":

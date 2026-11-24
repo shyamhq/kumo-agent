@@ -1,22 +1,10 @@
 /** The sidebar footer's icon line, in row order. */
-export const SIDEBAR_FOOTER_ACTIONS = [
-  "add-project",
-  "usage",
-  "hosts",
-  "help",
-  "settings",
-] as const;
+export const SIDEBAR_FOOTER_ACTIONS = ["add-project", "hosts", "help", "settings"] as const;
 
 export type SidebarFooterAction = (typeof SIDEBAR_FOOTER_ACTIONS)[number];
 
 /** The order actions keep their place in a row too narrow for all of them. */
-const KEEP_ORDER: readonly SidebarFooterAction[] = [
-  "settings",
-  "add-project",
-  "hosts",
-  "usage",
-  "help",
-];
+const KEEP_ORDER: readonly SidebarFooterAction[] = ["settings", "add-project", "hosts", "help"];
 
 /** Measured widths land a hair under the exact sum of their parts. */
 const MEASUREMENT_TOLERANCE = 0.5;
