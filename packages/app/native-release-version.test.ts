@@ -23,6 +23,10 @@ describe("native release version", () => {
     });
   });
 
+  it("numbers a kumo-agent release like a beta of the same version", () => {
+    expect(getNativeReleaseVersion("0.17.4-kumo.1")).toEqual(getNativeReleaseVersion("0.17.4-beta.1"));
+  });
+
   it("rejects beta numbers that consume the stable iOS build slot", () => {
     expect(() => getNativeReleaseVersion("0.2.6-beta.999")).toThrow(
       "iOS beta number must be between 1 and 998",

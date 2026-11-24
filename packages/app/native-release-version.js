@@ -1,4 +1,6 @@
-const versionPattern = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/;
+// kumo-agent releases are `X.Y.Z-kumo.N`, a version upstream never publishes; natively they
+// number like a beta of X.Y.Z.
+const versionPattern = /^(\d+)\.(\d+)\.(\d+)(?:-(?:beta|kumo)\.(\d+))?$/;
 const stableIosBuildSlot = 999;
 const FDROID_ABI_VERSION_CODE_SUFFIXES = {
   "armeabi-v7a": 1,
