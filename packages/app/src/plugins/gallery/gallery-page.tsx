@@ -23,7 +23,8 @@ type GalleryTab = "installed" | "browse";
 
 /**
  * Settings → Plugins: the plugins on this host and the directory to add more, behind one switch.
- * Opens on Installed when something is installed, otherwise on Browse.
+ * Opens on Installed when something is installed, otherwise on Browse. With the directory off
+ * (`PLUGIN_DIRECTORY_ENABLED`) it is Installed alone.
  */
 export function PluginGalleryPage({ serverId }: { serverId: string }) {
   const { t } = useTranslation();
