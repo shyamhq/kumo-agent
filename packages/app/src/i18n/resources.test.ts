@@ -437,22 +437,16 @@ describe("translation resources", () => {
     expect(en.openProject.tiles.addProject.title).toBe("Add a project");
   });
 
-  it("includes provider selector and pairing keys for the Batch 4D migration", () => {
+  it("includes provider selector keys for the Batch 4D migration", () => {
     expect(en.modelSelector.title).toBe("Select provider");
     expect(en.modelSelector.profiles).toBe("Profiles");
     expect(en.providerCatalog.title).toBe("Add provider");
     expect(en.providerCatalog.actions.installInstructions).toBe("Install instructions");
-    expect(en.pairing.link.title).toBe("Paste pairing link");
-    expect(en.pairing.connectionMethods.direct.title).toBe("Direct connection");
   });
 
-  it("includes onboarding and direct connection keys for the Batch 4E migration", () => {
+  it("includes onboarding keys for the Batch 4E migration", () => {
     expect(en.onboarding.title).toBe("Welcome to Paseo");
     expect(en.onboarding.actions.settings).toBe("Settings");
-    expect(en.pairing.direct.title).toBe("Direct connection");
-    expect(en.pairing.direct.fields.host).toBe("Host");
-    expect(en.pairing.scan.title).toBe("Scan QR");
-    expect(en.pairing.device.copy).toBe("Copy");
   });
 
   it("includes shared utility chrome keys for the Batch 4F migration", () => {
