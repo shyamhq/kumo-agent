@@ -948,7 +948,7 @@ async function createAgentMcpServer(
   return server;
 }
 
-describe("bundled Paseo skill", () => {
+describe("bundled kumo-agent skill", () => {
   it("documents only advertised create_workspace input names", async () => {
     const server = await createAgentMcpServer({
       agentManager: new BoundaryAgentManagerFake() as AgentManager,
@@ -961,7 +961,7 @@ describe("bundled Paseo skill", () => {
 
     try {
       const skill = await readFile(
-        new URL("../../../../../skills/paseo/SKILL.md", import.meta.url),
+        new URL("../../../../../skills/kumo-agent/SKILL.md", import.meta.url),
         "utf8",
       );
       const paragraph = skill.split("\n").find((line) => line.startsWith("**`create_workspace`**"));

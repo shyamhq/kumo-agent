@@ -36,7 +36,7 @@ interface Harness {
   selectionStore: SkillSelectionStore;
 }
 
-const BUNDLED_SKILLS = ["paseo", "paseo-advisor", "paseo-loop"];
+const BUNDLED_SKILLS = ["paseo-alpha", "paseo-beta", "paseo-loop"];
 
 async function makeHarness(selectionStore?: SkillSelectionStore): Promise<Harness> {
   const root = await mkdtemp(path.join(os.tmpdir(), "paseo-skills-controller-"));
@@ -264,16 +264,16 @@ describe("skills controller", () => {
     await expect(
       harness.controller.importLegacySelectionIfUnset({
         mode: "custom",
-        skills: ["paseo", "paseo-loop"],
+        skills: ["paseo-alpha", "paseo-loop"],
       }),
     ).resolves.toEqual({
       imported: true,
-      selection: { mode: "custom", skills: ["paseo", "paseo-loop"] },
+      selection: { mode: "custom", skills: ["paseo-alpha", "paseo-loop"] },
     });
     await expect(harness.controller.importLegacySelectionIfUnset({ mode: "all" })).resolves.toEqual(
       {
         imported: false,
-        selection: { mode: "custom", skills: ["paseo", "paseo-loop"] },
+        selection: { mode: "custom", skills: ["paseo-alpha", "paseo-loop"] },
       },
     );
     expect(await installedEverywhere(harness.targets)).toEqual([[], [], [], []]);
@@ -293,8 +293,8 @@ describe("skills controller", () => {
     expect(await harness.controller.status()).toEqual({
       state: "not-installed",
       ops: [
-        { kind: "add", name: "paseo" },
-        { kind: "add", name: "paseo-advisor" },
+        { kind: "add", name: "paseo-alpha" },
+        { kind: "add", name: "paseo-beta" },
         { kind: "add", name: "paseo-loop" },
       ],
       available: BUNDLED_SKILLS,
@@ -311,11 +311,11 @@ describe("skills controller", () => {
       installed: BUNDLED_SKILLS,
       selection: { mode: "all" },
     });
-    expect(await isInstalled(harness.targets, "paseo-advisor")).toBe(true);
+    expect(await isInstalled(harness.targets, "paseo-beta")).toBe(true);
   });
 
   it("does not remove deselected directories during install", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
     await writeUserFile(harness.targets, "paseo-loop", "notes/mine.md", "keep this");
 
     await harness.controller.install();
@@ -331,20 +331,20 @@ describe("skills controller", () => {
   it("saves a custom selection, converges disk, and returns the refreshed snapshot", async () => {
     const snapshot = await harness.controller.save({
       mode: "custom",
-      skills: ["paseo-loop", "paseo"],
+      skills: ["paseo-loop", "paseo-alpha"],
     });
 
     expect(snapshot).toEqual({
       state: "up-to-date",
       ops: [],
       available: BUNDLED_SKILLS,
-      installed: ["paseo", "paseo-loop"],
-      selection: { mode: "custom", skills: ["paseo", "paseo-loop"] },
+      installed: ["paseo-alpha", "paseo-loop"],
+      selection: { mode: "custom", skills: ["paseo-alpha", "paseo-loop"] },
       confirmationRequired: null,
     });
-    expect(await isInstalled(harness.targets, "paseo")).toBe(true);
+    expect(await isInstalled(harness.targets, "paseo-alpha")).toBe(true);
     expect(await isInstalled(harness.targets, "paseo-loop")).toBe(true);
-    expect(await isInstalled(harness.targets, "paseo-advisor")).toBe(false);
+    expect(await isInstalled(harness.targets, "paseo-beta")).toBe(false);
   });
 
   it("removes a skill from disk when it is dropped from the selection", async () => {
@@ -352,36 +352,36 @@ describe("skills controller", () => {
 
     await harness.controller.save({
       mode: "custom",
-      skills: ["paseo"],
-      confirmedRemovals: ["paseo-advisor", "paseo-loop"],
+      skills: ["paseo-alpha"],
+      confirmedRemovals: ["paseo-beta", "paseo-loop"],
     });
 
-    expect(await isInstalled(harness.targets, "paseo")).toBe(true);
-    expect(await isInstalled(harness.targets, "paseo-advisor")).toBe(false);
+    expect(await isInstalled(harness.targets, "paseo-alpha")).toBe(true);
+    expect(await isInstalled(harness.targets, "paseo-beta")).toBe(false);
     expect(await isInstalled(harness.targets, "paseo-loop")).toBe(false);
   });
 
   it("keeps the saved selection after uninstall so a later install restores it", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
 
     const afterUninstall = await harness.controller.uninstall();
     const afterReinstall = await harness.controller.install();
 
     expect(afterUninstall).toEqual({
       state: "not-installed",
-      ops: [{ kind: "add", name: "paseo" }],
+      ops: [{ kind: "add", name: "paseo-alpha" }],
       available: BUNDLED_SKILLS,
       installed: [],
-      selection: { mode: "custom", skills: ["paseo"] },
+      selection: { mode: "custom", skills: ["paseo-alpha"] },
     });
     expect(afterReinstall).toEqual({
       state: "up-to-date",
       ops: [],
       available: BUNDLED_SKILLS,
-      installed: ["paseo"],
-      selection: { mode: "custom", skills: ["paseo"] },
+      installed: ["paseo-alpha"],
+      selection: { mode: "custom", skills: ["paseo-alpha"] },
     });
-    expect(await isInstalled(harness.targets, "paseo")).toBe(true);
+    expect(await isInstalled(harness.targets, "paseo-alpha")).toBe(true);
     expect(await isInstalled(harness.targets, "paseo-loop")).toBe(false);
   });
 
@@ -402,11 +402,11 @@ describe("skills controller", () => {
       selection: { mode: "custom", skills: [] },
       confirmationRequired: null,
     });
-    expect(await isInstalled(harness.targets, "paseo")).toBe(false);
+    expect(await isInstalled(harness.targets, "paseo-alpha")).toBe(false);
   });
 
   it("returns to every bundled skill when the selection goes back to all", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
 
     const snapshot = await harness.controller.save({ mode: "all" });
 
@@ -418,11 +418,11 @@ describe("skills controller", () => {
       selection: { mode: "all" },
       confirmationRequired: null,
     });
-    expect(await isInstalled(harness.targets, "paseo-advisor")).toBe(true);
+    expect(await isInstalled(harness.targets, "paseo-beta")).toBe(true);
   });
 
   it("keeps the previous selection when the save fails to reach disk", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
     await blockAgentsDir(harness.targets);
 
     await expect(harness.controller.save({ mode: "all" })).rejects.toThrow();
@@ -430,17 +430,19 @@ describe("skills controller", () => {
 
     expect(await harness.controller.status()).toEqual({
       state: "drift",
-      ops: [{ kind: "add", name: "paseo" }],
+      ops: [{ kind: "add", name: "paseo-alpha" }],
       available: BUNDLED_SKILLS,
-      installed: ["paseo"],
-      selection: { mode: "custom", skills: ["paseo"] },
+      installed: ["paseo-alpha"],
+      selection: { mode: "custom", skills: ["paseo-alpha"] },
     });
   });
 
   it("saves no selection at all when the very first save fails", async () => {
     await blockAgentsDir(harness.targets);
 
-    await expect(harness.controller.save({ mode: "custom", skills: ["paseo"] })).rejects.toThrow();
+    await expect(
+      harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] }),
+    ).rejects.toThrow();
     await rm(harness.targets.agentsDir, { force: true });
 
     expect(await harness.controller.status()).toEqual({
@@ -455,7 +457,7 @@ describe("skills controller", () => {
   it("restores deleted directories byte for byte when the selection cannot be committed", async () => {
     const store = createUnwritableSelectionStore({
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     });
     const readOnly = await makeHarness(store);
     await readOnly.controller.install();
@@ -465,7 +467,7 @@ describe("skills controller", () => {
     await expect(
       readOnly.controller.save({
         mode: "custom",
-        skills: ["paseo", "paseo-advisor"],
+        skills: ["paseo-alpha", "paseo-beta"],
         confirmedRemovals: ["paseo-loop"],
       }),
     ).rejects.toThrow("selection store is read-only");
@@ -474,14 +476,14 @@ describe("skills controller", () => {
       state: "up-to-date",
       ops: [],
       available: BUNDLED_SKILLS,
-      installed: ["paseo", "paseo-loop"],
-      selection: { mode: "custom", skills: ["paseo", "paseo-loop"] },
+      installed: ["paseo-alpha", "paseo-loop"],
+      selection: { mode: "custom", skills: ["paseo-alpha", "paseo-loop"] },
     });
     expect(await installedEverywhere(readOnly.targets)).toEqual([
-      ["paseo", "paseo-loop"],
-      ["paseo", "paseo-loop"],
+      ["paseo-alpha", "paseo-loop"],
+      ["paseo-alpha", "paseo-loop"],
       ["paseo-loop"],
-      ["paseo", "paseo-loop"],
+      ["paseo-alpha", "paseo-loop"],
     ]);
     expect(await readUserFile(readOnly.targets, "paseo-loop", "notes/mine.md")).toEqual([
       "hand written",
@@ -494,19 +496,19 @@ describe("skills controller", () => {
   });
 
   it("preserves files added by another writer before rollback", async () => {
-    const selection: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const selection: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const gated = createGatedUnwritableSelectionStore(selection);
     const readOnly = await makeHarness(gated.store);
     await readOnly.controller.install();
-    await writeFile(path.join(readOnly.targets.sourceDir, "paseo", "SKILL.md"), "paseo-v2");
+    await writeFile(path.join(readOnly.targets.sourceDir, "paseo-alpha", "SKILL.md"), "paseo-v2");
 
     const save = readOnly.controller.save(selection);
     await gated.persistenceStarted;
-    await writeUserFile(readOnly.targets, "paseo", "notes/concurrent.md", "keep this");
+    await writeUserFile(readOnly.targets, "paseo-alpha", "notes/concurrent.md", "keep this");
     gated.failPersistence();
     await expect(save).rejects.toThrow("selection store is read-only");
 
-    expect(await readUserFile(readOnly.targets, "paseo", "notes/concurrent.md")).toEqual([
+    expect(await readUserFile(readOnly.targets, "paseo-alpha", "notes/concurrent.md")).toEqual([
       "keep this",
       "keep this",
       "keep this",
@@ -516,14 +518,14 @@ describe("skills controller", () => {
   });
 
   it("does not automatically delete files preserved from a rolled-back add", async () => {
-    const previous: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const previous: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const gated = createGatedUnwritableSelectionStore(previous);
     const readOnly = await makeHarness(gated.store);
     await readOnly.controller.install();
 
     const save = readOnly.controller.save({
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     });
     await gated.persistenceStarted;
     await writeUserFile(readOnly.targets, "paseo-loop", "notes/concurrent.md", "keep this");
@@ -543,7 +545,7 @@ describe("skills controller", () => {
   it("merges a deleted directory backup into files another writer recreated", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
     const gated = createGatedUnwritableSelectionStore(previous);
     const readOnly = await makeHarness(gated.store);
@@ -552,7 +554,7 @@ describe("skills controller", () => {
 
     const save = readOnly.controller.save({
       mode: "custom",
-      skills: ["paseo"],
+      skills: ["paseo-alpha"],
       confirmedRemovals: ["paseo-loop"],
     });
     await gated.persistenceStarted;
@@ -578,9 +580,9 @@ describe("skills controller", () => {
   it("atomically stages a deletion before another writer can recreate its path", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
-    const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     await harness.controller.save(previous);
 
     const transaction = await beginSkillsTransaction(harness.targets, previous, next, [
@@ -604,9 +606,9 @@ describe("skills controller", () => {
     async () => {
       const previous: SkillSelection = {
         mode: "custom",
-        skills: ["paseo", "paseo-loop"],
+        skills: ["paseo-alpha", "paseo-loop"],
       };
-      const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+      const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
       await harness.controller.save(previous);
       await writeUserFile(harness.targets, "paseo-loop", "SKILL.md", "paseo-loop-v1");
       const livePaths = [
@@ -632,9 +634,9 @@ describe("skills controller", () => {
   it("finishes rollback when an external deletion leaves no live or staged path", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
-    const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     await harness.controller.save(previous);
     await writeUserFile(harness.targets, "paseo-loop", "SKILL.md", "paseo-loop-v1");
 
@@ -665,9 +667,9 @@ describe("skills controller", () => {
   it("quarantines a staged directory when an external file takes its live path", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
-    const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     await harness.controller.save(previous);
     await writeUserFile(harness.targets, "paseo-loop", "notes/mine.md", "keep this");
 
@@ -700,9 +702,9 @@ describe("skills controller", () => {
   it("quarantines staged files that collide with a recreated directory", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
-    const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     await harness.controller.save(previous);
     await writeUserFile(harness.targets, "paseo-loop", "SKILL.md", "paseo-loop-v1");
     await writeUserFile(harness.targets, "paseo-loop", "notes/mine.md", "staged notes");
@@ -734,22 +736,22 @@ describe("skills controller", () => {
   });
 
   it("preserves incompatible live paths while rolling back adds and updates", async () => {
-    const previous: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const previous: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const next: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-advisor"],
+      skills: ["paseo-alpha", "paseo-beta"],
     };
     await harness.controller.save(previous);
-    await writeUserFile(harness.targets, "paseo", "notes/mine.md", "keep this");
+    await writeUserFile(harness.targets, "paseo-alpha", "notes/mine.md", "keep this");
 
     const transaction = await beginSkillsTransaction(harness.targets, previous, next, [
-      { kind: "update", name: "paseo" },
-      { kind: "add", name: "paseo-advisor" },
+      { kind: "update", name: "paseo-alpha" },
+      { kind: "add", name: "paseo-beta" },
     ]);
-    const replacedUpdate = path.join(harness.targets.agentsDir, "paseo");
+    const replacedUpdate = path.join(harness.targets.agentsDir, "paseo-alpha");
     await rm(replacedUpdate, { recursive: true, force: true });
     await writeFile(replacedUpdate, "external update replacement");
-    const replacedAdd = path.join(harness.targets.codexDir, "paseo-advisor");
+    const replacedAdd = path.join(harness.targets.codexDir, "paseo-beta");
     await writeFile(replacedAdd, "external add replacement");
 
     await transaction.rollback();
@@ -764,7 +766,7 @@ describe("skills controller", () => {
     expect(await readFile(path.join(recoveryParent, recovered!, "notes", "mine.md"), "utf8")).toBe(
       "keep this",
     );
-    expect(await readUserFile(harness.targets, "paseo", "notes/mine.md")).toEqual([
+    expect(await readUserFile(harness.targets, "paseo-alpha", "notes/mine.md")).toEqual([
       null,
       "keep this",
       "keep this",
@@ -775,16 +777,16 @@ describe("skills controller", () => {
   });
 
   it("recovers after an update backup was quarantined before transaction cleanup", async () => {
-    const previous: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const previous: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const next: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-advisor"],
+      skills: ["paseo-alpha", "paseo-beta"],
     };
     await harness.controller.save(previous);
-    await writeUserFile(harness.targets, "paseo", "notes/mine.md", "captured notes");
+    await writeUserFile(harness.targets, "paseo-alpha", "notes/mine.md", "captured notes");
 
     await beginSkillsTransaction(harness.targets, previous, next, [
-      { kind: "update", name: "paseo" },
+      { kind: "update", name: "paseo-alpha" },
     ]);
     const transactionParent = path.dirname(harness.targets.agentsDir);
     const transactionName = (await readdir(transactionParent)).find((entry) =>
@@ -796,13 +798,13 @@ describe("skills controller", () => {
       await readFile(path.join(transactionDir, "transaction.json"), "utf8"),
     ) as { entries: Array<{ livePath: string; backupPath: string | null }> };
     const entry = manifest.entries.find(
-      (candidate) => candidate.livePath === path.join(harness.targets.agentsDir, "paseo"),
+      (candidate) => candidate.livePath === path.join(harness.targets.agentsDir, "paseo-alpha"),
     );
     expect(entry?.backupPath).toBeTruthy();
     const backup = path.join(transactionDir, entry!.backupPath!);
     const recovered = path.join(
       transactionParent,
-      `.paseo-skills-recovered-paseo-${transactionName!.replace(".paseo-skills-transaction-", "")}`,
+      `.paseo-skills-recovered-paseo-alpha-${transactionName!.replace(".paseo-skills-transaction-", "")}`,
     );
     await rm(entry!.livePath, { recursive: true, force: true });
     await writeFile(entry!.livePath, "external replacement");
@@ -816,18 +818,18 @@ describe("skills controller", () => {
   });
 
   it("preserves a directory that replaces a captured file before recovery", async () => {
-    const previous: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const previous: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const next: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-advisor"],
+      skills: ["paseo-alpha", "paseo-beta"],
     };
     await harness.controller.save(previous);
-    const live = path.join(harness.targets.agentsDir, "paseo");
+    const live = path.join(harness.targets.agentsDir, "paseo-alpha");
     await rm(live, { recursive: true, force: true });
     await writeFile(live, "captured file");
 
     await beginSkillsTransaction(harness.targets, previous, next, [
-      { kind: "update", name: "paseo" },
+      { kind: "update", name: "paseo-alpha" },
     ]);
     await rm(live, { force: true });
     await mkdir(live, { recursive: true });
@@ -855,9 +857,9 @@ describe("skills controller", () => {
         harness.targets.installDirs[1] = harness.targets.claudeDir;
         const previous: SkillSelection = {
           mode: "custom",
-          skills: ["paseo", "paseo-loop"],
+          skills: ["paseo-alpha", "paseo-loop"],
         };
-        const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+        const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
         await harness.controller.save(previous);
 
         expect((await lstat(harness.targets.agentsDir)).dev).not.toBe(
@@ -881,9 +883,9 @@ describe("skills controller", () => {
     async () => {
       const previous: SkillSelection = {
         mode: "custom",
-        skills: ["paseo", "paseo-loop"],
+        skills: ["paseo-alpha", "paseo-loop"],
       };
-      const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+      const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
       await harness.controller.save(previous);
       const shared = path.join(harness.root, "home", "shared", "paseo-loop");
       await mkdir(shared, { recursive: true });
@@ -905,17 +907,17 @@ describe("skills controller", () => {
   it.skipIf(process.platform === "win32")(
     "restores updates made through a relative skill-directory symlink",
     async () => {
-      const selection: SkillSelection = { mode: "custom", skills: ["paseo"] };
+      const selection: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
       const gated = createGatedUnwritableSelectionStore(selection);
       const readOnly = await makeHarness(gated.store);
       await readOnly.controller.install();
-      const shared = path.join(readOnly.root, "home", "shared", "paseo");
+      const shared = path.join(readOnly.root, "home", "shared", "paseo-alpha");
       await mkdir(shared, { recursive: true });
       await writeFile(path.join(shared, "SKILL.md"), "paseo-v1");
-      const live = path.join(readOnly.targets.claudeDir, "paseo");
+      const live = path.join(readOnly.targets.claudeDir, "paseo-alpha");
       await rm(live, { recursive: true, force: true });
       await symlink(path.relative(readOnly.targets.claudeDir, shared), live, "dir");
-      await writeFile(path.join(readOnly.targets.sourceDir, "paseo", "SKILL.md"), "paseo-v2");
+      await writeFile(path.join(readOnly.targets.sourceDir, "paseo-alpha", "SKILL.md"), "paseo-v2");
 
       const save = readOnly.controller.save(selection);
       await gated.persistenceStarted;
@@ -941,7 +943,7 @@ describe("skills controller", () => {
 
       const result = await harness.controller.save({
         mode: "custom",
-        skills: ["paseo", "paseo-advisor"],
+        skills: ["paseo-alpha", "paseo-beta"],
         confirmedRemovals: ["paseo-loop"],
       });
 
@@ -955,7 +957,7 @@ describe("skills controller", () => {
     async () => {
       const previous: SkillSelection = {
         mode: "custom",
-        skills: ["paseo", "paseo-loop"],
+        skills: ["paseo-alpha", "paseo-loop"],
       };
       const gated = createGatedUnwritableSelectionStore(previous);
       const readOnly = await makeHarness(gated.store);
@@ -974,7 +976,7 @@ describe("skills controller", () => {
 
       const save = readOnly.controller.save({
         mode: "custom",
-        skills: ["paseo"],
+        skills: ["paseo-alpha"],
         confirmedRemovals: ["paseo-loop"],
       });
       await gated.persistenceStarted;
@@ -1000,7 +1002,7 @@ describe("skills controller", () => {
     async () => {
       const previous: SkillSelection = {
         mode: "custom",
-        skills: ["paseo", "paseo-loop"],
+        skills: ["paseo-alpha", "paseo-loop"],
       };
       const gated = createGatedUnwritableSelectionStore(previous);
       const readOnly = await makeHarness(gated.store);
@@ -1017,7 +1019,7 @@ describe("skills controller", () => {
 
       const save = readOnly.controller.save({
         mode: "custom",
-        skills: ["paseo"],
+        skills: ["paseo-alpha"],
         confirmedRemovals: ["paseo-loop"],
       });
       await gated.persistenceStarted;
@@ -1038,7 +1040,7 @@ describe("skills controller", () => {
   );
 
   it("leaves no backup artifacts behind after a successful save", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
 
     expect(await backupArtifacts(harness.targets)).toEqual([[], [], [], []]);
   });
@@ -1048,7 +1050,7 @@ describe("skills controller", () => {
     async () => {
       const gated = createGatedSelectionStore({ mode: "all" });
       const blocked = await makeHarness(gated.store);
-      const next: SkillSelection = { mode: "custom", skills: ["paseo"] };
+      const next: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
       const parent = path.dirname(blocked.targets.agentsDir);
       const movedParent = `${parent}-moved`;
 
@@ -1080,7 +1082,7 @@ describe("skills controller", () => {
     await mkdir(unrelated, { recursive: true });
     await writeFile(path.join(unrelated, "mine.md"), "keep me");
 
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
 
     expect(await readFile(path.join(unrelated, "mine.md"), "utf8")).toBe("keep me");
   });
@@ -1088,11 +1090,11 @@ describe("skills controller", () => {
   it("recovers an interrupted save before the next controller operation", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
     const next: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-advisor"],
+      skills: ["paseo-alpha", "paseo-beta"],
     };
     await harness.controller.save(previous);
     await writeUserFile(harness.targets, "paseo-loop", "notes/mine.md", "hand written");
@@ -1122,11 +1124,11 @@ describe("skills controller", () => {
   it("does not roll back an interrupted transaction after the selection committed", async () => {
     const previous: SkillSelection = {
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     };
     const next: SkillSelection = {
       mode: "custom",
-      skills: ["paseo"],
+      skills: ["paseo-alpha"],
     };
     await harness.controller.save(previous);
     await beginSkillsTransaction(harness.targets, previous, next, [
@@ -1150,23 +1152,23 @@ describe("skills controller", () => {
   });
 
   it("asks for confirmation naming the directories a save would delete", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo", "paseo-loop"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha", "paseo-loop"] });
     // Something puts a managed directory back after the UI took its snapshot.
-    await writeUserFile(harness.targets, "paseo-advisor", "SKILL.md", "external");
+    await writeUserFile(harness.targets, "paseo-beta", "SKILL.md", "external");
 
     const result = await harness.controller.save({
       mode: "custom",
-      skills: ["paseo", "paseo-loop"],
+      skills: ["paseo-alpha", "paseo-loop"],
     });
 
-    expect(result.confirmationRequired).toEqual({ removals: ["paseo-advisor"] });
+    expect(result.confirmationRequired).toEqual({ removals: ["paseo-beta"] });
     expect(await installedEverywhere(harness.targets)).toEqual([
-      ["paseo", "paseo-advisor", "paseo-loop"],
-      ["paseo", "paseo-advisor", "paseo-loop"],
-      ["paseo-advisor"],
-      ["paseo", "paseo-advisor", "paseo-loop"],
+      ["paseo-alpha", "paseo-beta", "paseo-loop"],
+      ["paseo-alpha", "paseo-beta", "paseo-loop"],
+      ["paseo-beta"],
+      ["paseo-alpha", "paseo-beta", "paseo-loop"],
     ]);
-    expect(result.selection).toEqual({ mode: "custom", skills: ["paseo", "paseo-loop"] });
+    expect(result.selection).toEqual({ mode: "custom", skills: ["paseo-alpha", "paseo-loop"] });
   });
 
   it("applies the save once the removals are confirmed", async () => {
@@ -1174,17 +1176,17 @@ describe("skills controller", () => {
 
     const result = await harness.controller.save({
       mode: "custom",
-      skills: ["paseo"],
-      confirmedRemovals: ["paseo-advisor", "paseo-loop"],
+      skills: ["paseo-alpha"],
+      confirmedRemovals: ["paseo-beta", "paseo-loop"],
     });
 
     expect(result.confirmationRequired).toBeNull();
-    expect(result.selection).toEqual({ mode: "custom", skills: ["paseo"] });
+    expect(result.selection).toEqual({ mode: "custom", skills: ["paseo-alpha"] });
     expect(await installedEverywhere(harness.targets)).toEqual([
-      ["paseo"],
-      ["paseo"],
+      ["paseo-alpha"],
+      ["paseo-alpha"],
       [],
-      ["paseo"],
+      ["paseo-alpha"],
     ]);
   });
 
@@ -1194,25 +1196,25 @@ describe("skills controller", () => {
 
     const result = await harness.controller.save({
       mode: "custom",
-      skills: ["paseo"],
-      confirmedRemovals: ["paseo-advisor", "paseo-loop"],
+      skills: ["paseo-alpha"],
+      confirmedRemovals: ["paseo-beta", "paseo-loop"],
     });
 
     expect(result.confirmationRequired).toEqual({
-      removals: ["paseo-advisor", "paseo-chat", "paseo-loop"],
+      removals: ["paseo-beta", "paseo-chat", "paseo-loop"],
     });
     expect(await installedEverywhere(harness.targets)).toEqual([
-      ["paseo", "paseo-advisor", "paseo-chat", "paseo-loop"],
-      ["paseo", "paseo-advisor", "paseo-chat", "paseo-loop"],
+      ["paseo-alpha", "paseo-beta", "paseo-chat", "paseo-loop"],
+      ["paseo-alpha", "paseo-beta", "paseo-chat", "paseo-loop"],
       ["paseo-chat"],
-      ["paseo", "paseo-advisor", "paseo-chat", "paseo-loop"],
+      ["paseo-alpha", "paseo-beta", "paseo-chat", "paseo-loop"],
     ]);
   });
 
   it("does not commit when a new removal appears while the frozen plan is applying", async () => {
-    const selection: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const selection: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     await harness.controller.save(selection);
-    await writeFile(path.join(harness.targets.sourceDir, "paseo", "SKILL.md"), "paseo-v2");
+    await writeFile(path.join(harness.targets.sourceDir, "paseo-alpha", "SKILL.md"), "paseo-v2");
 
     const transactionStarted = waitForTransactionDirectory(path.dirname(harness.targets.agentsDir));
     const save = harness.controller.save(selection);
@@ -1232,33 +1234,37 @@ describe("skills controller", () => {
   });
 
   it("saves without asking when nothing would be deleted", async () => {
-    const result = await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    const result = await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
 
     expect(result.confirmationRequired).toBeNull();
     expect(await installedEverywhere(harness.targets)).toEqual([
-      ["paseo"],
-      ["paseo"],
+      ["paseo-alpha"],
+      ["paseo-alpha"],
       [],
-      ["paseo"],
+      ["paseo-alpha"],
     ]);
   });
 
   it("preserves a regular file at a skill path when save convergence fails", async () => {
     await mkdir(harness.targets.agentsDir, { recursive: true });
-    const collision = path.join(harness.targets.agentsDir, "paseo");
+    const collision = path.join(harness.targets.agentsDir, "paseo-alpha");
     await writeFile(collision, "keep this file");
 
-    await expect(harness.controller.save({ mode: "custom", skills: ["paseo"] })).rejects.toThrow();
+    await expect(
+      harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] }),
+    ).rejects.toThrow();
 
     expect(await readFile(collision, "utf8")).toBe("keep this file");
   });
 
   it("rolls back earlier targets when writing to Antigravity fails", async () => {
     await mkdir(harness.targets.antigravityDir, { recursive: true });
-    const collision = path.join(harness.targets.antigravityDir, "paseo");
+    const collision = path.join(harness.targets.antigravityDir, "paseo-alpha");
     await writeFile(collision, "keep this file");
 
-    await expect(harness.controller.save({ mode: "custom", skills: ["paseo"] })).rejects.toThrow();
+    await expect(
+      harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] }),
+    ).rejects.toThrow();
 
     expect(await readFile(collision, "utf8")).toBe("keep this file");
     expect(await installedEverywhere(harness.targets)).toEqual([[], [], [], []]);
@@ -1270,7 +1276,9 @@ describe("skills controller", () => {
     await mkdir(path.dirname(geminiConfig), { recursive: true });
     await writeFile(geminiConfig, "not a directory");
 
-    await expect(harness.controller.save({ mode: "custom", skills: ["paseo"] })).rejects.toThrow();
+    await expect(
+      harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] }),
+    ).rejects.toThrow();
 
     expect(await readFile(geminiConfig, "utf8")).toBe("not a directory");
     expect(await installedEverywhere(harness.targets)).toEqual([[], [], [], []]);
@@ -1292,7 +1300,7 @@ describe("skills controller", () => {
       await chmod(geminiHome, 0o000);
       try {
         await expect(
-          harness.controller.save({ mode: "custom", skills: ["paseo"] }),
+          harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] }),
         ).rejects.toThrow();
 
         expect(await installedEverywhere(harness.targets)).toEqual([[], [], [], []]);
@@ -1337,7 +1345,7 @@ describe("skills controller", () => {
   );
 
   it("recovers a pre-upgrade transaction manifest that recorded codex at root index 2", async () => {
-    const previous: SkillSelection = { mode: "custom", skills: ["paseo"] };
+    const previous: SkillSelection = { mode: "custom", skills: ["paseo-alpha"] };
     const next: SkillSelection = { mode: "all" };
     await harness.controller.save(previous);
 
@@ -1345,7 +1353,7 @@ describe("skills controller", () => {
       path.dirname(harness.targets.agentsDir),
       ".paseo-skills-transaction-legacy-codex-index",
     );
-    const codexBackup = path.join(transactionDir, "backup", "2", "paseo");
+    const codexBackup = path.join(transactionDir, "backup", "2", "paseo-alpha");
     await mkdir(path.join(codexBackup, "notes"), { recursive: true });
     await writeFile(path.join(codexBackup, "notes", "codex.md"), "restored codex note");
     await writeFile(
@@ -1359,9 +1367,9 @@ describe("skills controller", () => {
           nextSelection: next,
           entries: [
             {
-              livePath: path.join(harness.targets.codexDir, "paseo"),
+              livePath: path.join(harness.targets.codexDir, "paseo-alpha"),
               kind: "update",
-              backupPath: path.join("backup", "2", "paseo"),
+              backupPath: path.join("backup", "2", "paseo-alpha"),
             },
           ],
         },
@@ -1373,7 +1381,10 @@ describe("skills controller", () => {
     await harness.controller.status();
 
     expect(
-      await readFile(path.join(harness.targets.codexDir, "paseo", "notes", "codex.md"), "utf8"),
+      await readFile(
+        path.join(harness.targets.codexDir, "paseo-alpha", "notes", "codex.md"),
+        "utf8",
+      ),
     ).toBe("restored codex note");
     expect(await backupArtifacts(harness.targets)).toEqual([[], [], [], []]);
   });
@@ -1391,42 +1402,42 @@ describe("skills controller", () => {
       harness.controller.autoUpdate(),
       harness.controller.save({
         mode: "custom",
-        skills: ["paseo"],
-        confirmedRemovals: ["paseo-advisor", "paseo-loop"],
+        skills: ["paseo-alpha"],
+        confirmedRemovals: ["paseo-beta", "paseo-loop"],
       }),
     ]);
 
-    expect(saved.selection).toEqual({ mode: "custom", skills: ["paseo"] });
+    expect(saved.selection).toEqual({ mode: "custom", skills: ["paseo-alpha"] });
     expect(await installedEverywhere(harness.targets)).toEqual([
-      ["paseo"],
-      ["paseo"],
+      ["paseo-alpha"],
+      ["paseo-alpha"],
       [],
-      ["paseo"],
+      ["paseo-alpha"],
     ]);
     expect(await harness.controller.status()).toEqual({
       state: "up-to-date",
       ops: [],
       available: BUNDLED_SKILLS,
-      installed: ["paseo"],
-      selection: { mode: "custom", skills: ["paseo"] },
+      installed: ["paseo-alpha"],
+      selection: { mode: "custom", skills: ["paseo-alpha"] },
     });
   });
 
   it("updates a drifted install without touching the saved selection", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
-    await writeFile(path.join(harness.targets.agentsDir, "paseo", "SKILL.md"), "stale");
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
+    await writeFile(path.join(harness.targets.agentsDir, "paseo-alpha", "SKILL.md"), "stale");
 
     expect(await harness.controller.update()).toEqual({
       state: "up-to-date",
       ops: [],
       available: BUNDLED_SKILLS,
-      installed: ["paseo"],
-      selection: { mode: "custom", skills: ["paseo"] },
+      installed: ["paseo-alpha"],
+      selection: { mode: "custom", skills: ["paseo-alpha"] },
     });
   });
 
   it("does not remove deselected directories during a manual update", async () => {
-    await harness.controller.save({ mode: "custom", skills: ["paseo"] });
+    await harness.controller.save({ mode: "custom", skills: ["paseo-alpha"] });
     await writeUserFile(harness.targets, "paseo-loop", "notes/mine.md", "keep this");
 
     await harness.controller.update();

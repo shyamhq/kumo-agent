@@ -1,6 +1,7 @@
 import type { AgentSkillSelection } from "@getpaseo/protocol/messages";
 
 import type { DaemonConfigStore } from "../../daemon-config-store.js";
+import { SKILL_RENAMES } from "./operations.js";
 
 export type SkillSelection = AgentSkillSelection;
 
@@ -29,7 +30,10 @@ export function coerceSkillSelection(value: unknown): SkillSelection {
   if (!isRecord(value)) return DEFAULT_SKILL_SELECTION;
   if (value.mode === "all") return { mode: "all" };
   if (value.mode === "custom") {
-    return { mode: "custom", skills: coerceSkillNames(value.skills) };
+    const skills = coerceSkillNames(value.skills).map((name) =>
+      Object.hasOwn(SKILL_RENAMES, name) ? SKILL_RENAMES[name] : name,
+    );
+    return { mode: "custom", skills: coerceSkillNames(skills) };
   }
   return DEFAULT_SKILL_SELECTION;
 }

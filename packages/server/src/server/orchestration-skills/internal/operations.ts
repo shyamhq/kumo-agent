@@ -7,6 +7,7 @@ import {
   listFilesRecursive,
   readManagedFilesManifest,
   removeSkill,
+  retireSkill,
   syncSkills,
 } from "./sync.js";
 
@@ -44,14 +45,27 @@ export interface SkillTargets {
   codexDir: string;
 }
 
+/** Renamed skills, old name to new, so a saved custom selection keeps what it picked. */
+export const SKILL_RENAMES: Readonly<Record<string, string>> = {
+  paseo: "kumo-agent",
+  "paseo-advisor": "kumo-agent-advisor",
+  "paseo-committee": "kumo-agent-committee",
+  "paseo-handoff": "kumo-agent-handoff",
+};
+
 // Names the bundle used to ship. They are never selectable, but every scan still
 // covers them so an older install's copies get cleaned up.
-export const LEGACY_SKILL_NAMES = [
+export const LEGACY_SKILL_NAMES: readonly string[] = [
+  ...Object.keys(SKILL_RENAMES),
   "paseo-chat",
   "paseo-epic",
+  "paseo-help",
   "paseo-orchestrate",
   "paseo-orchestrator",
-] as const;
+  "paseo-plugin",
+].sort(compareStrings);
+
+const LEGACY_NAMES: ReadonlySet<string> = new Set(LEGACY_SKILL_NAMES);
 
 type SkillFiles = Map<string, string>;
 type TargetSkills = Map<string, SkillFiles>;
@@ -236,11 +250,35 @@ export async function updateSkills(
   selection: SkillSelection,
 ): Promise<SkillsStatus> {
   const status = await getSkillsStatus(targets, selection);
-  return applySkills(targets, selection, nonDestructivePlan(status));
+  return applyThenRetire(targets, selection, status);
 }
 
 function nonDestructivePlan(status: SkillsStatus): SkillsStatus {
   return { ...status, ops: status.ops.filter((op) => op.kind !== "delete") };
+}
+
+/**
+ * Automatic paths never delete a skill the bundle still ships, but they do retire the names it
+ * used to ship, keeping any file the user added or changed. Current skills go first, and every old
+ * name is tried, so one bad old folder can't keep the current skills from installing.
+ */
+async function applyThenRetire(
+  targets: SkillTargets,
+  selection: SkillSelection,
+  status: SkillsStatus,
+): Promise<SkillsStatus> {
+  await applySkills(targets, selection, nonDestructivePlan(status));
+  let firstError: unknown = null;
+  for (const op of status.ops) {
+    if (op.kind !== "delete" || !LEGACY_NAMES.has(op.name)) continue;
+    try {
+      await retireSkill(op.name, { installDirs: targets.installDirs, codexDir: targets.codexDir });
+    } catch (error) {
+      firstError ??= error;
+    }
+  }
+  if (firstError) throw firstError;
+  return getSkillsStatus(targets, selection);
 }
 
 export async function autoUpdateInstalledSkills(
@@ -249,9 +287,9 @@ export async function autoUpdateInstalledSkills(
 ): Promise<SkillsStatus> {
   const status = await getSkillsStatus(targets, selection);
   if (status.state !== "drift") return status;
-  // Automatic maintenance may repair selected skills, but removal is an
-  // interactive operation because managed directories can contain user files.
-  return applySkills(targets, selection, nonDestructivePlan(status));
+  // Automatic maintenance repairs selected skills and retires old names; removing a current skill
+  // stays interactive because managed directories can contain user files.
+  return applyThenRetire(targets, selection, status);
 }
 
 export async function uninstallSkills(
