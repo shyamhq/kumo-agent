@@ -71,6 +71,18 @@ describe("server config", () => {
     expect(standaloneConfig.desktopManaged).toBe(false);
   });
 
+  // Kumo gives every app its own address in PUBLIC_URL; only that computer's OS may frame it.
+  test("lets only the Kumo computer's OS frame the web UI", async () => {
+    const paseoHome = await mkdtemp(path.join(os.tmpdir(), "paseo-config-frame-"));
+    roots.push(paseoHome);
+
+    expect(
+      loadConfig(paseoHome, { env: { PUBLIC_URL: "https://6868--deep-badger.mykumo.xyz/" } }).webUi
+        ?.frameAncestors,
+    ).toBe("frame-ancestors https://os--deep-badger.mykumo.xyz");
+    expect(loadConfig(paseoHome, { env: {} }).webUi?.frameAncestors).toBe("frame-ancestors 'self'");
+  });
+
   test("idle runtime cleanup defaults on and supports a host-wide opt-out", async () => {
     const paseoHome = await mkdtemp(path.join(os.tmpdir(), "paseo-config-idle-cleanup-"));
     roots.push(paseoHome);

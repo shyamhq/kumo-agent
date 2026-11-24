@@ -8,7 +8,7 @@ import {
 
 let instance: OnboardingModel | null = null;
 
-// A page its daemon served (Kumo serves every computer's this way) was set up by whoever runs
+// A page served by its own daemon (how Kumo serves every computer's) was set up by whoever runs
 // that daemon, so setup never opens by itself there; Settings can still reopen it.
 const servedSetUp: OnboardingCompletionStorage = {
   ...asyncStorageOnboardingCompletion,

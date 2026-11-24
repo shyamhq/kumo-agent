@@ -18,7 +18,9 @@ How it runs under Kumo:
   gate. The app's run line in Kumo's apps catalogue sets the daemon's env: `PASEO_RELAY_ENABLED=false`
   (Kumo's gate replaces the relay), its own `PASEO_HOME`, a listen address Kumo's proxy can reach,
   and an allowed origin and hostnames that match the preview address (the worker passes it to apps
-  as `PUBLIC_URL`). Get any of these wrong and the web app can't load or connect.
+  as `PUBLIC_URL`). Get any of these wrong and the web app can't load or connect. The daemon also
+  reads `PUBLIC_URL` so that only that computer's Kumo OS (`https://os--<handle>.<zone>`) may frame
+  the web UI; without it, `frame-ancestors 'self'`.
 - Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
   (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`

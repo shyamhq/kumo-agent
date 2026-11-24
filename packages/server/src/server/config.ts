@@ -1,3 +1,4 @@
+import { frameAncestors } from "./web-ui.js";
 import { configurationEnvironment } from "./config-environment.js";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -390,6 +391,7 @@ function resolveServiceProxyConfig(
 interface ResolvedWebUi {
   enabled: boolean;
   distDir: string | null;
+  frameAncestors: string;
 }
 
 function resolveWebUiConfig(
@@ -411,6 +413,8 @@ function resolveWebUiConfig(
   return {
     enabled,
     distDir,
+    // On a Kumo computer the app's own address, which names the computer whose OS may frame it.
+    frameAncestors: frameAncestors(env.PUBLIC_URL),
   };
 }
 

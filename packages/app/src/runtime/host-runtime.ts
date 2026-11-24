@@ -2076,12 +2076,15 @@ export class HostRuntimeStore {
     while (!registryHasConnection(this.hosts, connection)) {
       attempt += 1;
       try {
-        await this.probeAndUpsertConnection({
-          connection,
-          timeoutMs: DEFAULT_LOCALHOST_BOOTSTRAP_TIMEOUT_MS,
-        });
+        // The normal timeout, not localhost's: this may be the page's daemon behind a proxy whose
+        // every handshake is slower than localhost's would be.
+        await this.probeAndUpsertConnection({ connection });
         return;
       } catch (error) {
+        // A password is not something retrying can supply.
+        if (error instanceof DaemonAuthenticationError) {
+          return;
+        }
         if (attempt === 1 || attempt % 10 === 0) {
           console.warn("[HostRuntime] configured bootstrap probe failed", {
             endpoint,
@@ -2106,10 +2109,7 @@ export class HostRuntimeStore {
     }
 
     try {
-      await this.probeAndUpsertConnection({
-        connection: connectionWithHint,
-        timeoutMs: DEFAULT_LOCALHOST_BOOTSTRAP_TIMEOUT_MS,
-      });
+      await this.probeAndUpsertConnection({ connection: connectionWithHint });
       return true;
     } catch (error) {
       console.warn("[HostRuntime] initial connection hint probe failed", {

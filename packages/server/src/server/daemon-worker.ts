@@ -7,6 +7,7 @@ import { resolvePaseoHome } from "./paseo-home.js";
 import { createRootLogger } from "./logger.js";
 import type { DaemonLifecycleIntent } from "./bootstrap.js";
 import { getProcessDiagnostics } from "./process-diagnostics.js";
+import { frameAncestors } from "./web-ui.js";
 
 process.title = "Paseo Daemon";
 
@@ -120,12 +121,18 @@ function applyCliFlagOverrides(config: ReturnType<typeof loadConfig>): void {
     override("daemon.mcp.injectIntoAgents");
   }
   if (process.argv.includes("--web-ui")) {
-    config.webUi = { ...(config.webUi ?? { distDir: null }), enabled: true };
+    config.webUi = {
+      ...(config.webUi ?? { distDir: null, frameAncestors: frameAncestors(undefined) }),
+      enabled: true,
+    };
     cli.webUiEnabled = true;
     override("features.webUi.enabled");
   }
   if (process.argv.includes("--no-web-ui")) {
-    config.webUi = { ...(config.webUi ?? { distDir: null }), enabled: false };
+    config.webUi = {
+      ...(config.webUi ?? { distDir: null, frameAncestors: frameAncestors(undefined) }),
+      enabled: false,
+    };
     cli.webUiEnabled = false;
     override("features.webUi.enabled");
   }

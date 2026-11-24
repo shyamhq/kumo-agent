@@ -81,6 +81,7 @@ function createApp(options: {
       distDir: options.distDir,
       label: "test-label",
       logger,
+      frameAncestors: "frame-ancestors https://os--box.test",
     }),
   );
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -294,6 +295,7 @@ describe("daemon web UI route module", () => {
     expect(res.headers["cache-control"]).toBe(
       "no-store, no-cache, must-revalidate, proxy-revalidate",
     );
+    expect(res.headers["content-security-policy"]).toBe("frame-ancestors https://os--box.test");
   });
 
   test("sets immutable caching for hashed assets", async () => {
