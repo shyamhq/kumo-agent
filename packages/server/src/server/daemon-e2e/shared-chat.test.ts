@@ -103,22 +103,16 @@ test("a chat turns shared at its second writer, and then names every writer to t
 });
 
 test("a command in a shared chat still reaches the provider as a command", async () => {
-  const { root, prompts, connect, close } = await sharedChatDaemon();
+  const daemon = await sharedChatDaemon();
   try {
-    const alice = await connect(gate("u_alice", "Alice"));
-    const bob = await connect(gate("u_bob", "Bob"));
-    const agent = await alice.createAgent({ provider: "claude", cwd: root });
-    await alice.sendMessage(agent.id, "hello");
-    await alice.waitForFinish(agent.id, 10_000);
-    await bob.sendMessage(agent.id, "hi");
-    await bob.waitForFinish(agent.id, 10_000);
+    const { bob, agent } = await sharedAgent(daemon);
 
     await bob.sendMessage(agent.id, "/help");
     await bob.waitForFinish(agent.id, 10_000);
 
-    expect(prompts.at(-1)).toBe("/help");
+    expect(daemon.prompts.at(-1)).toBe("/help");
   } finally {
-    await close();
+    await daemon.close();
   }
 });
 

@@ -3271,8 +3271,6 @@ function extractSocketRequestMetadata(request: unknown): SocketRequestMetadata {
       host?: unknown;
       origin?: unknown;
       "user-agent"?: unknown;
-      "x-kumo-user"?: unknown;
-      "x-kumo-name"?: unknown;
     };
     url?: unknown;
     socket?: {

@@ -78,14 +78,13 @@ export async function sendFromPerson(send: PersonSend): Promise<PromptDispatchRe
   }
 }
 
-/** Counts a person as a writer in an agent's chat; answers the thread after them. */
+/** Counts a person as a writer in an agent's chat. */
 export async function joinThread(
   storage: Pick<AgentStorage, "updateThread">,
   agentId: string,
   person: MessageAuthor,
-): Promise<AgentThread> {
-  const before = await storage.updateThread(agentId, (thread) => withWriter(thread, person.id));
-  return withWriter(before, person.id);
+): Promise<void> {
+  await storage.updateThread(agentId, (thread) => withWriter(thread, person.id));
 }
 
 /** Two writers make a chat shared for good, so a third is never recorded. */
