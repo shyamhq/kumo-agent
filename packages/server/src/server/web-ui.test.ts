@@ -7,7 +7,7 @@ import express from "express";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import pino from "pino";
 
-import { createWebUiMiddleware, frameAncestors } from "./web-ui.js";
+import { createWebUiMiddleware } from "./web-ui.js";
 
 const logger = pino({ level: "silent" });
 
@@ -331,18 +331,5 @@ describe("daemon web UI route module", () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toBe("");
-  });
-});
-
-describe("frameAncestors", () => {
-  test("lets only the Kumo computer's own OS frame the UI", () => {
-    expect(frameAncestors("https://6868--deep-badger.staging.mykumo.xyz/")).toBe(
-      "frame-ancestors https://os--deep-badger.staging.mykumo.xyz",
-    );
-  });
-
-  test("allows only the UI's own origin off Kumo or for an address it does not recognise", () => {
-    expect(frameAncestors(undefined)).toBe("frame-ancestors 'self'");
-    expect(frameAncestors("http://localhost:6767")).toBe("frame-ancestors 'self'");
   });
 });
