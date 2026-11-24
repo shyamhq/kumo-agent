@@ -75,19 +75,16 @@ export async function sendFromPerson(send: PersonSend): Promise<PromptDispatchRe
         ...thread,
         posts: thread.posts.filter((post) => !carried.has(post.clientMessageId)),
       }));
-    // A refused turn rejects `started`, and the posts stay.
-    void taken(result)
+    // The provider has the prompt once its turn starts, or at once for a steer. A refused turn
+    // rejects `started`, and the posts stay.
+    const delivered = result.disposition === "turn_started" ? result.started : Promise.resolve();
+    void delivered
       .then(forget, () => undefined)
       .catch((error: unknown) => {
         params.logger.error({ err: error, agentId }, "Could not drop the posts a turn delivered");
       });
   }
   return result;
-}
-
-/** Settles once the provider has the prompt: at once for a steer, when the turn starts otherwise. */
-function taken(result: PromptDispatchResult): Promise<void> {
-  return result.disposition === "turn_started" ? result.started : Promise.resolve();
 }
 
 /** Counts a person as a writer in an agent's chat. */
