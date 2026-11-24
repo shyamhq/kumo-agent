@@ -405,6 +405,12 @@ function kumoFrameAncestors(publicUrl: string | undefined): string | undefined {
   return computer ? `frame-ancestors https://os--${computer.host}` : undefined;
 }
 
+/** On a Kumo computer, `~/workspace`, where Kumo keeps its projects. */
+function resolveKumoWorkspace(env: NodeJS.ProcessEnv): string | undefined {
+  if (!readKumoComputer(env.PUBLIC_URL)) return undefined;
+  return path.join(homedir(), "workspace");
+}
+
 function resolveWebUiConfig(
   paseoHome: string,
   env: NodeJS.ProcessEnv,
@@ -656,7 +662,7 @@ export function resolveConfigFromPersisted(
     relayPublicUseTls: relay.publicUseTls,
     serviceProxy: resolveServiceProxyConfig(env, persisted),
     webUi: resolveWebUiConfig(paseoHome, env, cli, persisted),
-    kumoWorkspace: readKumoComputer(env.PUBLIC_URL) ? path.join(homedir(), "workspace") : undefined,
+    kumoWorkspace: resolveKumoWorkspace(env),
     auth: resolveAuthConfig(env, persisted),
     openai,
     speech,
