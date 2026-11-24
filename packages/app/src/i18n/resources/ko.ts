@@ -136,6 +136,7 @@ export const ko: TranslationResources = {
       mobile: "메시지, @files, /commands",
       fallback: "메시지...",
       terminal: "Prompt",
+      shared: "모두에게 메시지 · @kumo로 에이전트에게 질문",
     },
     input: {
       accessibilityLabel: "에이전트에게 메시지...",

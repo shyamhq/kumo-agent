@@ -82,7 +82,7 @@ import {
   foldHookFeatureValues,
   type ProviderOptionsPatch,
 } from "./option-controls.js";
-import type { StoredAgentRecord, AgentStorage } from "./agent-storage.js";
+import type { StoredAgentRecord, AgentStorage, StoredPost } from "./agent-storage.js";
 import type { AgentOwner } from "./agent-owner.js";
 import {
   InMemoryAgentTimelineStore,
@@ -5155,10 +5155,40 @@ export class AgentManager {
         typeof broadcast === "function" ? broadcast() : broadcast,
         typeof broadcastTimeline === "function" ? broadcastTimeline() : broadcastTimeline,
       );
-      return;
+    } else {
+      await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
     }
+    // A post the replay already holds was delivered (the daemon stopped before it could drop it):
+    // drop it now. The rest are recorded as they were, not as new activity.
+    const replayed = new Set(
+      this.timelineStore
+        .getItems(agent.id)
+        .flatMap((item) => (item.type === "user_message" ? [item.clientMessageId] : [])),
+    );
+    const posts = (await this.registry?.get(agent.id))?.thread?.posts ?? [];
+    const unseen = posts.filter((post) => !replayed.has(post.clientMessageId));
+    if (unseen.length < posts.length) {
+      // Only tidies the record, so a failed write never stops the agent from loading.
+      await this.registry
+        ?.updateThread(agent.id, (thread) => ({
+          ...thread,
+          posts: thread.posts.filter((post) => !replayed.has(post.clientMessageId)),
+        }))
+        .catch((error: unknown) => {
+          this.logger.warn({ err: error, agentId: agent.id }, "Could not drop delivered posts");
+        });
+    }
+    for (const post of unseen) {
+      this.recordAndDispatchTimelineItem(agent.id, post, agent.provider);
+    }
+  }
 
-    await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
+  /**
+   * Shows a shared chat's post (docs/glossary.md) to every client without sending it anywhere.
+   * Recorded like a submitted prompt, so the prompt that later carries it skips it by id.
+   */
+  recordPost(agentId: string, post: StoredPost): void {
+    this.recordSubmittedPromptItem(this.requireAgent(agentId), post);
   }
 
   private async forceHydrateTimelineFromLegacyProviderHistory(

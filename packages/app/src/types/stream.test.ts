@@ -13,6 +13,7 @@ import {
   type AgentToolCallItem,
   type StreamItem,
   isAgentToolCallItem,
+  isSharedChat,
   upsertUserMessage,
   upsertUserMessageAcrossStream,
 } from "./stream";
@@ -267,6 +268,51 @@ describe("user message identity", () => {
     expect(first[0]).toBe(second[0]);
   });
 
+  it("shows who wrote a message as soon as the daemon's row arrives", () => {
+    const local = createUserMessage({
+      clientMessageId: "client-1",
+      text: "hi",
+      timestamp: new Date("2026-11-25T10:00:00Z"),
+    });
+
+    const result = applyStreamEvent({
+      tail: [local],
+      head: [],
+      event: {
+        type: "timeline",
+        provider: "claude",
+        item: {
+          type: "user_message",
+          text: "hi",
+          clientMessageId: "client-1",
+          author: { id: "u_bob", name: "Bob" },
+        },
+      },
+      timestamp: new Date("2026-11-25T10:00:01Z"),
+    });
+
+    expect(result.tail).toEqual([{ ...local, author: { id: "u_bob", name: "Bob" } }]);
+  });
+
+  it("takes the author from the daemon's row, which a local echo never has", () => {
+    const timestamp = new Date("2026-11-25T10:00:00.000Z");
+    const author = { id: "u_bob", name: "Bob" };
+    const local = createUserMessage({ clientMessageId: "client-1", text: "hi", timestamp });
+    const canonical = createUserMessage({
+      id: "client-1",
+      clientMessageId: "client-1",
+      author,
+      text: "hi",
+      timestamp,
+    });
+
+    const first = upsertUserMessage([local], canonical);
+    const second = upsertUserMessage(first, canonical);
+
+    expect(first).toEqual([{ ...local, author }]);
+    expect(first[0]).toBe(second[0]);
+  });
+
   it("keeps local presentation when a later canonical row omits provider identity", () => {
     const timestamp = new Date("2026-07-27T10:00:00.000Z");
     const local = createUserMessage({
@@ -442,6 +488,22 @@ function findToolByCallId(state: StreamItem[], callId: string): AgentToolCallIte
       isAgentToolCallItem(item) && item.payload.data.callId === callId,
   );
 }
+
+describe("isSharedChat", () => {
+  const timestamp = new Date("2026-11-25T10:00:00.000Z");
+
+  it("is shared once a row names its author, as only a shared chat's do", () => {
+    const alone = [createUserMessage({ id: "m1", text: "hi", timestamp })];
+    const shared = [
+      ...alone,
+      createUserMessage({ id: "m2", text: "hi", author: { id: "u_b", name: "Bob" }, timestamp }),
+    ];
+
+    expect(isSharedChat(undefined)).toBe(false);
+    expect(isSharedChat(alone)).toBe(false);
+    expect(isSharedChat(shared)).toBe(true);
+  });
+});
 
 describe("stream reducer tool call idempotency", () => {
   it("returns the same detail reference when tool call detail is identical", () => {

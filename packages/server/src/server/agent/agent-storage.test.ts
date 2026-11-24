@@ -486,6 +486,54 @@ describe("AgentStorage", () => {
     expect(recordAfterSnapshot?.archivedAt).toBe(archivedAt);
   });
 
+  test("an agent's thread survives snapshots and a daemon restart", async () => {
+    await storage.applySnapshot(createManagedAgent({ id: "agent-shared" }));
+
+    const post = {
+      type: "user_message" as const,
+      text: "build fails",
+      clientMessageId: "m1",
+      author: { id: "u_a", name: "Alice" },
+    };
+    const thread = { writers: ["u_a", "u_b"], posts: [post] };
+    const before = await storage.updateThread("agent-shared", () => thread);
+    await storage.applySnapshot(createManagedAgent({ id: "agent-shared", lifecycle: "running" }));
+
+    expect(before).toEqual({ writers: [], posts: [] });
+    const reloaded = new AgentStorage(storagePath, createTestLogger());
+    expect((await reloaded.get("agent-shared"))?.thread).toEqual(thread);
+  });
+
+  test("a write that read the record before a thread change keeps the change", async () => {
+    await storage.applySnapshot(createManagedAgent({ id: "agent-race" }));
+    const post = {
+      type: "user_message" as const,
+      text: "note",
+      clientMessageId: "m1",
+      author: { id: "u_a", name: "Alice" },
+    };
+
+    await Promise.all([
+      storage.setTitle("agent-race", "Renamed"),
+      storage.updateThread("agent-race", (thread) => ({ ...thread, posts: [post] })),
+    ]);
+
+    const reloaded = new AgentStorage(storagePath, createTestLogger());
+    const record = await reloaded.get("agent-race");
+    expect(record?.title).toBe("Renamed");
+    expect(record?.thread?.posts).toEqual([post]);
+  });
+
+  test("a thread change that changes nothing writes nothing", async () => {
+    await storage.applySnapshot(createManagedAgent({ id: "agent-alone" }));
+    await storage.updateThread("agent-alone", () => ({ writers: ["u_a"], posts: [] }));
+    const written = (await fs.stat(findRecordFile(storagePath, "agent-alone"))).ino;
+
+    await storage.updateThread("agent-alone", (thread) => thread);
+
+    expect((await fs.stat(findRecordFile(storagePath, "agent-alone"))).ino).toBe(written);
+  });
+
   test("stores titles independently of snapshots", async () => {
     await storage.applySnapshot(
       createManagedAgent({

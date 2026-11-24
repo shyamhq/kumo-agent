@@ -1016,6 +1016,11 @@ interface ComposerProps {
   /** Overrides the mode's default placeholder, for text only the caller can build. */
   placeholder?: string;
   /**
+   * The chat is shared (docs/glossary.md): a message for people, without `@kumo`, goes at once
+   * even while the agent runs, since the daemon keeps it as a post and starts no turn.
+   */
+  isSharedChat?: boolean;
+  /**
    * The host that also lays out the dock and chrome shares this session so its
    * fullscreen state and the composer's agree. Defaults to the tab's session for
    * `inputMode`.
@@ -1330,6 +1335,7 @@ function ComposerContentImpl({
   readOnly = false,
   submitLabel,
   placeholder,
+  isSharedChat = false,
 }: ComposerContentProps) {
   const mode = resolveComposerInputMode(inputMode);
   const { t } = useTranslation();
@@ -1804,6 +1810,7 @@ function ComposerContentImpl({
         hasExternalContent,
         allowEmptySubmit,
         forceSend,
+        isSharedChat,
         submitBehavior,
         isAgentRunning,
         // Parent-managed submits are still valid submit paths even when the
@@ -1842,6 +1849,7 @@ function ComposerContentImpl({
       completeSubmit,
       hasExternalContent,
       isAgentRunning,
+      isSharedChat,
       queueMessage,
       setSelectedAttachments,
       replaceUserInput,

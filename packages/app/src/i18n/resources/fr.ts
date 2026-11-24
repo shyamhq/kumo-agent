@@ -138,6 +138,7 @@ export const fr: TranslationResources = {
       mobile: "Message, @fichiers, /commandes",
       fallback: "Message…",
       terminal: "Prompt",
+      shared: "Écrire à tout le monde · @kumo interroge l'agent",
     },
     input: {
       accessibilityLabel: "Écrire à l’agent…",

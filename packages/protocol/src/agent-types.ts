@@ -407,8 +407,20 @@ export interface AgentTaskItem {
   activeForm?: string;
 }
 
+/** A person signed in through Kumo's gate: who wrote a message in a shared chat. */
+export interface MessageAuthor {
+  id: string;
+  name: string;
+}
+
 export type AgentTimelineItem =
-  | { type: "user_message"; text: string; messageId?: string; clientMessageId?: string }
+  | {
+      type: "user_message";
+      text: string;
+      messageId?: string;
+      clientMessageId?: string;
+      author?: MessageAuthor;
+    }
   | { type: "assistant_message"; text: string; messageId?: string }
   | { type: "reasoning"; text: string }
   | ToolCallTimelineItem

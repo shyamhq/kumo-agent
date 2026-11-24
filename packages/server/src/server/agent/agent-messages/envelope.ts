@@ -8,6 +8,7 @@ import type {
 } from "../agent-sdk-types.js";
 
 const agentIdSchema = z.string().min(1);
+const messageAuthorSchema = z.object({ id: z.string().min(1), name: z.string() });
 const sourceSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("change-request-update"),
@@ -19,6 +20,10 @@ const sourceSchema = z.discriminatedUnion("kind", [
     serverId: z.string().min(1).optional(),
     title: z.string().min(1).optional(),
   }),
+  // A person writing in a shared chat, named by Kumo's gate (MessageAuthor), never by the text:
+  // to the agent, or (a post) to the people in the chat, carried ahead of the next prompt.
+  z.object({ kind: z.literal("person-message"), author: messageAuthorSchema }),
+  z.object({ kind: z.literal("person-post"), author: messageAuthorSchema }),
   z.object({
     kind: z.literal("agent-notification"),
     agentId: agentIdSchema,
@@ -75,6 +80,9 @@ export function formatAgentMessage(message: AgentMessage): string {
   if (source?.kind === "change-request-update") {
     return `<paseo-system version="1" kind="change-request-update" source-url="${escapeXml(source.url)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
   }
+  if (source?.kind === "person-message" || source?.kind === "person-post") {
+    return `<paseo-system version="1" kind="${source.kind}" author-id="${escapeXml(source.author.id)}" author-name="${escapeXml(source.author.name)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
+  }
   const attributes = source
     ? `kind="${source.kind}" source-agent-id="${escapeXml(source.agentId)}"`
     : 'kind="user-message"';
@@ -110,6 +118,7 @@ export function parseAgentMessage(text: string): AgentMessage | null {
     event: attributes.get("event"),
     title: attributes.get("source-agent-title"),
     url: attributes.get("source-url"),
+    author: { id: attributes.get("author-id"), name: attributes.get("author-name") },
   });
   if (!source.success) return null;
   return { id, source: source.data, text: body };
@@ -117,8 +126,10 @@ export function parseAgentMessage(text: string): AgentMessage | null {
 
 /** Accept only a complete sequence of envelopes; prose around them stays user text. */
 export function parseAgentMessages(text: string): AgentMessage[] | null {
-  // Bodies are XML escaped, so a literal closing tag unambiguously ends an entry.
-  const parts = text.split(/(?<=<\/paseo-system>)\n+(?=<paseo-system )/);
+  // Bodies are XML escaped, so a literal closing tag unambiguously ends an entry. A provider may
+  // join a prompt's text blocks with no separator at all when it replays them (Codex's legacy
+  // threads), so none is required.
+  const parts = text.split(/(?<=<\/paseo-system>)\n*(?=<paseo-system )/);
   const messages = parts.map(parseAgentMessage);
   return messages.every((message) => message !== null) ? messages : null;
 }
@@ -210,6 +221,9 @@ function projectAgentMessage(item: AgentTimelineItem): AgentTimelineItem | null 
   const { source } = message;
   if (!source) {
     return { ...item, text: message.text, clientMessageId: message.id };
+  }
+  if (source.kind === "person-message" || source.kind === "person-post") {
+    return { ...item, text: message.text, clientMessageId: message.id, author: source.author };
   }
   if (source.kind === "change-request-update") {
     return {

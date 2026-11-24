@@ -136,6 +136,7 @@ export const ar: TranslationResources = {
       mobile: "الرسالة، @files ، /commands",
       fallback: "رسالة...",
       terminal: "Prompt",
+      shared: "رسالة إلى الجميع · @kumo لسؤال الوكيل",
     },
     input: {
       accessibilityLabel: "وكيل الرسائل...",

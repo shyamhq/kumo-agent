@@ -1,5 +1,6 @@
 import type { PluginSessionOpenRequest } from "@getpaseo/plugin/server";
 import { readKumoInstructions, readKumoKeys } from "./files.js";
+import { THREAD_INSTRUCTIONS } from "./thread.js";
 
 // The stock agents the worker writes Kumo's MCP servers for, so the instructions' `kumo-chrome`
 // tools exist. Profiles that extend them have their own ids and are skipped.
@@ -20,7 +21,8 @@ export async function withKumo(
   const instructions = await readKumoInstructions(home);
   const keys = KEYED_PROVIDERS.has(request.provider) ? await readKumoKeys(home) : {};
   const prompt = request.appendSystemPrompt ?? [];
-  const appendSystemPrompt = instructions === null ? prompt : [...prompt, instructions];
+  const computer = instructions === null ? [] : [instructions];
+  const appendSystemPrompt = [...prompt, ...computer, THREAD_INSTRUCTIONS];
   // Env set for this one agent (e.g. `paseo run --env`) wins over Kumo's keys.
   return { ...request, appendSystemPrompt, env: { ...keys, ...request.env } };
 }

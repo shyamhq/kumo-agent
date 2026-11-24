@@ -12,7 +12,11 @@ import {
 export type DaemonClientConfig = Omit<
   SharedDaemonClientConfig,
   "webSocketFactory" | "transportFactory" | "clientId"
-> & { clientId?: string };
+> & {
+  clientId?: string;
+  /** Sent on the upgrade, e.g. the headers Kumo's gate sets to name a person. */
+  headers?: Record<string, string>;
+};
 export type CreateAgentOptions = CreateAgentRequestOptions;
 export { type SendMessageOptions, type DaemonEvent, type DaemonEventHandler };
 
@@ -31,7 +35,7 @@ export class DaemonClient extends SharedDaemonClient {
       clientId,
       webSocketFactory: (url, options) =>
         new WebSocket(url, options?.protocols, {
-          headers: options?.headers,
+          headers: { ...options?.headers, ...config.headers },
         }) as unknown as WebSocketLike,
     });
   }

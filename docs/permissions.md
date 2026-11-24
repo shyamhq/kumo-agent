@@ -58,6 +58,8 @@ Workspace-scoped grants require every resource-bearing operation and outbound ob
 
 The Hub authenticates as a service principal. Its locally selected grants decide whether it may execute agents, manage the daemon, manage tunnels, or manage access.
 
+A person Kumo's gate names on a connection (`readKumoPerson`) is attribution, not a principal: it labels who wrote a message in a shared chat and grants nothing. Everyone through the gate is the owner principal.
+
 Hub user and role identifiers remain opaque external subjects. The Hub may create and revoke linked daemon principals when granted `access.manage`; the daemon does not interpret accounts, organizations, or roles.
 
 Hub enrollment and permission updates exchange these semantic permissions directly. Legacy persisted Hub relationships that contain `hub.execution.*` migrate once to `hub.execute` when the daemon loads them; new relationships never persist or emit transport scopes as authority.

@@ -3,7 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { within } from "@testing-library/dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { i18n as testI18n } from "@/i18n/i18next";
-import { MessagePreview } from "./index";
+import { MessageAuthorLine, MessagePreview } from "./index";
 import { createUserMessageExpansion, type UserMessageExpansion } from "./expansion";
 import { UserMessageExpansionContext } from "./expansion-context";
 
@@ -77,5 +77,22 @@ describe("long user message preview", () => {
 
     expect(view().getByRole("button", { name: "Show less" })).toBeTruthy();
     expect(container.getBoundingClientRect().height).toBe(expandedHeight);
+  });
+});
+
+const ZOE = { id: "u_1", name: "zoë ng" };
+const FOX = { id: "u_2", name: "🦊" };
+
+describe("MessageAuthorLine", () => {
+  it("shows who wrote a message: their initials, then their name", () => {
+    act(() => root.render(<MessageAuthorLine author={ZOE} />));
+
+    expect(view().getByTestId("message-author").textContent).toBe("ZNzoë ng");
+  });
+
+  it("keeps a one-word name to one letter, and an emoji whole", () => {
+    act(() => root.render(<MessageAuthorLine author={FOX} />));
+
+    expect(view().getByTestId("message-author").textContent).toBe("🦊🦊");
   });
 });

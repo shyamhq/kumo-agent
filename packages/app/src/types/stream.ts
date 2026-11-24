@@ -4,6 +4,7 @@ import type {
   AgentProvider,
   AgentTimelineItem,
   JsonValue,
+  MessageAuthor,
   ToolCallDetail,
 } from "@getpaseo/protocol/agent-types";
 import { timelineItemIdentity } from "@getpaseo/protocol/timeline-identity";
@@ -97,6 +98,8 @@ export type UserMessageImageAttachment = AttachmentMetadata;
 export interface UserMessageItem {
   /** Attribution added by presentation for received agent messages. */
   sender?: AgentMessage["sender"];
+  /** The person who wrote it, in a shared chat. */
+  author?: MessageAuthor;
   kind: "user_message";
   id: string;
   clientMessageId?: string;
@@ -111,6 +114,7 @@ export interface UserMessageItem {
 
 export interface UserMessageInput {
   id?: string;
+  author?: MessageAuthor;
   clientMessageId?: string;
   messageId?: string;
   turnId?: string;
@@ -129,6 +133,7 @@ export function createUserMessage(input: UserMessageInput): UserMessageItem {
   return {
     kind: "user_message",
     id,
+    ...(input.author ? { author: input.author } : {}),
     ...(input.clientMessageId ? { clientMessageId: input.clientMessageId } : {}),
     ...(input.messageId ? { messageId: input.messageId } : {}),
     ...(input.turnId ? { turnId: input.turnId } : {}),
@@ -140,6 +145,23 @@ export function createUserMessage(input: UserMessageInput): UserMessageItem {
       ? { attachments: input.attachments }
       : {}),
   };
+}
+
+const sharedByTail = new WeakMap<readonly StreamItem[], boolean>();
+
+/**
+ * Whether a chat is shared (docs/glossary.md): the daemon names a message's author only once it
+ * is, so one authored row says so. Cached per tail array, so a store selector stays O(1) while
+ * the tail is unchanged. ponytail: reads the loaded tail, like Kumo's isSharedSession; a chat whose
+ * authored rows all scrolled out reads as unshared until someone writes again.
+ */
+export function isSharedChat(items: readonly StreamItem[] | undefined): boolean {
+  if (!items) return false;
+  const known = sharedByTail.get(items);
+  if (known !== undefined) return known;
+  const shared = items.some((item) => item.kind === "user_message" && item.author !== undefined);
+  sharedByTail.set(items, shared);
+  return shared;
 }
 
 export function isUnreconciledLocalUserMessage(message: UserMessageItem): boolean {
@@ -264,12 +286,15 @@ function produceUserMessage(
   const presentation = presentationPolicy === "incoming" ? incoming : existing;
   const merged = createUserMessage({
     ...presentation,
+    // The local echo of a send carries no author; the daemon's row names who wrote it.
+    author: incoming.author ?? existing.author,
     clientMessageId: incoming.clientMessageId ?? existing.clientMessageId,
     messageId: incoming.messageId ?? existing.messageId,
     timelineCursor: incoming.timelineCursor ?? existing.timelineCursor,
   });
   if (
     existing.id === merged.id &&
+    existing.author === merged.author &&
     existing.clientMessageId === merged.clientMessageId &&
     existing.messageId === merged.messageId &&
     existing.timelineCursor === merged.timelineCursor &&
@@ -929,6 +954,7 @@ function appendUserMessage(
   clientMessageId?: string,
   timelineCursor?: TimelinePosition,
   turnId?: string,
+  author?: MessageAuthor,
 ): StreamItem[] {
   const { chunk, hasContent } = normalizeChunk(text);
   if (!hasContent) {
@@ -938,6 +964,7 @@ function appendUserMessage(
   const chunkSeed = chunk.trim() || chunk;
   const nextItem = createUserMessage({
     id: messageId ?? createUniqueTimelineId(state, "user", chunkSeed, timestamp),
+    author,
     clientMessageId,
     messageId,
     timelineCursor,
@@ -1552,6 +1579,7 @@ function reduceTimelineEvent(
         item.clientMessageId,
         timelineCursor,
         event.turnId,
+        item.author,
       );
     case "assistant_message":
       return appendAssistantMessage(
@@ -1914,6 +1942,7 @@ function applyCanonicalUserMessageEvent(params: {
       createUniqueTimelineId([...tail, ...head], "user", normalized.chunk.trim(), timestamp),
     messageId: event.item.messageId,
     clientMessageId: event.item.clientMessageId,
+    author: event.item.author,
     turnId: event.turnId,
     timelineCursor,
     text: normalized.chunk,

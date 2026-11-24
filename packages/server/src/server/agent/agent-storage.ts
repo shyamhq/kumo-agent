@@ -51,6 +51,26 @@ const PERSISTENCE_HANDLE_SCHEMA = z
   .nullable()
   .optional();
 
+/** A post (docs/glossary.md) no provider has seen yet, kept as the row it is shown as. */
+const STORED_POST_SCHEMA = z.object({
+  type: z.literal("user_message"),
+  text: z.string(),
+  clientMessageId: z.string(),
+  author: z.object({ id: z.string(), name: z.string() }),
+});
+export type StoredPost = z.infer<typeof STORED_POST_SCHEMA>;
+
+/**
+ * A shared chat's state (docs/glossary.md). `writers` holds person ids up to two: two different
+ * people make a chat shared, for good. `posts` waits for the next prompt to carry it.
+ */
+const AGENT_THREAD_SCHEMA = z.object({
+  writers: z.array(z.string()),
+  posts: z.array(STORED_POST_SCHEMA),
+});
+export type AgentThread = z.infer<typeof AGENT_THREAD_SCHEMA>;
+const EMPTY_THREAD: AgentThread = { writers: [], posts: [] };
+
 const RAW_STORED_AGENT_SCHEMA = z.object({
   id: z.string(),
   provider: z.string(),
@@ -91,6 +111,7 @@ const RAW_STORED_AGENT_SCHEMA = z.object({
   background: z.boolean().optional(),
   archivedAt: z.string().nullable().optional(),
   owner: AgentOwnerSchema.optional(),
+  thread: AGENT_THREAD_SCHEMA.optional(),
 });
 
 export type SerializableAgentConfig = Pick<
@@ -302,7 +323,11 @@ export class AgentStorage {
   }
 
   private queueRecordWrite(record: StoredAgentRecord): Promise<void> {
-    return this.queueRecordMutation(record.id, () => record);
+    // The thread has one writer, `updateThread`: a record read before it ran must not undo it.
+    return this.queueRecordMutation(record.id, (existing) => {
+      const { thread: _readEarlier, ...rest } = record;
+      return existing?.thread ? { ...rest, thread: existing.thread } : rest;
+    });
   }
 
   private queueRecordMutation(
@@ -315,8 +340,9 @@ export class AgentStorage {
         return undefined;
       }
 
-      const record = mutate(this.cache.get(agentId) ?? null);
-      await this.writeRecord(record);
+      const existing = this.cache.get(agentId) ?? null;
+      const record = mutate(existing);
+      if (record !== existing) await this.writeRecord(record);
       return undefined;
     });
 
@@ -423,10 +449,31 @@ export class AgentStorage {
       }
       // Background is fixed at creation; a runtime opened without it cannot clear it.
       if (existing?.background) record.background = true;
+      // The thread lives only in the record (`updateThread`), never on the live agent.
+      if (existing?.thread) record.thread = existing.thread;
       record.resumeOnStartup =
         existing?.resumeOnStartup && agent.lifecycle !== "idle" && agent.lifecycle !== "error";
       return record;
     });
+  }
+
+  /**
+   * Changes an agent's thread inside its write queue, so two sends never read the same thread,
+   * and answers the thread as it was before the change.
+   */
+  async updateThread(
+    agentId: string,
+    change: (thread: AgentThread) => AgentThread,
+  ): Promise<AgentThread> {
+    await this.load();
+    let before = EMPTY_THREAD;
+    await this.queueRecordMutation(agentId, (existing) => {
+      if (!existing) throw new Error(`Agent ${agentId} not found`);
+      before = existing.thread ?? EMPTY_THREAD;
+      const after = change(before);
+      return after === before ? existing : { ...existing, thread: after };
+    });
+    return before;
   }
 
   async setTitle(agentId: string, title: string): Promise<void> {

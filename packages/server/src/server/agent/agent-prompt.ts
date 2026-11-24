@@ -269,6 +269,8 @@ export interface SendPromptToAgentParams {
   prompt: AgentPromptInput;
   source?: AgentPromptSource;
   messageId?: string;
+  /** Envelopes delivered first in the same provider prompt (`DirectPrompt.ahead`). */
+  ahead?: readonly string[];
   activeTurnBehavior?: ActiveTurnBehavior;
   runOptions?: AgentRunOptions;
   /** Optional mode to set on the agent before the run starts. */
@@ -359,7 +361,8 @@ async function resolvePromptSource(
   manager: Pick<AgentManager, "getAgent">,
   storage: AgentStorage,
 ): Promise<AgentPromptSource | undefined> {
-  if (!source || source.kind === "change-request-update" || source.title) return source;
+  // Only another agent's message is titled; a change request or a person passes as it came.
+  if (!source || !("agentId" in source) || source.title) return source;
   const title = (
     manager.getAgent(source.agentId)?.config.title ?? (await storage.get(source.agentId))?.title
   )?.trim();
@@ -383,13 +386,14 @@ async function resolvePromptSource(
 export async function sendPromptToAgent(
   params: SendDirectPromptParams,
 ): Promise<PromptDispatchResult> {
-  const { agentMessages, source, messageId, ...send } = params;
+  const { agentMessages, source, messageId, ahead, ...send } = params;
   return agentMessages.sendDirect(
     {
       recipientId: params.agentId,
       prompt: params.prompt,
       source: await resolvePromptSource(source, params.agentManager, params.agentStorage),
       messageId,
+      ahead,
       sessionMode: params.sessionMode,
       unarchive: params.unarchive,
     },

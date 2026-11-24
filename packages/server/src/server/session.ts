@@ -86,7 +86,10 @@ import {
   sendPromptToAgent,
   waitForAgentRunStartWithTimeout,
   unarchiveAgentState,
+  type SendDirectPromptParams,
 } from "./agent/agent-prompt.js";
+import { joinThread, PostAttachmentsError, sendFromPerson } from "./agent/agent-messages/index.js";
+import type { MessageAuthor } from "@getpaseo/protocol/agent-types";
 import {
   resolveCreateAgentTitles,
   resolveFirstAgentPromptTitle,
@@ -607,6 +610,8 @@ export interface SessionOptions {
   providerSnapshotManager: ProviderSnapshotManager;
   hubExecutionAgents?: HubExecutionAgents;
   hubRelationships?: HubRelationshipManagement;
+  /** Who Kumo's gate says this connection is (`readKumoPerson`); absent off the gate. */
+  person?: MessageAuthor;
   serviceProxy?: ServiceProxySubsystem;
   scriptRuntimeStore?: WorkspaceScriptRuntimeStore;
   workspaceSetupObservation?: WorkspaceSetupObservation;
@@ -795,6 +800,7 @@ export class Session {
   );
   private readonly browserToolsBroker: SessionOptions["browserToolsBroker"];
   private readonly clientId: string;
+  private readonly person: MessageAuthor | undefined;
   private readonly authorization: SessionAuthorization;
   private appVersion: string | null;
   private clientCapabilities: ReadonlySet<ClientCapability>;
@@ -1013,6 +1019,7 @@ export class Session {
     });
     this.agentManager = agentManager;
     this.agentStorage = agentStorage;
+    this.person = options.person;
     this.projectRegistry = projectRegistry;
     this.workspaceRegistry = workspaceRegistry;
     this.directorySync = resolveDirectorySync(directorySync);
@@ -5061,6 +5068,10 @@ export class Session {
         },
       );
       createdAgentId = snapshot.id;
+      // Whoever creates a chat is its first writer, prompt or not.
+      if (this.person && !msg.callerAgentId) {
+        await joinThread(this.agentStorage, snapshot.id, this.person);
+      }
       // `snapshot` predates the initial prompt; subscribers keep the last state they receive.
       await this.agentUpdates.forwardLiveAgent(
         this.agentManager.getAgent(snapshot.id) ?? liveSnapshot,
@@ -9220,7 +9231,7 @@ export class Session {
           await receipt.dispatched;
           return;
         }
-        const result = await sendPromptToAgent({
+        const params: SendDirectPromptParams = {
           agentMessages: this.agentMessages,
           agentManager: this.agentManager,
           agentStorage: this.agentStorage,
@@ -9232,8 +9243,12 @@ export class Session {
           clearPendingPermissions: true,
           beforeDispatch,
           logger: this.sessionLogger,
-        });
-        if (result.disposition === "turn_started") {
+        };
+        const hasAttachments = Boolean(msg.images?.length || msg.attachments?.length);
+        const result = this.person
+          ? await sendFromPerson({ ...params, person: this.person, text: msg.text, hasAttachments })
+          : await sendPromptToAgent(params);
+        if (result?.disposition === "turn_started") {
           await waitForAgentRunStartWithTimeout(
             this.agentManager,
             agentId,
@@ -9285,7 +9300,10 @@ export class Session {
       });
     } catch (error) {
       if (this.delivery.requestSignal.aborted) return;
-      this.handleAgentRunError(resolved.agentId, error, "Failed to send agent message");
+      // A refused post is the person's to fix, not the agent's failure.
+      if (!(error instanceof PostAttachmentsError)) {
+        this.handleAgentRunError(resolved.agentId, error, "Failed to send agent message");
+      }
       this.emit({
         type: "send_agent_message_response",
         payload: {
