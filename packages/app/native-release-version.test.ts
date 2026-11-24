@@ -24,7 +24,11 @@ describe("native release version", () => {
   });
 
   it("numbers a kumo-agent release like a beta of the same version", () => {
-    expect(getNativeReleaseVersion("0.17.4-kumo.1")).toEqual(getNativeReleaseVersion("0.17.4-beta.1"));
+    expect(getNativeReleaseVersion("0.17.4-kumo.1")).toEqual({
+      appVersion: "0.17.4",
+      androidVersionCode: 17004,
+      iosBuildNumber: "17004001",
+    });
   });
 
   it("rejects beta numbers that consume the stable iOS build slot", () => {
