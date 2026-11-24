@@ -824,6 +824,18 @@ describe("renamed skills", () => {
     expect(status.ops).toEqual([{ kind: "delete", name: "paseo" }]);
   });
 
+  it("installs the current skills even when an old folder can't be retired", async () => {
+    await writeBundleSkill(sandbox.targets.sourceDir, "kumo-agent", { "SKILL.md": "new" });
+    await writeOnDiskSkill(sandbox.targets.agentsDir, "paseo-help", {
+      ".paseo-managed-files.json": JSON.stringify({ version: 1, files: { "../escape": "x" } }),
+    });
+
+    await expect(autoUpdateInstalledSkills(sandbox.targets, ALL_SKILLS)).rejects.toThrow(
+      /outside skill directory/,
+    );
+    expect(await installedIn(sandbox.targets, "kumo-agent")).toEqual([true, true, false, true]);
+  });
+
   it("still keeps a current skill the user deselected", async () => {
     await writeCurrentBundle(sandbox.targets.sourceDir);
     await installSkills(sandbox.targets, ALL_SKILLS);

@@ -30,7 +30,9 @@ export function coerceSkillSelection(value: unknown): SkillSelection {
   if (!isRecord(value)) return DEFAULT_SKILL_SELECTION;
   if (value.mode === "all") return { mode: "all" };
   if (value.mode === "custom") {
-    const skills = coerceSkillNames(value.skills).map((name) => SKILL_RENAMES[name] ?? name);
+    const skills = coerceSkillNames(value.skills).map((name) =>
+      Object.hasOwn(SKILL_RENAMES, name) ? SKILL_RENAMES[name] : name,
+    );
     return { mode: "custom", skills: coerceSkillNames(skills) };
   }
   return DEFAULT_SKILL_SELECTION;

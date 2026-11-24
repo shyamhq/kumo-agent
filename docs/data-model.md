@@ -192,8 +192,9 @@ missing value defaults to `{ mode: "all" }`. The daemon does not persist install
 derives installed state from `~/.agents/skills`, `~/.claude/skills`, and `~/.gemini/config/skills`,
 and serializes configuration and filesystem convergence through one owner. Codex and Gemini CLI
 discover `~/.agents/skills`, while Antigravity discovers `~/.gemini/config/skills`. Updates retire
-unchanged files from Paseo-managed copies in `~/.codex/skills` and preserve user edits and
-untracked files.
+unchanged files from managed copies in `~/.codex/skills` and from skills the bundle no longer ships
+(`LEGACY_SKILL_NAMES`, including the `paseo*` names renamed to `kumo-agent*`), and preserve user
+edits and untracked files.
 
 `paseo reload` reads and validates this file once inside the daemon. That snapshot drives resolution,
 classification, application, and reload bookkeeping. `DaemonConfigStore` owns applying runtime-safe
