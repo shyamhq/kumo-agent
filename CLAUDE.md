@@ -39,7 +39,8 @@ How it runs under Kumo:
   swap in upstream code. A release builds and `npm pack`s the seven packages Paseo's Docker image
   installs (`highlight`, `relay`, `protocol`, `client`, `plugin`, `server` with the web UI and
   built-in plugins baked in, `cli`) and attaches them to the GitHub Release `vX.Y.Z-kumo.N`. Kumo's
-  apps catalogue installs all seven in one `npm install`.
+  apps catalogue installs all seven in one `npm install`, and puts the CLI on the computer's PATH
+  as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 
