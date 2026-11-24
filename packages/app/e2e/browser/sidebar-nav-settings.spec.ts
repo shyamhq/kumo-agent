@@ -61,6 +61,10 @@ test("fixed footer line keeps its four icons, Help and Settings at the end", asy
   await openAddProjectFlow(page);
   await page.keyboard.press("Escape");
   await expect(addProjectFlow(page)).toBeHidden();
+  // With no plugin footer rows there is nothing to arrange, so Settings shows no Footer card.
+  await openSidebarNavSettings(page);
+  await expect(page.getByTestId("sidebar-nav-section-footer")).toHaveCount(0);
+  await leaveSettings(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await openCompactSidebar(page);
   await expectFooterSeparator(page, false);

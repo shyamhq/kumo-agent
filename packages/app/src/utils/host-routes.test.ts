@@ -255,8 +255,8 @@ describe("host settings section slugs", () => {
     expect(normalizeHostSectionSlug("host")).toBe("host");
   });
 
-  it("drops the removed Usage section", () => {
-    expect(normalizeHostSectionSlug("usage")).toBeNull();
+  it("opens the host overview for the removed Usage section", () => {
+    expect(normalizeHostSectionSlug("usage")).toBe("host");
   });
 
   it("maps old host settings sections to their new names", () => {
