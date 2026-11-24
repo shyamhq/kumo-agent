@@ -1942,6 +1942,7 @@ function applyCanonicalUserMessageEvent(params: {
       createUniqueTimelineId([...tail, ...head], "user", normalized.chunk.trim(), timestamp),
     messageId: event.item.messageId,
     clientMessageId: event.item.clientMessageId,
+    author: event.item.author,
     turnId: event.turnId,
     timelineCursor,
     text: normalized.chunk,

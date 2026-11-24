@@ -66,7 +66,7 @@ export type StoredPost = z.infer<typeof STORED_POST_SCHEMA>;
  */
 const AGENT_THREAD_SCHEMA = z.object({
   writers: z.array(z.string()),
-  posts: z.array(STORED_POST_SCHEMA).default([]),
+  posts: z.array(STORED_POST_SCHEMA),
 });
 export type AgentThread = z.infer<typeof AGENT_THREAD_SCHEMA>;
 const EMPTY_THREAD: AgentThread = { writers: [], posts: [] };
@@ -323,7 +323,11 @@ export class AgentStorage {
   }
 
   private queueRecordWrite(record: StoredAgentRecord): Promise<void> {
-    return this.queueRecordMutation(record.id, () => record);
+    // The thread has one writer, `updateThread`: a record read before it ran must not undo it.
+    return this.queueRecordMutation(record.id, (existing) => {
+      const { thread: _readEarlier, ...rest } = record;
+      return existing?.thread ? { ...rest, thread: existing.thread } : rest;
+    });
   }
 
   private queueRecordMutation(
@@ -336,8 +340,9 @@ export class AgentStorage {
         return undefined;
       }
 
-      const record = mutate(this.cache.get(agentId) ?? null);
-      await this.writeRecord(record);
+      const existing = this.cache.get(agentId) ?? null;
+      const record = mutate(existing);
+      if (record !== existing) await this.writeRecord(record);
       return undefined;
     });
 
@@ -465,7 +470,8 @@ export class AgentStorage {
     await this.queueRecordMutation(agentId, (existing) => {
       if (!existing) throw new Error(`Agent ${agentId} not found`);
       before = existing.thread ?? EMPTY_THREAD;
-      return { ...existing, thread: change(before) };
+      const after = change(before);
+      return after === before ? existing : { ...existing, thread: after };
     });
     return before;
   }

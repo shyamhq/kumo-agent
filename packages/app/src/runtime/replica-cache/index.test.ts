@@ -828,6 +828,30 @@ describe("ReplicaCache", () => {
     expect((await reader.readTimeline(SERVER_ID, "agent-1"))?.items).toEqual([answer]);
   });
 
+  it("keeps who wrote a message in a shared chat across cache reopen", async () => {
+    const storage = new MemoryStorage();
+    const writer = createCache(storage);
+    const said: StreamItem = {
+      kind: "user_message",
+      id: "m1",
+      clientMessageId: "m1",
+      author: { id: "u_bob", name: "Bob" },
+      text: "hi",
+      timestamp: new Date("2026-11-25T10:00:00Z"),
+      timelineCursor: { epoch: "epoch-1", seq: 12 },
+    };
+    writer.commitTimeline(SERVER_ID, "agent-1", {
+      agentId: "agent-1",
+      items: [said],
+      range: { epoch: "epoch-1", startSeq: 12, endSeq: 12 },
+      hasOlder: false,
+    });
+    await writer.flush();
+
+    const reader = createCache(storage);
+    expect((await reader.readTimeline(SERVER_ID, "agent-1"))?.items).toEqual([said]);
+  });
+
   it("round-trips plugin timeline items", async () => {
     const storage = new MemoryStorage();
     const writer = createCache(storage);

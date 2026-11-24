@@ -59,23 +59,35 @@ export async function sendFromPerson(send: PersonSend): Promise<PromptDispatchRe
     return null;
   }
 
-  // Taken inside the agent's write queue, so two prompts never carry the same post.
-  const { posts } = await storage.updateThread(agentId, (thread) => ({ ...thread, posts: [] }));
-  try {
-    return await sendPromptToAgent({
-      ...params,
-      source: { kind: "person-message", author: person },
-      ahead: posts.map(envelopeOf),
-    });
-  } catch (error) {
-    // ponytail: a crash between taking and the provider's acceptance loses them (milliseconds: a
-    // person's prompt dispatches at once). Mark posts with their carrier instead if that bites.
-    await storage.updateThread(agentId, (thread) => ({
-      ...thread,
-      posts: [...posts, ...thread.posts],
-    }));
-    throw error;
+  // A post stays in the record until the provider has it, so a refused turn or a crash keeps it
+  // for the next prompt. ponytail: two prompts in flight together both carry it, and a crash right
+  // after the provider took it carries it once more; both mean the agent reads it twice.
+  const posts = (await storage.get(agentId))?.thread?.posts ?? [];
+  const result = await sendPromptToAgent({
+    ...params,
+    source: { kind: "person-message", author: person },
+    ahead: posts.map(envelopeOf),
+  });
+  if (posts.length) {
+    const carried = new Set(posts.map((post) => post.clientMessageId));
+    const forget = () =>
+      storage.updateThread(agentId, (thread) => ({
+        ...thread,
+        posts: thread.posts.filter((post) => !carried.has(post.clientMessageId)),
+      }));
+    // A refused turn rejects `started`, and the posts stay.
+    void taken(result)
+      .then(forget, () => undefined)
+      .catch((error: unknown) => {
+        params.logger.error({ err: error, agentId }, "Could not drop the posts a turn delivered");
+      });
   }
+  return result;
+}
+
+/** Settles once the provider has the prompt: at once for a steer, when the turn starts otherwise. */
+function taken(result: PromptDispatchResult): Promise<void> {
+  return result.disposition === "turn_started" ? result.started : Promise.resolve();
 }
 
 /** Counts a person as a writer in an agent's chat. */

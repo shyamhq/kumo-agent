@@ -1566,7 +1566,7 @@ export class VoiceAssistantWebSocketServer {
       identity,
       admission,
       authenticating: false,
-      person: requestMetadata.person,
+      person: personOf(request),
     };
     const timeout = setTimeout(() => {
       if (this.pendingConnections.get(ws) !== pending) {
@@ -3196,7 +3196,6 @@ interface SocketRequestMetadata {
   origin?: string;
   userAgent?: string;
   remoteAddress?: string;
-  person?: MessageAuthor;
 }
 
 function createWebSocketConnectionIdentity(
@@ -3284,15 +3283,21 @@ function extractSocketRequestMetadata(request: unknown): SocketRequestMetadata {
     typeof record.headers?.["user-agent"] === "string" ? record.headers["user-agent"] : undefined;
   const remoteAddress =
     typeof record.socket?.remoteAddress === "string" ? record.socket.remoteAddress : undefined;
-  const person = record.headers ? readKumoPerson(record.headers) : null;
 
   return {
     ...(host ? { host } : {}),
     ...(origin ? { origin } : {}),
     ...(userAgent ? { userAgent } : {}),
     ...(remoteAddress ? { remoteAddress } : {}),
-    ...(person ? { person } : {}),
   };
+}
+
+/** Kept apart from the request metadata, which connection logs spread whole. */
+function personOf(request: unknown): MessageAuthor | undefined {
+  if (!request || typeof request !== "object" || !("headers" in request)) return undefined;
+  const { headers } = request;
+  if (!headers || typeof headers !== "object") return undefined;
+  return readKumoPerson(headers);
 }
 
 interface HostAuthority {

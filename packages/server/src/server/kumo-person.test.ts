@@ -10,9 +10,9 @@ describe("readKumoPerson", () => {
   });
 
   it("is nobody off the gate", () => {
-    expect(readKumoPerson({ "x-kumo-name": "Zo%C3%AB" })).toBeNull();
-    expect(readKumoPerson({ "x-kumo-user": "", "x-kumo-name": "Zo%C3%AB" })).toBeNull();
-    expect(readKumoPerson({ "x-kumo-user": ["u_1", "u_2"] })).toBeNull();
+    expect(readKumoPerson({ "x-kumo-name": "Zo%C3%AB" })).toBeUndefined();
+    expect(readKumoPerson({ "x-kumo-user": "", "x-kumo-name": "Zo%C3%AB" })).toBeUndefined();
+    expect(readKumoPerson({ "x-kumo-user": ["u_1", "u_2"] })).toBeUndefined();
   });
 
   it("calls a grant without a name Someone", () => {

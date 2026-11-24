@@ -3,7 +3,7 @@ import path from "node:path";
 import { expect, test } from "vitest";
 
 import type { AgentPromptInput } from "../agent/agent-sdk-types.js";
-import { parseAgentMessages } from "../agent/agent-messages/envelope.js";
+import { parseAgentMessages } from "../agent/agent-messages/index.js";
 import { createTestAgentClients } from "../test-utils/fake-agent-client.js";
 import { createTestPaseoDaemon } from "../test-utils/paseo-daemon.js";
 import { DaemonClient } from "../test-utils/daemon-client.js";
@@ -20,16 +20,19 @@ async function sharedChatDaemon() {
   const start = () =>
     createTestPaseoDaemon({
       agentClients: createTestAgentClients({
-        onStartTurn: (prompt: AgentPromptInput) =>
-          prompts.push(typeof prompt === "string" ? prompt : JSON.stringify(prompt)),
+        onStartTurn: (prompt: AgentPromptInput) => {
+          const text = typeof prompt === "string" ? prompt : JSON.stringify(prompt);
+          if (text.includes("refuse this")) throw new Error("provider refused the turn");
+          prompts.push(text);
+        },
       }),
       paseoHomeRoot: path.join(root, "daemon"),
       staticDir: path.join(root, "static"),
       cleanup: false,
     });
   let daemon = await start();
-  async function connect(headers: Record<string, string> = {}) {
-    const client = new DaemonClient({ url: `ws://127.0.0.1:${daemon.port}/ws`, headers });
+  async function connect(headers: Record<string, string> = {}, clientId?: string) {
+    const client = new DaemonClient({ url: `ws://127.0.0.1:${daemon.port}/ws`, headers, clientId });
     clients.push(client);
     await client.connect();
     await client.fetchAgents({ subscribe: {} });
@@ -194,6 +197,65 @@ test("a post with a file is refused, since only the agent can take it", async ()
       }),
     ).rejects.toThrow("Add @kumo to send files to the agent.");
     expect(daemon.prompts).toHaveLength(turns);
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("a post stays for the next @kumo when the provider refuses the turn that carried it", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const { alice, bob, agent } = await sharedAgent(daemon);
+    await alice.sendMessage(agent.id, "the deploy key expired");
+
+    await expect(bob.sendMessage(agent.id, "@kumo refuse this")).rejects.toThrow(
+      "provider refused the turn",
+    );
+    await bob.sendMessage(agent.id, "@kumo try again");
+    await bob.waitForFinish(agent.id, 10_000);
+
+    expect(parseAgentMessages(daemon.prompts.at(-1) ?? "")?.map((message) => message.text)).toEqual(
+      ["the deploy key expired", "@kumo try again"],
+    );
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("whoever creates a chat with a prompt is its first writer", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const alice = await daemon.connect(gate("u_alice", "Alice"));
+    const bob = await daemon.connect(gate("u_bob", "Bob"));
+    const agent = await alice.createAgent({
+      provider: "claude",
+      cwd: daemon.root,
+      initialPrompt: "set it up",
+    });
+    await alice.waitForFinish(agent.id, 10_000);
+
+    await bob.sendMessage(agent.id, "hi");
+    await bob.waitForFinish(agent.id, 10_000);
+
+    expect(daemon.prompts.at(-1)).toContain('kind="person-message" author-id="u_bob"');
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("two people on one browser profile stay two people", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const alice = await daemon.connect(gate("u_alice", "Alice"), "clid_shared_profile");
+    const agent = await alice.createAgent({ provider: "claude", cwd: daemon.root });
+    await alice.sendMessage(agent.id, "hello");
+    await alice.waitForFinish(agent.id, 10_000);
+
+    const bob = await daemon.connect(gate("u_bob", "Bob"), "clid_shared_profile");
+    await bob.sendMessage(agent.id, "hi");
+    await bob.waitForFinish(agent.id, 10_000);
+
+    expect(daemon.prompts.at(-1)).toContain('author-id="u_bob" author-name="Bob"');
   } finally {
     await daemon.close();
   }

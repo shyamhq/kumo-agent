@@ -5159,8 +5159,9 @@ export class AgentManager {
       await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
     }
     // A replay rebuilds the timeline from the provider, which has not seen these yet.
+    // Recorded as they were, not as new activity: the agent's activity times stay put.
     for (const post of (await this.registry?.get(agent.id))?.thread?.posts ?? []) {
-      this.recordSubmittedPromptItem(agent, post);
+      this.recordAndDispatchTimelineItem(agent.id, post, agent.provider);
     }
   }
 

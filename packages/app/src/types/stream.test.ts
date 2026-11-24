@@ -268,6 +268,32 @@ describe("user message identity", () => {
     expect(first[0]).toBe(second[0]);
   });
 
+  it("shows who wrote a message as soon as the daemon's row arrives", () => {
+    const local = createUserMessage({
+      clientMessageId: "client-1",
+      text: "hi",
+      timestamp: new Date("2026-11-25T10:00:00Z"),
+    });
+
+    const result = applyStreamEvent({
+      tail: [local],
+      head: [],
+      event: {
+        type: "timeline",
+        provider: "claude",
+        item: {
+          type: "user_message",
+          text: "hi",
+          clientMessageId: "client-1",
+          author: { id: "u_bob", name: "Bob" },
+        },
+      },
+      timestamp: new Date("2026-11-25T10:00:01Z"),
+    });
+
+    expect(result.tail).toEqual([{ ...local, author: { id: "u_bob", name: "Bob" } }]);
+  });
+
   it("takes the author from the daemon's row, which a local echo never has", () => {
     const timestamp = new Date("2026-11-25T10:00:00.000Z");
     const author = { id: "u_bob", name: "Bob" };

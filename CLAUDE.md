@@ -62,7 +62,7 @@ How it runs under Kumo:
   reaches a box port. Once two people have written in a chat it is shared: each message carries its
   author in an envelope, and only `@kumo` asks the agent; the rest are posts, kept on the agent
   record and carried ahead of the next prompt (`agent-messages/thread.ts`). The `kumo` plugin tells
-  every agent about shared chats on open.
+  every stock Claude, Codex and OpenCode agent about shared chats on open.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 

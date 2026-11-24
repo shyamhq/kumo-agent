@@ -88,7 +88,7 @@ import {
   unarchiveAgentState,
   type SendDirectPromptParams,
 } from "./agent/agent-prompt.js";
-import { joinThread, sendFromPerson } from "./agent/agent-messages/thread.js";
+import { joinThread, PostAttachmentsError, sendFromPerson } from "./agent/agent-messages/index.js";
 import type { MessageAuthor } from "@getpaseo/protocol/agent-types";
 import {
   resolveCreateAgentTitles,
@@ -9300,7 +9300,10 @@ export class Session {
       });
     } catch (error) {
       if (this.delivery.requestSignal.aborted) return;
-      this.handleAgentRunError(resolved.agentId, error, "Failed to send agent message");
+      // A refused post is the person's to fix, not the agent's failure.
+      if (!(error instanceof PostAttachmentsError)) {
+        this.handleAgentRunError(resolved.agentId, error, "Failed to send agent message");
+      }
       this.emit({
         type: "send_agent_message_response",
         payload: {

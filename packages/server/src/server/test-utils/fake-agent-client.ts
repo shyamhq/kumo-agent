@@ -480,9 +480,10 @@ class FakeAgentSession implements AgentSession {
       throw new Error("A foreground turn is already active");
     }
 
+    // A provider that refuses the prompt never starts the turn.
+    this.onStartTurn?.(prompt, this.config);
     const turnId = `fake-turn-${this.nextTurnOrdinal++}`;
     this.activeForegroundTurnId = turnId;
-    this.onStartTurn?.(prompt, this.config);
 
     void this.emitTurnEvents(prompt);
 

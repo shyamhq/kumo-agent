@@ -22,6 +22,18 @@ describe("a person's envelope", () => {
     ]);
   });
 
+  it("still splits when a provider replays a prompt's text blocks with nothing between them", () => {
+    const post = envelopeMessage("build fails", { kind: "person-post", author: bob }, "m1");
+    const ask = envelopeMessage("@kumo why?", { kind: "person-message", author: bob }, "m2");
+
+    expect(
+      projectAgentMessages({ type: "user_message", text: `${post.prompt}${ask.prompt}` }),
+    ).toEqual([
+      { type: "user_message", text: "build fails", clientMessageId: "m1", author: bob },
+      { type: "user_message", text: "@kumo why?", clientMessageId: "m2", author: bob },
+    ]);
+  });
+
   it("is no person's without an id", () => {
     const text =
       '<paseo-system version="1" kind="person-message" author-id="" author-name="Bob" message-id="m4">\nhi\n</paseo-system>';

@@ -126,8 +126,10 @@ export function parseAgentMessage(text: string): AgentMessage | null {
 
 /** Accept only a complete sequence of envelopes; prose around them stays user text. */
 export function parseAgentMessages(text: string): AgentMessage[] | null {
-  // Bodies are XML escaped, so a literal closing tag unambiguously ends an entry.
-  const parts = text.split(/(?<=<\/paseo-system>)\n+(?=<paseo-system )/);
+  // Bodies are XML escaped, so a literal closing tag unambiguously ends an entry. A provider may
+  // join a prompt's text blocks with no separator at all when it replays them (Codex's legacy
+  // threads), so none is required.
+  const parts = text.split(/(?<=<\/paseo-system>)\n*(?=<paseo-system )/);
   const messages = parts.map(parseAgentMessage);
   return messages.every((message) => message !== null) ? messages : null;
 }
