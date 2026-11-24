@@ -239,6 +239,16 @@ async function retireManagedSkill(dstDir: string): Promise<number> {
   return removed.length + 1;
 }
 
+/**
+ * Removes a skill the bundle no longer ships from every root, keeping any file the user added or
+ * changed. Unlike removeSkill, this is safe without asking.
+ */
+export async function retireSkill(skillName: string, targets: RemoveSkillTargets): Promise<void> {
+  for (const root of [...targets.installDirs, targets.codexDir]) {
+    await retireManagedSkill(path.join(root, skillName));
+  }
+}
+
 export async function syncSkills(options: SkillSyncOptions): Promise<SkillSyncResult> {
   let changedFiles = 0;
   let processedSkills = 0;

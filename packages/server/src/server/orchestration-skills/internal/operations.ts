@@ -7,6 +7,7 @@ import {
   listFilesRecursive,
   readManagedFilesManifest,
   removeSkill,
+  retireSkill,
   syncSkills,
 } from "./sync.js";
 
@@ -58,6 +59,16 @@ export const LEGACY_SKILL_NAMES = [
   "paseo-orchestrator",
   "paseo-plugin",
 ] as const;
+
+/** Renamed skills, old name to new, so a saved custom selection keeps what it picked. */
+export const SKILL_RENAMES: Readonly<Record<string, string>> = {
+  paseo: "kumo-agent",
+  "paseo-advisor": "kumo-agent-advisor",
+  "paseo-committee": "kumo-agent-committee",
+  "paseo-handoff": "kumo-agent-handoff",
+};
+
+const LEGACY_NAMES: ReadonlySet<string> = new Set(LEGACY_SKILL_NAMES);
 
 type SkillFiles = Map<string, string>;
 type TargetSkills = Map<string, SkillFiles>;
@@ -242,11 +253,24 @@ export async function updateSkills(
   selection: SkillSelection,
 ): Promise<SkillsStatus> {
   const status = await getSkillsStatus(targets, selection);
+  await retireLegacySkills(targets, status);
   return applySkills(targets, selection, nonDestructivePlan(status));
 }
 
 function nonDestructivePlan(status: SkillsStatus): SkillsStatus {
   return { ...status, ops: status.ops.filter((op) => op.kind !== "delete") };
+}
+
+/**
+ * Automatic paths never delete a skill the bundle still ships, but they do retire the names it
+ * used to ship, keeping any file the user added or changed.
+ */
+async function retireLegacySkills(targets: SkillTargets, status: SkillsStatus): Promise<void> {
+  for (const op of status.ops) {
+    if (op.kind === "delete" && LEGACY_NAMES.has(op.name)) {
+      await retireSkill(op.name, { installDirs: targets.installDirs, codexDir: targets.codexDir });
+    }
+  }
 }
 
 export async function autoUpdateInstalledSkills(
@@ -257,6 +281,7 @@ export async function autoUpdateInstalledSkills(
   if (status.state !== "drift") return status;
   // Automatic maintenance may repair selected skills, but removal is an
   // interactive operation because managed directories can contain user files.
+  await retireLegacySkills(targets, status);
   return applySkills(targets, selection, nonDestructivePlan(status));
 }
 

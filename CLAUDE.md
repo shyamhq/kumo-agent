@@ -51,7 +51,9 @@ How it runs under Kumo:
   meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
   the onboarding phone step. Kumo will list a person's other computers as hosts instead. Paseo's
   website, its release workflows (npm, app stores, Docker, Nix, desktop rollout), F-Droid and the
-  store screenshots. The plugin directory is off (`PLUGIN_DIRECTORY_ENABLED`), not removed. Four
+  store screenshots. The plugin directory is off (`PLUGIN_DIRECTORY_ENABLED`), not removed. The bundled
+  skills are `kumo-agent*` (renamed from `paseo*`; `paseo-help` and `paseo-plugin` dropped): port upstream
+  skill changes into the renamed files. Four
   usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/` as fixtures for
   the usage-source tests, out of the built-in list.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
