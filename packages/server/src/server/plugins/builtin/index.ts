@@ -14,6 +14,7 @@ export const builtinPlugins = [
   "hermes-provider",
   "hoplite-provider",
   "kimi-usage-source",
+  "kumo",
   "minimax-usage-source",
   "muse-provider",
   "opencode-go-usage-source",

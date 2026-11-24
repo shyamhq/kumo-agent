@@ -23,8 +23,14 @@ How it runs under Kumo:
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`
   entries' port and token change on every worker start, so an agent started before a worker restart
   holds dead entries.
-- Kumo's instructions for agents are in `~/.kumo/instructions.md`, rewritten each time the worker
-  starts. Agents this daemon starts don't get them yet.
+- The AI keys the owner saved in Kumo's Settings › AI are in `~/.kumo/ai-credentials.json`, which
+  the worker rewrites. The built-in `kumo` plugin (`plugins/kumo/`) reads it every time a stock
+  Claude or Codex agent opens and adds the keys to its env. Env set for that one agent wins. A
+  profile with its own id is left alone, but env on the stock `claude`/`codex` entry loses to Kumo's
+  keys, so give a custom endpoint its own profile. OpenCode gets none: any launch env would start a
+  separate OpenCode server per agent.
+- The worker's `~/.kumo/instructions.md` is written for Kumo's own chat (threads, `@kumo`, a
+  `kumo-view` tool these agents don't have), so this daemon doesn't use it.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 
