@@ -1797,6 +1797,16 @@ export function readInitialDaemonConnectionHint(input?: {
   return { listen: `${location.hostname}:${port}`, useTls };
 }
 
+function hintConnection(hint: InitialDaemonConnectionHint): HostConnection | null {
+  const connection = connectionFromListen(hint.listen);
+  if (!connection) {
+    return null;
+  }
+  return connection.type === "directTcp"
+    ? { ...connection, useTls: hint.useTls ?? connection.useTls ?? false }
+    : connection;
+}
+
 function readConfiguredLocalDaemonOverride(): string | null {
   const value = process.env.EXPO_PUBLIC_LOCAL_DAEMON?.trim();
   return value && value.length > 0 ? value : null;
@@ -1950,9 +1960,12 @@ export class HostRuntimeStore {
       : readInitialDaemonConnectionHint();
     if (initialHint) {
       const bootstrapped = await this.bootstrapInitialConnectionHint(initialHint);
-      if (bootstrapped) {
-        return;
+      if (!bootstrapped) {
+        // The daemon that served this page is the one to reach: keep trying it, never this
+        // machine's own localhost, which would be some other daemon.
+        this.bootstrapConfiguredOverride(initialHint.listen, hintConnection(initialHint));
       }
+      return;
     }
 
     if (override) {
@@ -2036,8 +2049,10 @@ export class HostRuntimeStore {
     }
   }
 
-  private bootstrapConfiguredOverride(endpoint: string): void {
-    const connection = connectionFromListen(endpoint);
+  private bootstrapConfiguredOverride(
+    endpoint: string,
+    connection: HostConnection | null = connectionFromListen(endpoint),
+  ): void {
     if (!connection) {
       return;
     }
@@ -2085,14 +2100,10 @@ export class HostRuntimeStore {
   private async bootstrapInitialConnectionHint(
     hint: InitialDaemonConnectionHint,
   ): Promise<boolean> {
-    const connection = connectionFromListen(hint.listen);
-    if (!connection) {
+    const connectionWithHint = hintConnection(hint);
+    if (!connectionWithHint) {
       return false;
     }
-    const connectionWithHint: HostConnection =
-      connection.type === "directTcp"
-        ? { ...connection, useTls: hint.useTls ?? connection.useTls ?? false }
-        : connection;
     if (registryHasConnection(this.hosts, connectionWithHint)) {
       return true;
     }

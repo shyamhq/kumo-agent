@@ -5949,6 +5949,43 @@ describe("HostRuntimeStore initial connection hint bootstrap", () => {
     store.syncHosts([]);
   });
 
+  // Behind a slow first hop (Kumo's gate) the first probe can time out. The daemon that served
+  // the page is still the one to reach; this machine's own localhost would be some other daemon.
+  it("keeps retrying the page's daemon, never localhost, when the hint's first probe fails", async () => {
+    const seenProbes: { endpoint: string; useTls?: boolean }[] = [];
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async ({ connection }) => {
+          if (connection.type === "directTcp") {
+            seenProbes.push({ endpoint: connection.endpoint, useTls: connection.useTls });
+          }
+          if (seenProbes.length === 1) {
+            throw new Error("first hop too slow");
+          }
+          return {
+            client: makeConnectedProbeClient(5) as unknown as DaemonClient,
+            serverId: "srv_hint",
+            hostname: "hint host",
+          };
+        },
+        getClientId: async () => "cid_test_runtime",
+        readInitialConnectionHint: () => ({ listen: "daemon-origin:443", useTls: true }),
+      },
+      storage: createMemoryHostRuntimeStorage(),
+    });
+
+    const hostAdded = onceHostListMatches(store, () => store.getHosts().length > 0);
+    void store.boot();
+    await hostAdded;
+
+    expect(seenProbes).toEqual([
+      { endpoint: "daemon-origin:443", useTls: true },
+      { endpoint: "daemon-origin:443", useTls: true },
+    ]);
+    store.syncHosts([]);
+  });
+
   it("does not infer window.location.host when no explicit hint is present", async () => {
     const seenProbes: { endpoint: string; useTls?: boolean }[] = [];
     const firstProbe = createDeferred<void>();
