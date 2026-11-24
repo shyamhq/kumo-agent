@@ -1,6 +1,10 @@
 import { readInitialDaemonConnectionHint } from "@/runtime/host-runtime";
 import { asyncStorageOnboardingCompletion } from "./completion-storage";
-import { createOnboardingModel, type OnboardingModel, type OnboardingCompletionStorage } from "./model";
+import {
+  createOnboardingModel,
+  type OnboardingModel,
+  type OnboardingCompletionStorage,
+} from "./model";
 
 let instance: OnboardingModel | null = null;
 

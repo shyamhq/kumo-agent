@@ -1969,7 +1969,7 @@ export class HostRuntimeStore {
     }
 
     if (override) {
-      this.bootstrapConfiguredOverride(override);
+      this.bootstrapConfiguredOverride(override, connectionFromListen(override));
     } else {
       await this.bootstrapDefaultLocalhost();
     }
@@ -2049,10 +2049,7 @@ export class HostRuntimeStore {
     }
   }
 
-  private bootstrapConfiguredOverride(
-    endpoint: string,
-    connection: HostConnection | null = connectionFromListen(endpoint),
-  ): void {
+  private bootstrapConfiguredOverride(endpoint: string, connection: HostConnection | null): void {
     if (!connection) {
       return;
     }

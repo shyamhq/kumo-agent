@@ -272,7 +272,7 @@ function sendIndexHtml(
  * may frame it: every other page in the zone is the same site and could frame a signed-in shell.
  */
 export function frameAncestors(publicUrl: string | undefined): string {
-  const host = publicUrl ? /^https:\/\/\d+--([^/]+)\/?$/.exec(publicUrl)?.[1] : undefined;
+  const host = /^https:\/\/\d+--([^/]+)\/?$/.exec(publicUrl ?? "")?.[1];
   return host ? `frame-ancestors https://os--${host}` : "frame-ancestors 'self'";
 }
 
