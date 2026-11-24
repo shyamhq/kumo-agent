@@ -5160,15 +5160,23 @@ export class AgentManager {
     }
     // A post the replay already holds was delivered (the daemon stopped before it could drop it):
     // drop it now. The rest are recorded as they were, not as new activity.
+    const replayed = new Set(
+      this.timelineStore
+        .getItems(agent.id)
+        .flatMap((item) => (item.type === "user_message" ? [item.clientMessageId] : [])),
+    );
     const posts = (await this.registry?.get(agent.id))?.thread?.posts ?? [];
-    const isReplayed = (post: StoredPost) =>
-      this.timelineStore.getSubmittedUserMessage(agent.id, post.clientMessageId) !== null;
-    const unseen = posts.filter((post) => !isReplayed(post));
+    const unseen = posts.filter((post) => !replayed.has(post.clientMessageId));
     if (unseen.length < posts.length) {
-      await this.registry?.updateThread(agent.id, (thread) => ({
-        ...thread,
-        posts: thread.posts.filter((post) => !isReplayed(post)),
-      }));
+      // Only tidies the record, so a failed write never stops the agent from loading.
+      await this.registry
+        ?.updateThread(agent.id, (thread) => ({
+          ...thread,
+          posts: thread.posts.filter((post) => !replayed.has(post.clientMessageId)),
+        }))
+        .catch((error: unknown) => {
+          this.logger.warn({ err: error, agentId: agent.id }, "Could not drop delivered posts");
+        });
     }
     for (const post of unseen) {
       this.recordAndDispatchTimelineItem(agent.id, post, agent.provider);
