@@ -2224,8 +2224,6 @@ function ComposerContentImpl({
       hasAgent ? (
         <View style={styles.contextWindowMeterSlot}>
           <ContextWindowMeter
-            serverId={serverId}
-            agentId={agentId}
             maxTokens={agentState.contextWindowMaxTokens}
             usedTokens={agentState.contextWindowUsedTokens}
             totalCostUsd={agentState.totalCostUsd}
@@ -2236,8 +2234,6 @@ function ComposerContentImpl({
       ) : null,
     [
       hasAgent,
-      serverId,
-      agentId,
       agentState.contextWindowMaxTokens,
       agentState.contextWindowUsedTokens,
       agentState.totalCostUsd,

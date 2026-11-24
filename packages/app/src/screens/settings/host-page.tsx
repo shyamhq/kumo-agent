@@ -51,7 +51,6 @@ import {
 } from "@/runtime/host-runtime";
 import { ProviderList } from "@/provider-settings";
 import { openProviderSettings } from "@/navigation/settings-navigation";
-import { HostUsageSection } from "@/usage";
 import { HostAppearanceSection } from "@/screens/settings/host-appearance-section";
 import { SettingsSection } from "@/components/settings/headings/settings-section";
 import { useSessionStore } from "@/stores/session-store";
@@ -347,20 +346,6 @@ export function HostProvidersPage({ serverId }: { serverId: string }) {
   return (
     <View>
       <ProviderList serverId={serverId} onOpenProvider={openProvider} />
-    </View>
-  );
-}
-
-export function HostUsagePage({ serverId }: { serverId: string }) {
-  const host = useHostProfile(serverId);
-
-  if (!host) {
-    return <HostNotFound />;
-  }
-
-  return (
-    <View>
-      <HostUsageSection serverId={serverId} />
     </View>
   );
 }

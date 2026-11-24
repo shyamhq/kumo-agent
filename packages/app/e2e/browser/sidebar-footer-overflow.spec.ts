@@ -7,61 +7,32 @@ import {
   expectFooterMenusInsideViewport,
   expectFooterNeverClipped,
   expectFooterOverflowActions,
-  footerOverflowMenu,
   openFooterOverflow,
   seedDockedSidebarWidth,
   watchFooterClipping,
 } from "../support/helpers/sidebar-footer-overflow";
 import { addOfflineHostsAndReload } from "../support/helpers/hosts";
-import { openCompactSidebar } from "../support/helpers/usage-sidebar-item";
+import { openCompactSidebar } from "../support/helpers/sidebar";
 
 const TOUCH_CONTROL = 44;
 const MIN_SIDEBAR_WIDTH = 200;
+// Four 44pt buttons and the row's padding need 192pt, so the minimum sidebar width holds them all.
 const ALL_INLINE = [
   "sidebar-add-project",
-  "sidebar-usage-icon",
   "sidebar-hosts-trigger",
   "sidebar-help",
-  "sidebar-settings",
-];
-// Five 44pt buttons and the row's padding need 236pt; 200pt holds three and the caret.
-const NARROW_TOUCH_LINE = [
-  "sidebar-add-project",
-  "sidebar-hosts-trigger",
-  "sidebar-footer-overflow",
   "sidebar-settings",
 ];
 
 test.describe("Sidebar footer on a touch screen", () => {
   test.use({ viewport: { width: 1280, height: 800 }, hasTouch: true });
 
-  test("a narrow docked sidebar moves the actions it can't fit behind a caret", async ({
-    page,
-  }) => {
+  test("a minimum-width docked sidebar keeps all four actions inline", async ({ page }) => {
     await seedDockedSidebarWidth(page, MIN_SIDEBAR_WIDTH);
     await watchFooterClipping(page);
     await gotoAppShell(page);
-    await expectFooterLine(page, { testIDs: NARROW_TOUCH_LINE, controlSize: TOUCH_CONTROL });
+    await expectFooterLine(page, { testIDs: ALL_INLINE, controlSize: TOUCH_CONTROL });
     await expectFooterNeverClipped(page);
-
-    await test.step("Help opens as a page of the overflow menu", async () => {
-      await openFooterOverflow(page);
-      await expectFooterOverflowActions(page, ["Usage", "Help and support"]);
-      await chooseFooterOverflowAction(page, "Help and support");
-      await expect(page.getByRole("menuitem", { name: "What's new" })).toBeVisible();
-      await expect(page.getByTestId("sidebar-help-menu")).toHaveCount(0);
-      await page.keyboard.press("Escape");
-      await expect(footerOverflowMenu(page)).toBeHidden();
-    });
-
-    await test.step("Usage opens from the overflow menu", async () => {
-      await openFooterOverflow(page);
-      await chooseFooterOverflowAction(page, "Usage");
-      await expect(footerOverflowMenu(page)).toBeHidden();
-      await expect(page.getByTestId("usage-modal")).toBeVisible();
-      await page.keyboard.press("Escape");
-      await expect(page.getByTestId("usage-modal")).toBeHidden();
-    });
 
     await test.step("Add project and Settings shortcuts still work", async () => {
       await page.keyboard.press("Control+o");
@@ -73,7 +44,7 @@ test.describe("Sidebar footer on a touch screen", () => {
     });
   });
 
-  test("the default sidebar width keeps all five actions inline", async ({ page }) => {
+  test("the default sidebar width keeps all four actions inline", async ({ page }) => {
     await gotoAppShell(page);
     await expectFooterLine(page, { testIDs: ALL_INLINE, controlSize: TOUCH_CONTROL });
   });
@@ -82,15 +53,12 @@ test.describe("Sidebar footer on a touch screen", () => {
 test.describe("Sidebar footer in a compact overlay narrower than the footer", () => {
   test.use({ viewport: { width: 220, height: 800 }, hasTouch: true });
 
-  test("the overflow menu reaches the hidden actions", async ({ page }) => {
+  test("the four actions still fit inline", async ({ page }) => {
     await watchFooterClipping(page);
     await gotoAppShell(page);
     await openCompactSidebar(page);
-    await expectFooterLine(page, { testIDs: NARROW_TOUCH_LINE, controlSize: TOUCH_CONTROL });
+    await expectFooterLine(page, { testIDs: ALL_INLINE, controlSize: TOUCH_CONTROL });
     await expectFooterNeverClipped(page);
-    await openFooterOverflow(page);
-    await expectFooterOverflowActions(page, ["Usage", "Help and support"]);
-    await expectFooterMenusInsideViewport(page);
   });
 });
 
@@ -113,7 +81,7 @@ test.describe("Sidebar footer on a short, narrow phone", () => {
       controlSize: TOUCH_CONTROL,
     });
     await openFooterOverflow(page);
-    await expectFooterOverflowActions(page, ["Usage", "Hosts", "Help and support"]);
+    await expectFooterOverflowActions(page, ["Hosts", "Help and support"]);
     await expectFooterMenusInsideViewport(page);
     await chooseFooterOverflowAction(page, "Hosts");
     await expectFooterMenusInsideViewport(page);

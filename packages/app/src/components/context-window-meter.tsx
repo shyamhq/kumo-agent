@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useIsCompactFormFactor } from "@/constants/layout";
 import { isNative } from "@/constants/platform";
 import type { AgentMetric } from "@getpaseo/protocol/agent-types";
-import { useHostReportsUsage } from "@/usage";
 import type { Theme } from "@/styles/theme";
 import { TOOLBAR_DISC_SIZE, type ToolbarRing } from "@/components/ui/control-geometry";
 import { ContextWindowDetails } from "./context-window-details";
@@ -22,8 +21,6 @@ import { DetailsSheet } from "./details-sheet";
 import { formatContextPercentage } from "./context-window-meter.utils";
 
 interface ContextWindowMeterProps {
-  serverId: string;
-  agentId: string;
   maxTokens: number | null;
   usedTokens: number | null;
   totalCostUsd?: number | null;
@@ -36,7 +33,7 @@ interface ContextWindowMeterProps {
 
 const EMPTY_METRICS: AgentMetric[] = [];
 const SVG_SIZE = 14;
-const USAGE_POPOVER_WIDTH = 300;
+const WIDE_POPOVER_WIDTH = 300;
 const COMPACT_SVG_SIZE = 12;
 const COMPACT_RADIUS = 5;
 const STROKE_WIDTH = 2;
@@ -155,8 +152,6 @@ const ContextWindowRing = withUnistyles(function ContextWindowRing({
 });
 
 export function ContextWindowMeter({
-  serverId,
-  agentId,
   maxTokens,
   usedTokens,
   totalCostUsd,
@@ -166,12 +161,10 @@ export function ContextWindowMeter({
 }: ContextWindowMeterProps) {
   const { t, i18n } = useTranslation();
   const { width } = useWindowDimensions();
-  // Usage cards and session metrics need a wider popover; without them it keeps the plain tooltip
-  // shape.
-  const showsUsage = useHostReportsUsage(serverId);
-  const isWide = showsUsage || sessionMetrics.length > 0;
-  const popoverWidth = Math.min(USAGE_POPOVER_WIDTH, width - 24);
-  // Compact screens open the details in a sheet, which can hold a pressable Refresh.
+  // Session metrics need a wider popover; without them it keeps the plain tooltip shape.
+  const isWide = sessionMetrics.length > 0;
+  const popoverWidth = Math.min(WIDE_POPOVER_WIDTH, width - 24);
+  // Compact screens open the details in a sheet.
   const isCompact = useIsCompactFormFactor();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const openSheet = useCallback(() => setIsSheetOpen(true), []);
@@ -235,25 +228,19 @@ export function ContextWindowMeter({
         </Pressable>
         <DetailsSheet open={isSheetOpen} onClose={closeSheet} title={t("contextWindow.title")}>
           <ContextWindowDetails
-            serverId={serverId}
-            agentId={agentId}
             context={context}
             sessionCost={formattedSessionCost}
             sessionMetrics={sessionMetrics}
             showTitle={false}
-            refreshable
           />
         </DetailsSheet>
       </>
     );
   }
 
-  const popoverStyle = isWide
-    ? [styles.usagePopover, { width: popoverWidth }]
-    : styles.plainPopover;
+  const popoverStyle = isWide ? [styles.widePopover, { width: popoverWidth }] : styles.plainPopover;
 
-  // Native wide screens have no hover, so the details open in a tooltip on press. The tooltip
-  // takes no presses, so its usage cards have no Refresh.
+  // Native wide screens have no hover, so the details open in a tooltip on press.
   if (isNative) {
     return (
       <Tooltip delayDuration={0} enabledOnDesktop enabledOnMobile>
@@ -277,13 +264,10 @@ export function ContextWindowMeter({
           testID="context-window-meter-tooltip"
         >
           <ContextWindowDetails
-            serverId={serverId}
-            agentId={agentId}
             context={context}
             sessionCost={formattedSessionCost}
             sessionMetrics={sessionMetrics}
             showTitle
-            refreshable={false}
           />
         </TooltipContent>
       </Tooltip>
@@ -312,13 +296,10 @@ export function ContextWindowMeter({
         style={popoverStyle}
       >
         <ContextWindowDetails
-          serverId={serverId}
-          agentId={agentId}
           context={context}
           sessionCost={formattedSessionCost}
           sessionMetrics={sessionMetrics}
           showTitle
-          refreshable
         />
       </HoverCardContent>
     </HoverCard>
@@ -349,7 +330,7 @@ const styles = StyleSheet.create((theme) => ({
     fontSize: theme.fontSize.base,
     fontWeight: theme.fontWeight.normal,
   },
-  // Plain details use a small inset; account usage cards have their own content density.
+  // Plain details use a small inset; session metrics get room of their own.
   plainPopover: { paddingVertical: theme.spacing[1], paddingHorizontal: theme.spacing[2] },
-  usagePopover: { padding: theme.spacing[3], gap: theme.spacing[3] },
+  widePopover: { padding: theme.spacing[3], gap: theme.spacing[3] },
 }));

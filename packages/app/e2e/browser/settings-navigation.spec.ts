@@ -7,7 +7,7 @@ import {
   buildSettingsRoute,
   buildSettingsSectionRoute,
 } from "@/utils/host-routes";
-import { openCompactSidebar } from "../support/helpers/usage-sidebar-item";
+import { openCompactSidebar } from "../support/helpers/sidebar";
 import { gotoAppShell, openSettings } from "../support/helpers/app";
 import { getE2EDaemonPort } from "../support/helpers/daemon-port";
 import {

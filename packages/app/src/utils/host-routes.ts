@@ -521,7 +521,6 @@ export const HOST_SECTION_SLUGS = [
   "voice",
   "workspaces",
   "providers",
-  "usage",
   "terminals",
   "plugins",
   "host",
@@ -532,6 +531,8 @@ export type HostSectionSlug = (typeof HOST_SECTION_SLUGS)[number];
 const LEGACY_HOST_SECTION_SLUGS: Record<string, HostSectionSlug> = {
   orchestration: "agents",
   daemon: "host",
+  // Usage was removed for Kumo; an old link opens the host overview.
+  usage: "host",
 };
 
 export function isHostSectionSlug(value: string): value is HostSectionSlug {

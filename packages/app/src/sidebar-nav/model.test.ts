@@ -114,13 +114,15 @@ describe("resolveSidebarNavItems", () => {
   });
 });
 
-describe("resolveSidebarNavItems for the Usage item", () => {
-  it("shows the Usage item by default and honors an explicit off choice", () => {
-    const resolve = (preferences: SidebarNavPreference[]) =>
-      summarize(resolveSidebarNavItems({ section: "footer", pluginGroups: [], preferences }));
-
-    expect(resolve([])).toEqual([{ key: "usage", visible: true }]);
-    expect(resolve([{ key: "usage", visible: false }])).toEqual([{ key: "usage", visible: false }]);
+describe("resolveSidebarNavItems for the retired Usage item", () => {
+  it("drops a stored Usage preference", () => {
+    expect(
+      resolveSidebarNavItems({
+        section: "footer",
+        pluginGroups: [],
+        preferences: [{ key: "usage", visible: true }],
+      }),
+    ).toEqual([]);
   });
 });
 
@@ -289,17 +291,14 @@ describe("footer section", () => {
   const sync = group("sync", "status");
   const syncKey = pluginSidebarNavKey(sync);
 
-  it("resolves the Usage item first, then plugin rows", () => {
+  it("resolves only plugin rows", () => {
     const items = resolveSidebarNavItems({
       section: "footer",
       pluginGroups: [sync],
       preferences: [],
     });
 
-    expect(summarize(items)).toEqual([
-      { key: "usage", visible: true },
-      { key: syncKey, visible: true },
-    ]);
+    expect(summarize(items)).toEqual([{ key: syncKey, visible: true }]);
   });
 
   it("ignores header built-ins stored in footer preferences", () => {
@@ -309,7 +308,7 @@ describe("footer section", () => {
       preferences: [{ key: "history", visible: false }],
     });
 
-    expect(summarize(items)).toEqual([{ key: "usage", visible: true }]);
+    expect(summarize(items)).toEqual([]);
   });
 
   it("ignores the footer icon buttons, which are fixed and not items", () => {
@@ -326,10 +325,7 @@ describe("footer section", () => {
       ],
     });
 
-    expect(summarize(items)).toEqual([
-      { key: syncKey, visible: true },
-      { key: "usage", visible: false },
-    ]);
+    expect(summarize(items)).toEqual([{ key: syncKey, visible: true }]);
   });
 
   it("moves and shows footer rows while keeping an unavailable plugin's entry", () => {
@@ -337,26 +333,26 @@ describe("footer section", () => {
     const previous: SidebarNavPreference[] = [notesPreference];
     const items = resolveSidebarNavItems({
       section: "footer",
-      pluginGroups: [sync],
+      pluginGroups: [sync, kanban],
       preferences: previous,
     });
 
-    const moved = moveSidebarNavItem({ items, key: syncKey, direction: "up", previous });
-    const shown = setSidebarNavItemVisible({
+    const moved = moveSidebarNavItem({ items, key: kanbanKey, direction: "up", previous });
+    const hidden = setSidebarNavItemVisible({
       items: resolveSidebarNavItems({
         section: "footer",
-        pluginGroups: [sync],
+        pluginGroups: [sync, kanban],
         preferences: moved,
       }),
-      key: "usage",
-      visible: true,
+      key: syncKey,
+      visible: false,
       previous: moved,
     });
 
-    expect(shown).toEqual([
+    expect(hidden).toEqual([
       notesPreference,
-      { key: syncKey, visible: true },
-      { key: "usage", visible: true },
+      { key: kanbanKey, visible: true },
+      { key: syncKey, visible: false },
     ]);
   });
 });

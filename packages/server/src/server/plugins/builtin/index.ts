@@ -2,25 +2,16 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// Kumo has no Usage view, so the plan-usage sources (plugins/*-usage-source) stay unloaded.
 export const builtinPlugins = [
   "antigravity-provider",
-  "claude-usage-source",
-  "codex-usage-source",
-  "copilot-usage-source",
-  "cursor-usage-source",
   "fx-provider",
   "goose-provider",
-  "grok-usage-source",
   "hermes-provider",
   "hoplite-provider",
-  "kimi-usage-source",
   "kumo",
-  "minimax-usage-source",
   "muse-provider",
-  "opencode-go-usage-source",
-  "openrouter-host-usage-source",
   "worktree-include",
-  "zai-usage-source",
 ] as const;
 
 export function resolveBuiltinPluginsRoot(moduleUrl: string | URL = import.meta.url): string {

@@ -1,13 +1,6 @@
 import { SidebarViewSlot } from "@/plugins/sidebar-view";
 import { useAddHost } from "@/hosts/add-host";
-import {
-  CircleGauge,
-  FolderPlus,
-  GitBranch,
-  Server,
-  Settings,
-  type LucideIcon,
-} from "lucide-react-native";
+import { FolderPlus, GitBranch, Server, Settings, type LucideIcon } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import {
   memo,
@@ -93,7 +86,7 @@ import type { SidebarProjectIconTarget } from "@/utils/sidebar-project-row-model
 import { type SidebarGroupMode, useSidebarViewStore } from "@/stores/sidebar-view-store";
 import { useHosts } from "@/runtime/host-runtime";
 import { PluginSidebarItem } from "@/plugins/sidebar-items";
-import { builtinSidebarNavLabelKey } from "@/sidebar-nav/model";
+import type { PluginSidebarNavItem } from "@/sidebar-nav/model";
 import { useSidebarNavItems } from "@/sidebar-nav/use-sidebar-nav-items";
 import { usePanelStore } from "@/stores/panel-store";
 import { useOwnsWindowChromeCorner, WindowChromeSafeArea } from "@/utils/desktop-window";
@@ -103,7 +96,6 @@ import { MobilePanelOverlay } from "@/mobile-panels/presentation";
 import { buildSettingsHostSectionRoute } from "@/utils/host-routes";
 import { useActiveWorkspaceSelection } from "@/stores/navigation-active-workspace-store";
 import { openSettingsFromSidebar } from "@/navigation/settings-navigation";
-import { UsageSidebarItem, UsageSidebarRoot, useUsageSummary, useOpenSidebarUsage } from "@/usage";
 import { SidebarAgentListSkeleton } from "./sidebar-agent-list-skeleton";
 import { SidebarCalloutSlot } from "./sidebar-callout-slot";
 import { SidebarWorkspaceList } from "./sidebar-workspace-list";
@@ -145,7 +137,6 @@ interface SidebarLabels {
   hosts: string;
   settings: string;
   searchHosts: string;
-  usage: string;
   closeSidebar: string;
 }
 
@@ -238,7 +229,6 @@ export const LeftSidebar = memo(function LeftSidebar({
       hosts: t("sidebar.actions.hosts"),
       settings: t("sidebar.actions.settings"),
       searchHosts: t("sidebar.host.searchPlaceholder"),
-      usage: t(builtinSidebarNavLabelKey("usage")),
       closeSidebar: t("sidebar.actions.closeSidebar"),
     }),
     [t],
@@ -438,7 +428,6 @@ function SidebarFooter({
     hosts: string;
     settings: string;
     searchHosts: string;
-    usage: string;
   };
   handleAddHost: () => void;
   handleOpenHostSettings: (serverId: string) => void;
@@ -463,101 +452,78 @@ function SidebarFooter({
   );
   const isInline = (action: SidebarFooterAction) => inline.includes(action);
 
-  // One line of icons: Add project, Usage, Hosts, then Help and Settings at the end. Actions that
+  // One line of icons: Add project, Hosts, then Help and Settings at the end. Actions that
   // don't fit move behind a caret before Settings.
   return (
-    <UsageSidebarRoot>
-      <View style={styles.footerContainer} testID="sidebar-footer">
-        <SidebarFooterRows onBeforeNavigate={onBeforeNavigate} />
-        <View
-          style={styles.sidebarFooter}
-          onLayout={handleRowLayout}
-          testID="sidebar-footer-bottom-line"
-        >
-          {isInline("add-project") ? (
-            <FooterIconButton
-              onPress={handleOpenProject}
-              testID="sidebar-add-project"
-              label={labels.addProject}
-              icon={FolderPlus}
-              shortcutKeys={newAgentKeys}
-            />
-          ) : null}
-          {isInline("usage") ? <SidebarUsageIcon label={labels.usage} /> : null}
-          {isInline("hosts") ? (
-            <SidebarHostPicker
-              label={labels.hosts}
-              onAddHost={handleAddHost}
-              onOpenHostSettings={handleOpenHostSettings}
-            />
-          ) : null}
-          <View style={styles.footerSpacer} />
-          {isInline("help") ? <SidebarHelpMenu /> : null}
-          {overflow.length > 0 ? (
-            <SidebarFooterOverflowMenu
-              actions={overflow}
-              labels={labels}
-              onAddProject={handleOpenProject}
-              onSettings={handleSettings}
-              onAddHost={handleAddHost}
-              onOpenHostSettings={handleOpenHostSettings}
-            />
-          ) : null}
-          {isInline("settings") ? (
-            <FooterIconButton
-              onPress={handleSettings}
-              testID="sidebar-settings"
-              label={labels.settings}
-              icon={Settings}
-              shortcutKeys={settingsKeys}
-            />
-          ) : null}
-        </View>
+    <View style={styles.footerContainer} testID="sidebar-footer">
+      <SidebarFooterRows onBeforeNavigate={onBeforeNavigate} />
+      <View
+        style={styles.sidebarFooter}
+        onLayout={handleRowLayout}
+        testID="sidebar-footer-bottom-line"
+      >
+        {isInline("add-project") ? (
+          <FooterIconButton
+            onPress={handleOpenProject}
+            testID="sidebar-add-project"
+            label={labels.addProject}
+            icon={FolderPlus}
+            shortcutKeys={newAgentKeys}
+          />
+        ) : null}
+        {isInline("hosts") ? (
+          <SidebarHostPicker
+            label={labels.hosts}
+            onAddHost={handleAddHost}
+            onOpenHostSettings={handleOpenHostSettings}
+          />
+        ) : null}
+        <View style={styles.footerSpacer} />
+        {isInline("help") ? <SidebarHelpMenu /> : null}
+        {overflow.length > 0 ? (
+          <SidebarFooterOverflowMenu
+            actions={overflow}
+            labels={labels}
+            onAddProject={handleOpenProject}
+            onSettings={handleSettings}
+            onAddHost={handleAddHost}
+            onOpenHostSettings={handleOpenHostSettings}
+          />
+        ) : null}
+        {isInline("settings") ? (
+          <FooterIconButton
+            onPress={handleSettings}
+            testID="sidebar-settings"
+            label={labels.settings}
+            icon={Settings}
+            shortcutKeys={settingsKeys}
+          />
+        ) : null}
       </View>
-    </UsageSidebarRoot>
+    </View>
   );
 }
 
-function SidebarUsageIcon({ label }: { label: string }) {
-  const openUsage = useOpenSidebarUsage();
-  return (
-    <FooterIconButton
-      onPress={openUsage}
-      testID="sidebar-usage-icon"
-      label={label}
-      icon={CircleGauge}
-    />
-  );
-}
-
-/**
- * The footer rows in the user's `sidebarFooterItems` order: the Usage item and plugin rows. The
- * Usage item is left out while it has no summary to show.
- */
+/** The footer's plugin rows, in the user's `sidebarFooterItems` order. */
 function SidebarFooterRows({ onBeforeNavigate }: { onBeforeNavigate?: () => void }) {
   const { items } = useSidebarNavItems("footer");
-  const usageSummary = useUsageSummary();
   const rowsRef = useRef<View | null>(null);
   const visibleItems = items.filter(
-    (item) => item.visible && (item.kind === "plugin" || usageSummary.length > 0),
+    (item): item is PluginSidebarNavItem => item.kind === "plugin" && item.visible,
   );
   if (visibleItems.length === 0) return null;
   return (
     <>
       <View ref={rowsRef} collapsable={false} style={styles.footerRows}>
-        {visibleItems.map((item) =>
-          item.kind === "plugin" ? (
-            <PluginSidebarItem
-              key={item.key}
-              group={item.group}
-              section="footer"
-              fallbackAnchorRef={rowsRef}
-              onBeforeNavigate={onBeforeNavigate}
-            />
-          ) : (
-            <UsageSidebarItem key={item.key} sources={usageSummary} />
-          ),
-        )}
+        {visibleItems.map((item) => (
+          <PluginSidebarItem
+            key={item.key}
+            group={item.group}
+            section="footer"
+            fallbackAnchorRef={rowsRef}
+            onBeforeNavigate={onBeforeNavigate}
+          />
+        ))}
       </View>
       <SidebarSeparator testID="sidebar-footer-separator" />
     </>
@@ -1062,7 +1028,7 @@ const styles = StyleSheet.create((theme) => ({
   footerSpacer: {
     flex: 1,
   },
-  // Usage and plugin rows sit above the footer's icon line, spaced like the header nav rows.
+  // Plugin rows sit above the footer's icon line, spaced like the header nav rows.
   footerRows: {
     paddingHorizontal: theme.spacing[2],
     paddingVertical: theme.spacing[1.5],

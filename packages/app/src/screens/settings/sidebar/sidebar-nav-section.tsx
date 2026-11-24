@@ -8,7 +8,6 @@ import {
   ArrowUp,
   Blocks,
   CalendarClock,
-  Gauge,
   History,
   Plus,
   Search,
@@ -45,7 +44,6 @@ const BUILTIN_ICONS: Record<BuiltinSidebarItemId, LucideIcon> = {
   history: History,
   search: Search,
   schedules: CalendarClock,
-  usage: Gauge,
 };
 
 /** Plugin items register no icon, so they share this one; a legacy `addSidebarItem` keeps its own. */
@@ -154,9 +152,11 @@ const SECTION_COPY = {
   },
 } as const satisfies Record<SidebarSection, { title: string; info: string }>;
 
-function SidebarItemsCard({ section }: { section: SidebarSection }): ReactElement {
+function SidebarItemsCard({ section }: { section: SidebarSection }): ReactElement | null {
   const { t } = useTranslation();
   const { items, setVisible, move } = useSidebarNavItems(section);
+  // The footer lists only plugin rows, so with no plugin rows there is nothing to arrange.
+  if (items.length === 0) return null;
 
   return (
     <SettingsSection

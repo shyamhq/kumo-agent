@@ -164,7 +164,6 @@ async function expectVerticalOrder<Key extends string>(
 
 /** Persisted footer row key -> the testID the app shell renders that row with. */
 function shellFooterTestID(key: string): string {
-  if (key === "usage") return "sidebar-usage";
   const [, pluginId, itemId] = key.split(":");
   return `plugin-sidebar-footer-${pluginId}-${itemId}`;
 }
@@ -231,7 +230,6 @@ export async function expectFooterItemHidden(page: Page, key: string): Promise<v
 
 const FOOTER_ICON_TEST_IDS = [
   "sidebar-add-project",
-  "sidebar-usage-icon",
   "sidebar-hosts-trigger",
   "sidebar-help",
   "sidebar-settings",
@@ -241,8 +239,8 @@ const FOOTER_ICON_TEST_IDS = [
 const FOOTER_GEOMETRY_TOLERANCE = 0.01;
 
 /**
- * One line of same-size icons: Add project, Usage and Hosts together on the left, Help and
- * Settings together at the end.
+ * One line of same-size icons: Add project and Hosts together on the left, Help and Settings
+ * together at the end.
  */
 export async function expectFooterIconRow(page: Page): Promise<void> {
   // Read one browser-frame snapshot: the compact drawer can translate between separate RPCs.
