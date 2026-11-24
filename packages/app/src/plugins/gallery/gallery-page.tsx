@@ -15,7 +15,7 @@ import { InstallPluginSheet, type InstallTarget } from "./install-sheet";
 import { InstalledTab } from "./installed-tab";
 import { installedByListing } from "./listing";
 import { PluginsOffAlert } from "./plugins-off-alert";
-import { useLivePluginList, usePluginDirectory } from "./queries";
+import { PLUGIN_DIRECTORY_ENABLED, useLivePluginList, usePluginDirectory } from "./queries";
 import { PluginRowsSkeleton } from "./skeletons";
 import { pluginErrorText } from "./error-text";
 
@@ -38,7 +38,7 @@ export function PluginGalleryPage({ serverId }: { serverId: string }) {
   const installed = useMemo(() => plugins.data ?? [], [plugins.data]);
   // The opening tab is chosen once, so installing the first plugin does not move the user off Browse.
   if (chosenTab === null && plugins.data)
-    setChosenTab(plugins.data.length === 0 ? "browse" : "installed");
+    setChosenTab(plugins.data.length === 0 && PLUGIN_DIRECTORY_ENABLED ? "browse" : "installed");
   const tab: GalleryTab = chosenTab ?? "installed";
   const byListing = useMemo(() => installedByListing(installed), [installed]);
   const listings = useMemo(
@@ -104,7 +104,7 @@ export function PluginGalleryPage({ serverId }: { serverId: string }) {
           plugins={installed}
           listings={listings}
           query={query}
-          onBrowse={browse}
+          onBrowse={PLUGIN_DIRECTORY_ENABLED ? browse : undefined}
         />
       ) : (
         <BrowseTab serverId={serverId} installed={byListing} query={query} onInstall={install} />
@@ -114,12 +114,14 @@ export function PluginGalleryPage({ serverId }: { serverId: string }) {
   return (
     <View>
       <View style={styles.toolbar}>
-        <SegmentedControl
-          options={tabs}
-          value={tab}
-          onValueChange={setChosenTab}
-          testID="plugin-tabs"
-        />
+        {PLUGIN_DIRECTORY_ENABLED ? (
+          <SegmentedControl
+            options={tabs}
+            value={tab}
+            onValueChange={setChosenTab}
+            testID="plugin-tabs"
+          />
+        ) : null}
         <View style={styles.search}>
           <SearchField
             value={query}

@@ -9,6 +9,10 @@ import {
   uninstallFromPage,
 } from "../support/helpers/plugin-directory";
 
+// Kumo has the plugin directory off (PLUGIN_DIRECTORY_ENABLED in src/plugins/gallery/queries.ts).
+// Turn this back on with it.
+test.skip(true, "plugin directory is off for Kumo");
+
 test("installs a listed plugin from Browse and uninstalls it from either of its pages", async ({
   page,
   directoryHost,

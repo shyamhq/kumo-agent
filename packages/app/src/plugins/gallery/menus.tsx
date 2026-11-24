@@ -43,6 +43,7 @@ import { openExternalUrl } from "@/utils/open-external-url";
 import type { PluginAction } from "./actions";
 import { InstallPluginSheet } from "./install-sheet";
 import { pluginErrorText } from "./error-text";
+import { PLUGIN_DIRECTORY_ENABLED } from "./queries";
 
 const SUBMIT_PLUGIN_URL =
   "https://github.com/getpaseo/plugins/issues/new?template=submit-plugin.yml";
@@ -128,9 +129,11 @@ export function PluginGalleryMenu({ serverId }: { serverId: string }) {
               ? t("settings.plugins.gallery.actions.turnOff")
               : t("settings.plugins.gallery.actions.turnOnAll")}
           </DropdownMenuItem>
-          <DropdownMenuItem leading={linkIcon} onSelect={submit}>
-            {t("settings.plugins.gallery.actions.submit")}
-          </DropdownMenuItem>
+          {PLUGIN_DIRECTORY_ENABLED ? (
+            <DropdownMenuItem leading={linkIcon} onSelect={submit}>
+              {t("settings.plugins.gallery.actions.submit")}
+            </DropdownMenuItem>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
       {installing ? (
