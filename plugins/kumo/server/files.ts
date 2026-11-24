@@ -30,8 +30,7 @@ export async function readKumoInstructions(home: string): Promise<string | null>
     return text?.trim() || null;
   } catch (error) {
     // Advice, not access: an unreadable file must not stop the agent from opening.
-    const kind = error instanceof Error ? error.name : "unknown";
-    console.warn(`kumo: computer.md is unreadable (${kind})`);
+    console.warn(`kumo: computer.md is unreadable (${String(error)})`);
     return null;
   }
 }
