@@ -2082,7 +2082,7 @@ export class HostRuntimeStore {
         return;
       } catch (error) {
         // A password is not something retrying can supply.
-        if (error instanceof DaemonAuthenticationError) {
+        if (getConnectionAuthFailureReason(error) !== null) {
           return;
         }
         if (attempt === 1 || attempt % 10 === 0) {

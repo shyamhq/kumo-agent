@@ -1,3 +1,4 @@
+import { DaemonConnectionTestError } from "@/utils/test-daemon-connection";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AppStateStatus } from "react-native";
 import {
@@ -5983,6 +5984,35 @@ describe("HostRuntimeStore initial connection hint bootstrap", () => {
       { endpoint: "daemon-origin:443", useTls: true },
       { endpoint: "daemon-origin:443", useTls: true },
     ]);
+    store.syncHosts([]);
+  });
+
+  // Retrying cannot supply a password: a daemon that wants one would be probed every second forever.
+  it("stops retrying the page's daemon when it asks for a password", async () => {
+    let attempts = 0;
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async () => {
+          attempts += 1;
+          // What the real probe throws for a refused password: not a DaemonAuthenticationError.
+          throw new DaemonConnectionTestError("Password required", {
+            reason: null,
+            lastError: null,
+            authFailureReason: "password_required",
+          });
+        },
+        getClientId: async () => "cid_test_runtime",
+        readInitialConnectionHint: () => ({ listen: "daemon-origin:443", useTls: true }),
+      },
+      storage: createMemoryHostRuntimeStorage(),
+    });
+
+    await store.boot();
+    await new Promise((resolve) => setTimeout(resolve, 2_500));
+
+    // The first probe, then the loop's first attempt, which gives up.
+    expect(attempts).toBe(2);
     store.syncHosts([]);
   });
 
