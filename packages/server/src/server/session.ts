@@ -261,6 +261,7 @@ import {
   searchDirectoryEntries,
   WORKSPACE_SEARCH_HIDDEN_DIRECTORIES,
 } from "../utils/directory-suggestions.js";
+import { readKumoComputer } from "./kumo-computer.js";
 import type { CheckoutDiffManager } from "./checkout-diff-manager.js";
 import type { Resolvable } from "./speech/provider-resolver.js";
 import type { SpeechReadinessSnapshot } from "./speech/speech-runtime.js";
@@ -5767,13 +5768,19 @@ export class Session {
       const workspaceCwd = cwd?.trim();
       const searchesWorkspace = Boolean(workspaceCwd);
       const homeRoot = process.env.HOME ?? homedir();
+      // A Kumo computer keeps its projects in ~/workspace, so a blank search lists them, as if
+      // the user had typed that path.
+      const searchQuery =
+        !searchesWorkspace && !query.trim() && readKumoComputer(process.env.PUBLIC_URL)
+          ? "~/workspace/"
+          : query;
       // readdir on TCC-protected folders under ~/Library blocks forever for a process that cannot
       // show a consent prompt, and each blocked call holds a libuv threadpool thread.
       const excludedDiscoveryPaths =
         !searchesWorkspace && process.platform === "darwin" ? [join(homeRoot, "Library")] : [];
       const entries = await searchDirectoryEntries({
         root: workspaceCwd ? expandTilde(workspaceCwd) : homeRoot,
-        query,
+        query: searchQuery,
         pathFormat: searchesWorkspace ? "relative" : "absolute",
         pathQueryPolicy: searchesWorkspace ? "slashes" : "rooted",
         blankQueryBehavior: searchesWorkspace ? "children" : "none",

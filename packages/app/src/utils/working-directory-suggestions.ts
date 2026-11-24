@@ -11,8 +11,10 @@ export function buildWorkingDirectorySuggestions(
 ): string[] {
   const query = input.query.trim();
   const recommended = uniquePaths(input.recommendedPaths);
+  // A blank query lists what the daemon offers for it after the recommendations: on a Kumo
+  // computer, the folders in ~/workspace.
   if (!query) {
-    return recommended;
+    return uniquePaths([...recommended, ...input.serverPaths]);
   }
 
   const matchingRecommended = recommended.filter((path) =>

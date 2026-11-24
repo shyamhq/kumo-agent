@@ -17,7 +17,6 @@ import { constants, existsSync, unlinkSync } from "fs";
 import { open, rm, stat } from "fs/promises";
 import { randomUUID } from "node:crypto";
 import { getHostName } from "./host-name.js";
-import { addKumoWorkspace } from "./kumo-computer.js";
 import path from "node:path";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { toNodeHandler } from "@modelcontextprotocol/node";
@@ -469,8 +468,6 @@ export interface PaseoDaemonConfig {
     distDir: string | null;
     frameAncestors?: string;
   };
-  /** `~/workspace` on a Kumo computer, where Kumo keeps its projects. */
-  kumoWorkspace?: string;
   appBaseUrl?: string;
   auth?: DaemonAuthConfig;
   openai?: PaseoOpenAIConfig;
@@ -1111,13 +1108,6 @@ export async function createPaseoDaemon(
     logger,
   });
   await workspaceLabelService.initialize();
-  if (config.kumoWorkspace) {
-    await addKumoWorkspace({
-      dir: config.kumoWorkspace,
-      projectRegistry,
-      workspaceProvisioning,
-    }).catch((err) => logger.warn({ err }, "Could not add the Kumo workspace as a project"));
-  }
   logger.info({ elapsed: elapsed() }, "Workspace registries bootstrapped");
   const teardownArchivedWorkspaceRuntime = (workspaceId: string): void => {
     scriptRuntimeStore.removeForWorkspace(workspaceId);

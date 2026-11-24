@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import { buildWorkingDirectorySuggestions } from "./working-directory-suggestions";
 
 describe("buildWorkingDirectorySuggestions", () => {
-  it("returns de-duplicated recommendations when query is empty", () => {
+  it("lists de-duplicated recommendations, then the daemon's paths, when query is empty", () => {
     const results = buildWorkingDirectorySuggestions({
       recommendedPaths: ["/Users/me/projects/paseo", "/Users/me/projects/paseo"],
-      serverPaths: ["/Users/me/projects/playground"],
+      serverPaths: ["/Users/me/projects/playground", "/Users/me/projects/paseo"],
       query: "",
     });
 
-    expect(results).toEqual(["/Users/me/projects/paseo"]);
+    expect(results).toEqual(["/Users/me/projects/paseo", "/Users/me/projects/playground"]);
   });
 
   it("keeps fuzzy recommendation matches before de-duplicated daemon suggestions", () => {
