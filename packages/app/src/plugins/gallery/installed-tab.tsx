@@ -183,7 +183,8 @@ export function InstalledTab({
   /** Directory listings by ID, for icons and authors. Empty until the directory loads. */
   listings: ReadonlyMap<string, PluginListing>;
   query: string;
-  onBrowse(): void;
+  /** Absent while the plugin directory is off. */
+  onBrowse?(): void;
 }) {
   const { t } = useTranslation();
   const actions = usePluginActions(serverId);
@@ -258,7 +259,7 @@ export function InstalledTab({
                   ? t("settings.plugins.gallery.empty.noMatches")
                   : t("settings.plugins.states.empty")}
               </Text>
-              {normalizedQuery ? null : (
+              {normalizedQuery || !onBrowse ? null : (
                 <Button variant="outline" onPress={onBrowse}>
                   {t("settings.plugins.gallery.actions.browse")}
                 </Button>

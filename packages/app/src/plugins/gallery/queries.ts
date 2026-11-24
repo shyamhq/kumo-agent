@@ -16,6 +16,12 @@ function useHostReady(serverId: string) {
   return { client, ready: Boolean(client && connected) };
 }
 
+/**
+ * Kumo keeps the plugin directory (Browse, from plugins.paseo.sh) off for now; installed plugins and
+ * installing from a source are unaffected. Turn it back on here.
+ */
+export const PLUGIN_DIRECTORY_ENABLED = false;
+
 /** The host's plugin directory. `supported` is false until the host proxies the registry. */
 export function usePluginDirectory(serverId: string) {
   const { client, ready } = useHostReady(serverId);
@@ -27,7 +33,7 @@ export function usePluginDirectory(serverId: string) {
       if (!client) throw new Error("Plugin host is offline");
       return client.listPluginRegistry();
     },
-    enabled: ready && supported,
+    enabled: PLUGIN_DIRECTORY_ENABLED && ready && supported,
     dataShape: "value",
     staleTimeMs: DIRECTORY_STALE_MS,
     refetchOnMount: true,
