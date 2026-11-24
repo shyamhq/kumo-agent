@@ -110,7 +110,7 @@ A working proxy must:
 - **Not buffer responses.** Terminal output and other live streams are long-lived; buffering makes the UI look frozen.
 - **Use long read timeouts.** Those streams stay open for the life of a session.
 - **Allow large request bodies.** Prompts and file uploads can be big.
-- **Preserve the `Host` header and pass `X-Forwarded-Proto`.** The daemon uses these to tell the app which origin and scheme (`wss://` vs `ws://`) to connect back on. Drop them and auto-connect points at the wrong place.
+- **Preserve the `Host` header, or allow the public origin.** The app connects back to the address it was loaded from, so auto-connect works behind any proxy. The daemon checks the WebSocket's `Origin` against `Host`, though: a proxy that rewrites `Host` must have the public origin listed in `daemon.cors.allowedOrigins`.
 
 ### Nginx
 
@@ -164,7 +164,7 @@ That's the whole config. Caddy provisions a certificate automatically and preser
 
 ## HTTPS and TLS
 
-Terminate TLS at the proxy (or tunnel) and forward to the daemon over plain HTTP on localhost, that's what the configs above do. When the page is served over HTTPS and the proxy passes `X-Forwarded-Proto: https`, the app automatically connects back over `wss://`. You don't configure the scheme anywhere; it follows the edge.
+Terminate TLS at the proxy (or tunnel) and forward to the daemon over plain HTTP on localhost, that's what the configs above do. When the page is served over HTTPS, the app connects back over `wss://` to the same address. You don't configure the scheme anywhere; it follows the page.
 
 The daemon trusts forwarded headers from loopback proxies by default, which is what all the setups above do, the proxy or tunnel forwards to `127.0.0.1:6767`.
 
