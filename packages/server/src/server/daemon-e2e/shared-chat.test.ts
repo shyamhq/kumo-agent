@@ -2,8 +2,8 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "vitest";
 
-import type { AgentPromptInput } from "../agent/agent-sdk-types.js";
-import { parseAgentMessages } from "../agent/agent-messages/index.js";
+import type { AgentPromptInput, AgentStreamEvent } from "../agent/agent-sdk-types.js";
+import { formatAgentMessage, parseAgentMessages } from "../agent/agent-messages/index.js";
 import { createTestAgentClients } from "../test-utils/fake-agent-client.js";
 import { createTestPaseoDaemon } from "../test-utils/paseo-daemon.js";
 import { DaemonClient } from "../test-utils/daemon-client.js";
@@ -17,9 +17,10 @@ async function sharedChatDaemon() {
   const root = await mkdtemp(path.join(artifacts, "shared-chat-"));
   const prompts: string[] = [];
   const clients: DaemonClient[] = [];
-  const start = () =>
+  const start = (history?: AgentStreamEvent[]) =>
     createTestPaseoDaemon({
       agentClients: createTestAgentClients({
+        historyEvents: history,
         onStartTurn: (prompt: AgentPromptInput) => {
           const text = typeof prompt === "string" ? prompt : JSON.stringify(prompt);
           if (text.includes("refuse this")) throw new Error("provider refused the turn");
@@ -39,10 +40,10 @@ async function sharedChatDaemon() {
     return client;
   }
   /** Stops the daemon and starts another on the same home, as an update does. */
-  async function restart() {
+  async function restart(history?: AgentStreamEvent[]) {
     await Promise.all(clients.splice(0).map((client) => client.close()));
     await daemon.close();
-    daemon = await start();
+    daemon = await start(history);
   }
   async function close() {
     await Promise.all(clients.map((client) => client.close()));
@@ -256,6 +257,33 @@ test("two people on one browser profile stay two people", async () => {
     await bob.waitForFinish(agent.id, 10_000);
 
     expect(daemon.prompts.at(-1)).toContain('author-id="u_bob" author-name="Bob"');
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("a post the provider took just before the daemon stopped shows once and isn't carried again", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const { alice, agent } = await sharedAgent(daemon);
+    await alice.sendMessage(agent.id, "remember X", { messageId: "post-1" });
+    // The provider has the prompt that carried it; the daemon stopped before dropping it.
+    const carried = formatAgentMessage({
+      id: "post-1",
+      source: { kind: "person-post", author: { id: "u_alice", name: "Alice" } },
+      text: "remember X",
+    });
+    await daemon.restart([
+      { type: "timeline", provider: "claude", item: { type: "user_message", text: carried } },
+    ]);
+
+    const bob = await daemon.connect(gate("u_bob", "Bob"));
+    expect((await peopleSaid(bob, agent.id)).filter((said) => said.endsWith("remember X"))).toEqual(
+      ["Alice: remember X"],
+    );
+    await bob.sendMessage(agent.id, "@kumo go on");
+    await bob.waitForFinish(agent.id, 10_000);
+    expect(parseAgentMessages(daemon.prompts.at(-1) ?? "")).toHaveLength(1);
   } finally {
     await daemon.close();
   }

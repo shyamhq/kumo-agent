@@ -60,8 +60,8 @@ export async function sendFromPerson(send: PersonSend): Promise<PromptDispatchRe
   }
 
   // A post stays in the record until the provider has it, so a refused turn or a crash keeps it
-  // for the next prompt. ponytail: two prompts in flight together both carry it, and a crash right
-  // after the provider took it carries it once more; both mean the agent reads it twice.
+  // for the next prompt; a replay that already holds it drops it too. ponytail: two prompts in
+  // flight together both carry it, so the provider's history, and any replay, holds it twice.
   const posts = (await storage.get(agentId))?.thread?.posts ?? [];
   const result = await sendPromptToAgent({
     ...params,

@@ -11,7 +11,8 @@ are never retained for history or catch-up. Provider history is the durable tran
 and rebuilds the projection when an agent resumes.
 
 A shared chat's posts are the one exception until the agent sees them: no provider holds them, so
-they live in the agent record's `thread` and are recorded again after every replay. The prompt that
+they live in the agent record's `thread` and are recorded again after every replay, unless the
+replay already holds them, which means they were delivered and the record lets them go. The prompt that
 carries them puts them in the provider's history, inside `person-post` envelopes the projection
 turns back into the same rows.
 

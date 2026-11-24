@@ -5158,9 +5158,19 @@ export class AgentManager {
     } else {
       await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
     }
-    // A replay rebuilds the timeline from the provider, which has not seen these yet.
-    // Recorded as they were, not as new activity: the agent's activity times stay put.
-    for (const post of (await this.registry?.get(agent.id))?.thread?.posts ?? []) {
+    // A post the replay already holds was delivered (the daemon stopped before it could drop it):
+    // drop it now. The rest are recorded as they were, not as new activity.
+    const posts = (await this.registry?.get(agent.id))?.thread?.posts ?? [];
+    const isReplayed = (post: StoredPost) =>
+      this.timelineStore.getSubmittedUserMessage(agent.id, post.clientMessageId) !== null;
+    const unseen = posts.filter((post) => !isReplayed(post));
+    if (unseen.length < posts.length) {
+      await this.registry?.updateThread(agent.id, (thread) => ({
+        ...thread,
+        posts: thread.posts.filter((post) => !isReplayed(post)),
+      }));
+    }
+    for (const post of unseen) {
       this.recordAndDispatchTimelineItem(agent.id, post, agent.provider);
     }
   }
