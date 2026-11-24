@@ -12,33 +12,6 @@ const appVariant = process.env.APP_VARIANT ?? "production";
 const isWatchdogBuild = process.env.PASEO_WATCHDOG_BUILD === "1";
 const isProfileBuild = process.env.PASEO_PROFILE_BUILD === "1";
 
-const buildProfile = {
-  androidPermissions: [
-    "RECORD_AUDIO",
-    "android.permission.RECORD_AUDIO",
-    "android.permission.MODIFY_AUDIO_SETTINGS",
-    "CAMERA",
-    "android.permission.CAMERA",
-  ],
-  cameraPlugins: [
-    [
-      "expo-camera",
-      {
-        cameraPermission: "Allow $(PRODUCT_NAME) to access your camera to scan pairing QR codes.",
-      },
-    ],
-  ],
-  notificationPlugins: [
-    [
-      "expo-notifications",
-      {
-        icon: "./assets/images/notification-icon.png",
-        color: "#20744A",
-      },
-    ],
-  ],
-};
-
 function resolveSecretFile(params) {
   const fromEnv = process.env[params.envKey];
   if (typeof fromEnv === "string" && fromEnv.trim().length > 0) {
@@ -115,7 +88,13 @@ export default {
       softwareKeyboardLayoutMode: "resize",
       // Allow HTTP connections for local network hosts (required for release builds)
       usesCleartextTraffic: true,
-      permissions: buildProfile.androidPermissions,
+      permissions: [
+        "RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "CAMERA",
+        "android.permission.CAMERA",
+      ],
       package: variant.packageId,
       versionCode: nativeReleaseVersion.androidVersionCode,
       ...(variant.googleServicesFile ? { googleServicesFile: variant.googleServicesFile } : {}),
@@ -134,7 +113,12 @@ export default {
       withAndroidScroll,
       withAndroidDisplayMetrics,
       [withAndroidAsyncStorageSize, 64],
-      ...buildProfile.cameraPlugins,
+      [
+        "expo-camera",
+        {
+          cameraPermission: "Allow $(PRODUCT_NAME) to access your camera to scan pairing QR codes.",
+        },
+      ],
       withAndroidOptionalCamera,
       [
         "expo-splash-screen",
@@ -148,7 +132,13 @@ export default {
           },
         },
       ],
-      ...buildProfile.notificationPlugins,
+      [
+        "expo-notifications",
+        {
+          icon: "./assets/images/notification-icon.png",
+          color: "#20744A",
+        },
+      ],
       "expo-audio",
       [
         "expo-gradle-jvmargs",
