@@ -23,7 +23,8 @@ How it runs under Kumo:
   reads `PUBLIC_URL` so that only that computer's Kumo OS (`https://os--<handle>.<zone>`) may frame
   the web UI; without it, `frame-ancestors 'self'`. From the same address it names the host by the
   computer's handle (its Linux hostname is a random container id), and a blank directory search
-  (Add project) lists `~/workspace`, where Kumo keeps projects (`packages/server/src/server/kumo-computer.ts`).
+  (Add project) lists `~/workspace` and its projects (`handleDirectorySuggestionsRequest` in
+  `packages/server/src/server/session.ts`).
 - Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
   (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`
