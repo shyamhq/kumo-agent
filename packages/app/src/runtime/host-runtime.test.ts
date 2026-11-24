@@ -1,3 +1,4 @@
+import { DaemonConnectionTestError } from "@/utils/test-daemon-connection";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AppStateStatus } from "react-native";
 import {
@@ -5946,6 +5947,72 @@ describe("HostRuntimeStore initial connection hint bootstrap", () => {
       ]),
     );
 
+    store.syncHosts([]);
+  });
+
+  // Behind a slow first hop (Kumo's gate) the first probe can time out. The daemon that served
+  // the page is still the one to reach; this machine's own localhost would be some other daemon.
+  it("keeps retrying the page's daemon, never localhost, when the hint's first probe fails", async () => {
+    const seenProbes: { endpoint: string; useTls?: boolean }[] = [];
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async ({ connection }) => {
+          if (connection.type === "directTcp") {
+            seenProbes.push({ endpoint: connection.endpoint, useTls: connection.useTls });
+          }
+          if (seenProbes.length === 1) {
+            throw new Error("first hop too slow");
+          }
+          return {
+            client: makeConnectedProbeClient(5) as unknown as DaemonClient,
+            serverId: "srv_hint",
+            hostname: "hint host",
+          };
+        },
+        getClientId: async () => "cid_test_runtime",
+        readInitialConnectionHint: () => ({ listen: "daemon-origin:443", useTls: true }),
+      },
+      storage: createMemoryHostRuntimeStorage(),
+    });
+
+    const hostAdded = onceHostListMatches(store, () => store.getHosts().length > 0);
+    void store.boot();
+    await hostAdded;
+
+    expect(seenProbes).toEqual([
+      { endpoint: "daemon-origin:443", useTls: true },
+      { endpoint: "daemon-origin:443", useTls: true },
+    ]);
+    store.syncHosts([]);
+  });
+
+  // Retrying cannot supply a password: a daemon that wants one would be probed every second forever.
+  it("stops retrying the page's daemon when it asks for a password", async () => {
+    let attempts = 0;
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async () => {
+          attempts += 1;
+          // What the real probe throws for a refused password: not a DaemonAuthenticationError.
+          throw new DaemonConnectionTestError("Password required", {
+            reason: null,
+            lastError: null,
+            authFailureReason: "password_required",
+          });
+        },
+        getClientId: async () => "cid_test_runtime",
+        readInitialConnectionHint: () => ({ listen: "daemon-origin:443", useTls: true }),
+      },
+      storage: createMemoryHostRuntimeStorage(),
+    });
+
+    await store.boot();
+    await new Promise((resolve) => setTimeout(resolve, 2_500));
+
+    // The first probe, then the loop's first attempt, which gives up.
+    expect(attempts).toBe(2);
     store.syncHosts([]);
   });
 

@@ -161,10 +161,13 @@ export interface WebUiMiddlewareOptions {
   distDir: string | null;
   label: string;
   logger: Logger;
+  /** Who may frame the page, from config; without it, only the page's own origin. */
+  frameAncestors?: string;
 }
 
 export function createWebUiMiddleware(options: WebUiMiddlewareOptions): RequestHandler {
   const { enabled, distDir, label, logger } = options;
+  const framePolicy = options.frameAncestors ?? "frame-ancestors 'self'";
   const childLogger = logger.child({ module: "web-ui" });
 
   if (!enabled || !distDir) {
@@ -192,7 +195,7 @@ export function createWebUiMiddleware(options: WebUiMiddlewareOptions): RequestH
       return;
     }
 
-    serveWebUiFile({ distDir, requestPath: req.path, label, req, res });
+    serveWebUiFile({ distDir, requestPath: req.path, label, framePolicy, req, res });
   };
 }
 
@@ -200,12 +203,13 @@ interface ServeWebUiFileOptions {
   distDir: string;
   requestPath: string;
   label: string;
+  framePolicy: string;
   req: Parameters<RequestHandler>[0];
   res: Parameters<RequestHandler>[1];
 }
 
 function serveWebUiFile(options: ServeWebUiFileOptions): void {
-  const { distDir, requestPath, label, req, res } = options;
+  const { distDir, requestPath, label, framePolicy, req, res } = options;
 
   const wellKnown = isWellKnownPath(requestPath);
   const target = resolveTargetFile({ distDir, requestPath, spaFallback: !wellKnown });
@@ -235,7 +239,7 @@ function serveWebUiFile(options: ServeWebUiFileOptions): void {
   }
 
   if (isIndexHtml) {
-    sendIndexHtml(res, finalFile, req, label);
+    sendIndexHtml(res, finalFile, req, label, framePolicy);
     return;
   }
 
@@ -255,10 +259,12 @@ function sendIndexHtml(
   filePath: string,
   req: Parameters<RequestHandler>[0],
   label: string,
+  framePolicy: string,
 ): void {
   try {
     const html = readFileSync(filePath, "utf-8");
     const injected = injectConnectionHint(html, req, label);
+    res.setHeader("Content-Security-Policy", framePolicy);
     res.status(200).send(injected);
   } catch {
     res.status(500).end();

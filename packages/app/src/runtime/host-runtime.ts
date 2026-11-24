@@ -1797,6 +1797,16 @@ export function readInitialDaemonConnectionHint(input?: {
   return { listen: `${location.hostname}:${port}`, useTls };
 }
 
+function hintConnection(hint: InitialDaemonConnectionHint): HostConnection | null {
+  const connection = connectionFromListen(hint.listen);
+  if (!connection) {
+    return null;
+  }
+  return connection.type === "directTcp"
+    ? { ...connection, useTls: hint.useTls ?? connection.useTls ?? false }
+    : connection;
+}
+
 function readConfiguredLocalDaemonOverride(): string | null {
   const value = process.env.EXPO_PUBLIC_LOCAL_DAEMON?.trim();
   return value && value.length > 0 ? value : null;
@@ -1950,13 +1960,16 @@ export class HostRuntimeStore {
       : readInitialDaemonConnectionHint();
     if (initialHint) {
       const bootstrapped = await this.bootstrapInitialConnectionHint(initialHint);
-      if (bootstrapped) {
-        return;
+      if (!bootstrapped) {
+        // The daemon that served this page is the one to reach: keep trying it, never this
+        // machine's own localhost, which would be some other daemon.
+        this.bootstrapConfiguredOverride(initialHint.listen, hintConnection(initialHint));
       }
+      return;
     }
 
     if (override) {
-      this.bootstrapConfiguredOverride(override);
+      this.bootstrapConfiguredOverride(override, connectionFromListen(override));
     } else {
       await this.bootstrapDefaultLocalhost();
     }
@@ -2036,8 +2049,7 @@ export class HostRuntimeStore {
     }
   }
 
-  private bootstrapConfiguredOverride(endpoint: string): void {
-    const connection = connectionFromListen(endpoint);
+  private bootstrapConfiguredOverride(endpoint: string, connection: HostConnection | null): void {
     if (!connection) {
       return;
     }
@@ -2064,12 +2076,15 @@ export class HostRuntimeStore {
     while (!registryHasConnection(this.hosts, connection)) {
       attempt += 1;
       try {
-        await this.probeAndUpsertConnection({
-          connection,
-          timeoutMs: DEFAULT_LOCALHOST_BOOTSTRAP_TIMEOUT_MS,
-        });
+        // The normal timeout, not localhost's: this may be the page's daemon behind a proxy whose
+        // every handshake is slower than localhost's would be.
+        await this.probeAndUpsertConnection({ connection });
         return;
       } catch (error) {
+        // A password is not something retrying can supply.
+        if (getConnectionAuthFailureReason(error) !== null) {
+          return;
+        }
         if (attempt === 1 || attempt % 10 === 0) {
           console.warn("[HostRuntime] configured bootstrap probe failed", {
             endpoint,
@@ -2085,23 +2100,16 @@ export class HostRuntimeStore {
   private async bootstrapInitialConnectionHint(
     hint: InitialDaemonConnectionHint,
   ): Promise<boolean> {
-    const connection = connectionFromListen(hint.listen);
-    if (!connection) {
+    const connectionWithHint = hintConnection(hint);
+    if (!connectionWithHint) {
       return false;
     }
-    const connectionWithHint: HostConnection =
-      connection.type === "directTcp"
-        ? { ...connection, useTls: hint.useTls ?? connection.useTls ?? false }
-        : connection;
     if (registryHasConnection(this.hosts, connectionWithHint)) {
       return true;
     }
 
     try {
-      await this.probeAndUpsertConnection({
-        connection: connectionWithHint,
-        timeoutMs: DEFAULT_LOCALHOST_BOOTSTRAP_TIMEOUT_MS,
-      });
+      await this.probeAndUpsertConnection({ connection: connectionWithHint });
       return true;
     } catch (error) {
       console.warn("[HostRuntime] initial connection hint probe failed", {

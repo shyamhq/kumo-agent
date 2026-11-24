@@ -390,6 +390,18 @@ function resolveServiceProxyConfig(
 interface ResolvedWebUi {
   enabled: boolean;
   distDir: string | null;
+  frameAncestors?: string;
+}
+
+/**
+ * Who may frame the web UI on a Kumo computer. Kumo sets `PUBLIC_URL` to the app's own address,
+ * `https://<port>--<handle>.<zone>`, and only that computer's OS, `https://os--<handle>.<zone>`,
+ * may frame it: every other page in the zone is the same site and could frame a signed-in shell.
+ * Anywhere else, undefined: the web UI's own default.
+ */
+function kumoFrameAncestors(publicUrl: string | undefined): string | undefined {
+  const host = /^https:\/\/\d+--([^/]+)\/?$/.exec(publicUrl ?? "")?.[1];
+  return host ? `frame-ancestors https://os--${host}` : undefined;
 }
 
 function resolveWebUiConfig(
@@ -411,6 +423,7 @@ function resolveWebUiConfig(
   return {
     enabled,
     distDir,
+    frameAncestors: kumoFrameAncestors(env.PUBLIC_URL),
   };
 }
 

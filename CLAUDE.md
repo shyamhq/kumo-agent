@@ -15,10 +15,13 @@ How it runs under Kumo:
   app (a systemd unit, run as the `dev` user) and keeps it running. This daemon starts its own
   agents; Kumo's chat agents are separate and run by the worker.
 - The browser reaches the daemon at the computer's Kumo preview address, behind Kumo's sign-in
-  gate. The app's run line in Kumo's apps catalogue sets the daemon's env: `PASEO_RELAY_ENABLED=false`
-  (Kumo's gate replaces the relay), its own `PASEO_HOME`, a listen address Kumo's proxy can reach,
-  and an allowed origin and hostnames that match the preview address (the worker passes it to apps
-  as `PUBLIC_URL`). Get any of these wrong and the web app can't load or connect.
+  gate. The app's catalogue row in Kumo sets it up: the install line runs `paseo daemon config set`
+  for a listen address Kumo's proxy can reach, an allowed origin matching the preview address (the
+  worker passes it to apps as `PUBLIC_URL`), the web UI on, and dictation and voice off; the run line
+  sets the daemon's own `PASEO_HOME`. The relay stays off (its default), since Kumo's gate replaces
+  it. Get any of these wrong and the web app can't load or connect. The daemon also
+  reads `PUBLIC_URL` so that only that computer's Kumo OS (`https://os--<handle>.<zone>`) may frame
+  the web UI; without it, `frame-ancestors 'self'`.
 - Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
   (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`

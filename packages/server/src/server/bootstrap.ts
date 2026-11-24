@@ -466,6 +466,7 @@ export interface PaseoDaemonConfig {
   webUi?: {
     enabled: boolean;
     distDir: string | null;
+    frameAncestors?: string;
   };
   appBaseUrl?: string;
   auth?: DaemonAuthConfig;
@@ -567,6 +568,7 @@ function mountWebUi(app: express.Application, config: PaseoDaemonConfig, logger:
       distDir: config.webUi?.distDir ?? null,
       label: getHostName(),
       logger,
+      frameAncestors: config.webUi?.frameAncestors,
     }),
   );
 }
