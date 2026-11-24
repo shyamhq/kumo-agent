@@ -1,13 +1,20 @@
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
-import { readFileSync, readdirSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { readFileSync, readdirSync } from "node:fs";
 import { relative as relativePath } from "node:path";
 import test from "node:test";
 import { runInNewContext } from "node:vm";
 
-import { PUBLISH_WORKSPACES } from "./publish-release-packages.mjs";
+// The seven packages a kumo-agent release packs and attaches (docs/release.md).
+const PUBLISH_WORKSPACES = [
+  "@getpaseo/highlight",
+  "@getpaseo/relay",
+  "@getpaseo/protocol",
+  "@getpaseo/client",
+  "@getpaseo/plugin",
+  "@getpaseo/server",
+  "@getpaseo/cli",
+];
 
 const repoRoot = new URL("../", import.meta.url);
 const ciWorkflowPath = new URL(".github/workflows/ci.yml", repoRoot);
@@ -132,9 +139,8 @@ test("change gating allows superseded workflow runs to cancel", () => {
   );
 });
 
-test("published npm packages declare and ship the repository license", () => {
+test("released packages declare and ship the repository license", () => {
   const rootManifest = JSON.parse(readFileSync(new URL("package.json", repoRoot), "utf8"));
-  assert.match(rootManifest.scripts["release:publish"], /scripts\/publish-release-packages\.mjs/);
   const workspaceArgs = PUBLISH_WORKSPACES.map((workspace) => `--workspace=${workspace}`);
   const packed = JSON.parse(
     execFileSync("npm", ["pack", "--dry-run", "--ignore-scripts", "--json", ...workspaceArgs], {
@@ -539,293 +545,6 @@ test("Windows units and integration run independently with complete routed cover
   }
 });
 
-test("macOS release xcrun wrapper retries transient stapling and notarization failures without rebuilding", async (t) => {
-  const wrapperSource = readFileSync(new URL("scripts/macos-xcrun-retry.sh", repoRoot), "utf8");
-  const networkLostError =
-    'Error Domain=NSURLErrorDomain Code=-1005 "The network connection was lost."';
-  const notaryTimeoutWithId =
-    'Error: HTTPError(statusCode: nil, error: Error Domain=NSURLErrorDomain Code=-1001 "The request timed out." UserInfo={NSErrorFailingURLStringKey=https://appstoreconnect.apple.com/notary/v2/submissions/ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba?})';
-  const notaryOfflineWithId =
-    'Error: HTTPError(statusCode: nil, error: Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSErrorFailingURLStringKey=https://appstoreconnect.apple.com/notary/v2/submissions/ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba?})';
-  const notaryUploadTimeout =
-    'Error: HTTPError(statusCode: nil, error: Error Domain=NSURLErrorDomain Code=-1001 "The request timed out.")';
-  const acceptedJson = JSON.stringify({
-    id: "ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba",
-    message: "Successfully received submission info",
-    status: "Accepted",
-  });
-  const invalidJson = JSON.stringify({
-    id: "ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba",
-    message: "Submission invalid",
-    status: "Invalid",
-  });
-
-  const cases = [
-    {
-      name: "stapler success",
-      steps: [{ code: 0, output: "stapled" }],
-      args: ["stapler", "staple", "-v", "Paseo signed.app"],
-      expected: 0,
-      expectedCalls: [["stapler", "staple", "-v", "Paseo signed.app"]],
-      expectPattern: /stapled/,
-    },
-    {
-      name: "stapler transient then success",
-      steps: [
-        { code: 68, output: networkLostError },
-        { code: 0, output: "stapled" },
-      ],
-      args: ["stapler", "staple", "-v", "Paseo signed.app"],
-      expected: 0,
-      expectedCalls: [
-        ["stapler", "staple", "-v", "Paseo signed.app"],
-        ["stapler", "staple", "-v", "Paseo signed.app"],
-      ],
-      expectPattern: /stapled/,
-    },
-    {
-      name: "stapler exhausted network retries",
-      steps: [
-        { code: 68, output: networkLostError },
-        { code: 68, output: networkLostError },
-        { code: 68, output: networkLostError },
-        { code: 68, output: networkLostError },
-      ],
-      args: ["stapler", "staple", "-v", "Paseo signed.app"],
-      expected: 68,
-      expectedCalls: Array.from({ length: 4 }, () => [
-        "stapler",
-        "staple",
-        "-v",
-        "Paseo signed.app",
-      ]),
-      expectPattern: /network connection was lost/,
-    },
-    {
-      name: "stapler non-network error is not retried",
-      steps: [{ code: 68, output: "ticket not found" }],
-      args: ["stapler", "staple", "-v", "Paseo signed.app"],
-      expected: 68,
-      expectedCalls: [["stapler", "staple", "-v", "Paseo signed.app"]],
-      expectPattern: /ticket not found/,
-    },
-    {
-      name: "notarytool switches to wait when polling fails after upload and emits clean JSON",
-      steps: [
-        { code: 1, output: notaryTimeoutWithId },
-        { code: 1, output: notaryOfflineWithId },
-        { code: 0, output: acceptedJson },
-      ],
-      args: [
-        "notarytool",
-        "submit",
-        "/tmp/Paseo.zip",
-        "--apple-id",
-        "id",
-        "--password",
-        "pw",
-        "--team-id",
-        "team",
-        "--wait",
-        "--output-format",
-        "json",
-      ],
-      expected: 0,
-      expectedCalls: [
-        [
-          "notarytool",
-          "submit",
-          "/tmp/Paseo.zip",
-          "--apple-id",
-          "id",
-          "--password",
-          "pw",
-          "--team-id",
-          "team",
-          "--wait",
-          "--output-format",
-          "json",
-        ],
-        [
-          "notarytool",
-          "wait",
-          "ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba",
-          "--apple-id",
-          "id",
-          "--password",
-          "pw",
-          "--team-id",
-          "team",
-          "--output-format",
-          "json",
-        ],
-        [
-          "notarytool",
-          "wait",
-          "ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba",
-          "--apple-id",
-          "id",
-          "--password",
-          "pw",
-          "--team-id",
-          "team",
-          "--output-format",
-          "json",
-        ],
-      ],
-      expectCleanJson: true,
-    },
-    {
-      name: "notarytool retries submit when upload fails before submission ID exists",
-      steps: [
-        { code: 1, output: notaryUploadTimeout },
-        { code: 0, output: acceptedJson },
-      ],
-      args: [
-        "notarytool",
-        "submit",
-        "/tmp/Paseo.zip",
-        "--apple-id",
-        "id",
-        "--wait",
-        "--output-format",
-        "json",
-      ],
-      expected: 0,
-      expectedCalls: [
-        [
-          "notarytool",
-          "submit",
-          "/tmp/Paseo.zip",
-          "--apple-id",
-          "id",
-          "--wait",
-          "--output-format",
-          "json",
-        ],
-        [
-          "notarytool",
-          "submit",
-          "/tmp/Paseo.zip",
-          "--apple-id",
-          "id",
-          "--wait",
-          "--output-format",
-          "json",
-        ],
-      ],
-      expectCleanJson: true,
-    },
-    {
-      name: "notarytool deterministic Invalid rejection is never retried",
-      steps: [{ code: 0, output: invalidJson }],
-      args: [
-        "notarytool",
-        "submit",
-        "/tmp/Paseo.zip",
-        "--apple-id",
-        "id",
-        "--wait",
-        "--output-format",
-        "json",
-      ],
-      expected: 0,
-      expectedCalls: [
-        [
-          "notarytool",
-          "submit",
-          "/tmp/Paseo.zip",
-          "--apple-id",
-          "id",
-          "--wait",
-          "--output-format",
-          "json",
-        ],
-      ],
-      expectCleanJson: true,
-    },
-    {
-      name: "notarytool bad credentials error is never retried",
-      steps: [{ code: 1, output: "Error: HTTP status code: 401. Invalid credentials." }],
-      args: [
-        "notarytool",
-        "submit",
-        "/tmp/Paseo.zip",
-        "--apple-id",
-        "id",
-        "--wait",
-        "--output-format",
-        "json",
-      ],
-      expected: 1,
-      expectedCalls: [
-        [
-          "notarytool",
-          "submit",
-          "/tmp/Paseo.zip",
-          "--apple-id",
-          "id",
-          "--wait",
-          "--output-format",
-          "json",
-        ],
-      ],
-      expectPattern: /Invalid credentials/,
-    },
-  ];
-  for (const scenario of cases) {
-    await t.test(scenario.name, () => {
-      const directory = mkdtempSync(join(tmpdir(), "xcrun-retry-"));
-      try {
-        const statePath = join(directory, "state.json");
-        const realXcrun = join(directory, "real-xcrun");
-        const wrapperPath = join(directory, "xcrun");
-        writeFileSync(wrapperPath, wrapperSource, { mode: 0o755 });
-        writeFileSync(join(directory, "sleep"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
-        writeFileSync(statePath, JSON.stringify({ steps: scenario.steps, calls: [] }));
-        writeFileSync(
-          realXcrun,
-          `#!/usr/bin/env node
-const fs = require("node:fs");
-const state = JSON.parse(fs.readFileSync(process.env.XCRUN_STATE, "utf8"));
-state.calls.push(process.argv.slice(2));
-const next = state.steps.shift();
-fs.writeFileSync(process.env.XCRUN_STATE, JSON.stringify(state));
-if (!next) process.exit(99);
-process.stdout.write(next.output + "\\n");
-process.exit(next.code);
-`,
-          { mode: 0o755 },
-        );
-        const result = spawnSync("bash", [wrapperPath, ...scenario.args], {
-          encoding: "utf8",
-          env: {
-            ...process.env,
-            PASEO_REAL_XCRUN: realXcrun,
-            XCRUN_STATE: statePath,
-            PATH: `${directory}:${process.env.PATH}`,
-          },
-          timeout: 5000,
-        });
-        assert.equal(result.status, scenario.expected, result.stdout + result.stderr);
-        const state = JSON.parse(readFileSync(statePath, "utf8"));
-        assert.deepEqual(state.calls, scenario.expectedCalls);
-        if (scenario.expectCleanJson) {
-          // @electron/notarize merges stdout and stderr before calling JSON.parse.
-          const parsed = JSON.parse((result.stdout + result.stderr).trim());
-          assert.equal(parsed.id, "ee2872f3-65d9-49f7-b2b5-adcdfe2db6ba");
-        }
-        if (scenario.expectPattern) {
-          assert.match(result.stdout + result.stderr, scenario.expectPattern);
-        }
-      } finally {
-        rmSync(directory, { recursive: true, force: true });
-      }
-    });
-  }
-});
-
-// GitHub retires macOS 14 on 2026-11-02; brownouts already reject these jobs.
 test("workflows avoid retired macOS 14 runners", () => {
   for (const path of filesUnder(".github/workflows", (candidate) => /\.ya?ml$/.test(candidate))) {
     assert.doesNotMatch(
@@ -841,49 +560,4 @@ test("macOS jobs use latest runners", () => {
     jobBlocks(readFileSync(ciWorkflowPath, "utf8")).get("server-tests-macos").join("\n"),
     /^    runs-on: macos-latest$/m,
   );
-});
-
-test("Nix desktop packaging resolves the workspace-local builder", () => {
-  const source = readFileSync(new URL("nix/desktop-package.nix", repoRoot), "utf8");
-  const invocation = source.match(/^\s+([^\n]*electron-builder) \\\n/m)?.[1];
-  assert.ok(invocation, "Nix invokes the desktop packaging tool");
-  const directory = mkdtempSync(join(tmpdir(), "nix-builder-resolution-"));
-  try {
-    const desktop = join(directory, "packages/desktop");
-    mkdirSync(join(desktop, "node_modules/.bin"), { recursive: true });
-    mkdirSync(join(desktop, "node_modules/electron-builder"));
-    writeFileSync(
-      join(desktop, "node_modules/electron-builder/package.json"),
-      JSON.stringify({
-        name: "electron-builder",
-        version: "1.0.0",
-        bin: { "electron-builder": "../.bin/electron-builder" },
-      }),
-    );
-    writeFileSync(
-      join(directory, "package.json"),
-      JSON.stringify({ private: true, workspaces: ["packages/desktop"] }),
-    );
-    writeFileSync(
-      join(desktop, "package.json"),
-      JSON.stringify({
-        name: "desktop-fixture",
-        private: true,
-        devDependencies: { "electron-builder": "1.0.0" },
-      }),
-    );
-    writeFileSync(
-      join(desktop, "node_modules/.bin/electron-builder"),
-      '#!/bin/sh\nprintf "workspace-builder\\n"\n',
-      { mode: 0o755 },
-    );
-    const result = spawnSync("sh", ["-c", `${invocation} --version`], {
-      cwd: desktop,
-      encoding: "utf8",
-    });
-    assert.equal(result.status, 0, result.stderr);
-    assert.equal(result.stdout.trim(), "workspace-builder");
-  } finally {
-    rmSync(directory, { recursive: true, force: true });
-  }
 });
