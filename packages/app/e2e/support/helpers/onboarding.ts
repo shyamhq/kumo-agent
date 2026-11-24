@@ -158,35 +158,6 @@ export async function finishSetup(page: Page): Promise<void> {
   await expect(setupModal(page)).toHaveCount(0);
 }
 
-/** Opens the Phone step's Relay row: the pair device modal, over setup. */
-export async function openRelayPairingFromSetup(page: Page): Promise<Locator> {
-  await setupModal(page).getByRole("button", { name: "Relay", exact: true }).click();
-  const pairing = page.getByTestId("onboarding-pair-device-card");
-  await expect(pairing).toBeVisible();
-  return pairing;
-}
-
-export async function closeRelayPairing(pairing: Locator): Promise<void> {
-  await pairing.getByRole("button", { name: "Close", exact: true }).click();
-  await expect(pairing).toHaveCount(0);
-}
-
-/** Clicks the Phone step's Tailscale row and returns the docs page it opened. */
-export async function openTailscaleDocsFromSetup(page: Page): Promise<string> {
-  await page
-    .context()
-    .route("https://paseo.sh/**", (route) =>
-      route.fulfill({ contentType: "text/html", body: "<title>Paseo docs</title>" }),
-    );
-  const popup = page.waitForEvent("popup");
-  await setupModal(page).getByRole("link", { name: "Tailscale, Docs", exact: true }).click();
-  const docs = await popup;
-  await docs.waitForLoadState("domcontentloaded");
-  const url = docs.url();
-  await docs.close();
-  return url;
-}
-
 export interface SetupHost {
   serverId: string;
   port: number;

@@ -1,5 +1,4 @@
 import { useOverlayRegistration, type KeyboardInputEvent } from "@/keyboard";
-import { useAddHost } from "@/hosts/add-host";
 import { Modal } from "@/components/ui/modal";
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View, type PressableStateCallbackType } from "react-native";
@@ -60,7 +59,6 @@ function matchesHostQuery(host: HostProfile, query: string): boolean {
 }
 
 export function useHostChooser() {
-  const addHost = useAddHost();
   const hosts = useHosts();
   const localServerId = useLocalDaemonServerId();
   const open = useHostChooserStore((state) => state.open);
@@ -72,7 +70,7 @@ export function useHostChooser() {
       );
 
       if (availableHosts.length === 0) {
-        (input.onNoHosts ?? addHost)();
+        input.onNoHosts?.();
         return false;
       }
 
@@ -88,7 +86,7 @@ export function useHostChooser() {
       });
       return true;
     },
-    [hosts, localServerId, open, addHost],
+    [hosts, localServerId, open],
   );
 }
 

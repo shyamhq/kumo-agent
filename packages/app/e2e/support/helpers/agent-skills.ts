@@ -10,12 +10,12 @@ import { gotoAppShell, openSettings } from "./app";
 import { connectDaemonClient } from "./daemon-client-loader";
 import { startIsolatedHostDaemon, type IsolatedHostDaemon } from "./isolated-host-daemon";
 import {
-  addDirectHostFromSettings,
   goBackInSettings,
   openCompactSettings,
   openHostSection,
   selectSettingsHost,
 } from "./settings";
+import { addConnectedHostAndReload } from "./hosts";
 
 type AgentSkillsClient = Pick<
   InternalDaemonClient,
@@ -130,8 +130,9 @@ export async function openAgentSkillsSettings(
   } else {
     await openSettings(page);
   }
-  await addDirectHostFromSettings(page, {
-    host: "127.0.0.1",
+  await addConnectedHostAndReload(page, {
+    serverId: sandbox.daemon.serverId,
+    label: "Skills host",
     port: sandbox.daemon.port,
   });
   if (options.compact) await goBackInSettings(page);

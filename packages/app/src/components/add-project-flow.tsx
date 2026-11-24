@@ -1,5 +1,4 @@
 import { useOverlayRegistration, type KeyboardInputEvent } from "@/keyboard";
-import { useAddHost } from "@/hosts/add-host";
 import { Modal } from "@/components/ui/modal";
 import { usePanelStore } from "@/stores/panel-store";
 import { getHostRuntimeStore } from "@/runtime/host-runtime";
@@ -11,7 +10,6 @@ import {
   FolderOpen,
   FolderPlus,
   HardDrive,
-  Plus,
   Search,
   Server,
 } from "lucide-react-native";
@@ -323,7 +321,6 @@ function setPageStatus(
 // The product flow is intentionally one cohesive page-stack state machine.
 // eslint-disable-next-line complexity
 export function AddProjectFlow({ request, onClose }: AddProjectFlowProps) {
-  const addHost = useAddHost();
   const hosts = useHosts();
   const hostIds = useMemo(() => hosts.map((host) => host.serverId), [hosts]);
   const connectionStatuses = useHostRuntimeConnectionStatuses(hostIds);
@@ -604,20 +601,6 @@ export function AddProjectFlow({ request, onClose }: AddProjectFlowProps) {
           select: () => setState((current) => chooseAddProjectHost(current, choice.serverId)),
         }),
       );
-      if (state.hosts.length === 0) {
-        choices.push({
-          id: "add-host",
-          title: "Add host",
-          subtitle: "No connected hosts",
-          icon: Plus,
-          testID: "add-project-flow-add-host",
-          select: () => {
-            // The native project Modal must release its window before the root sheet opens.
-            onClose();
-            addHost();
-          },
-        });
-      }
       return choices;
     }
     if (page.kind === "method") {
@@ -715,8 +698,6 @@ export function AddProjectFlow({ request, onClose }: AddProjectFlowProps) {
     directoryPaths,
     githubQuery.data,
     host,
-    addHost,
-    onClose,
     openAddedProject,
     page,
     pathOptions,

@@ -5578,6 +5578,26 @@ describe("readInitialDaemonConnectionHint", () => {
     expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toEqual(dial);
   });
 
+  it("keeps the daemon's label, and drops a malformed one without losing the hint", () => {
+    vi.stubGlobal("location", new URL("https://6868--kumox-sg-rustic-jackal.staging.mykumo.xyz/"));
+    (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = {
+      listen: "10.90.0.12:6868",
+      label: "kumox-sg-rustic-jackal",
+    };
+    expect(readInitialDaemonConnectionHint({ isWebRuntime: true })?.label).toBe(
+      "kumox-sg-rustic-jackal",
+    );
+
+    (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = {
+      listen: "10.90.0.12:6868",
+      label: 42,
+    };
+    expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toMatchObject({
+      listen: "6868--kumox-sg-rustic-jackal.staging.mykumo.xyz:443",
+      label: undefined,
+    });
+  });
+
   it("ignores invalid shapes", () => {
     (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = "localhost:6767";
     expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toBeNull();

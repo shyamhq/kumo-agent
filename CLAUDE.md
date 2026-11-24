@@ -47,9 +47,11 @@ How it runs under Kumo:
   built-in plugins baked in, `cli`) and attaches them to the GitHub Release `vX.Y.Z-kumo.N`. Kumo's
   apps catalogue installs all seven in one `npm install`, and puts the CLI on the computer's PATH
   as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
-- Cut for Kumo, so don't port upstream work on it: the Usage view (plan limits; the context-window
-  meter stays). Four usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/`
-  as fixtures for the usage-source tests, out of the built-in list.
+- Cut for Kumo, so don't port upstream work on them: the Usage view (plan limits; the context-window
+  meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
+  the onboarding phone step. Kumo will list a person's other computers as hosts instead. Four
+  usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/` as fixtures for
+  the usage-source tests, out of the built-in list.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 

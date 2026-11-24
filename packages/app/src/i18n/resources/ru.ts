@@ -284,8 +284,7 @@ export const ru: TranslationResources = {
       selectedHost: "Выбранный хост",
       unknownHost:
         "Невозможно открыть этого агента, поскольку {{serverLabel}} не настроен на этом устройстве.",
-      addHost:
-        "Добавьте хост в настройках или откройте агента на настроенном хосте, чтобы продолжить.",
+      addHost: "Чтобы продолжить, откройте агента на настроенном хосте.",
       preparingSession: "Подготовка сессии на хосте {{serverLabel}}...",
       connecting: "Подключение к {{serverLabel}}...",
       showSoon: "Агент скоро появится.",
@@ -1688,10 +1687,6 @@ export const ru: TranslationResources = {
         title: "Настроить провайдеров",
         description: "Настройте Claude Code, Codex и другие провайдеры",
       },
-      pairDevice: {
-        title: "Подключить устройство",
-        description: "Подключите свой телефон к этому демону",
-      },
     },
   },
   projectPicker: {
@@ -1802,24 +1797,9 @@ export const ru: TranslationResources = {
           description:
             "Разрешите агентам создавать рабочие пространства и общаться с другими агентами",
         },
-        phone: {
-          label: "Мобильный",
-          title: "Агенты всегда под рукой",
-          description:
-            "Полнофункциональное нативное мобильное приложение позволяет управлять любым компьютером с Paseo с телефона",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Выберите способ подключения",
-          connectDocs: "Документация",
-          openConnectDocs: "Открыть документацию по подключению",
-          recommended: "Рекомендуется",
-          relay: { title: "Ретранслятор", hint: "Сквозное шифрование, отсканируйте QR-код" },
-          tailscale: { title: "Tailscale", hint: "Требует небольшой настройки" },
-        },
       },
     },
     title: "Добро пожаловать в Paseo",
-    subtitle: "Подключите компьютер, чтобы начать",
     actions: {
       settings: "Настройки",
     },
@@ -1890,10 +1870,6 @@ export const ru: TranslationResources = {
     },
   },
   pairing: {
-    hostPassword: {
-      title: "Пароль для {{host}}",
-      label: "Пароль хоста",
-    },
     hostConfirmation: {
       title: "Подключиться к этому хосту?",
       description:
@@ -1904,153 +1880,6 @@ export const ru: TranslationResources = {
       fingerprintLabel: "Отпечаток ключа",
       relayLabel: "Реле",
       connect: "Подключить",
-    },
-    connectionMethods: {
-      title: "Добавить подключение",
-      direct: {
-        title: "Прямое подключение",
-        description: "Локальная сеть или VPN.",
-      },
-      remoteSsh: {
-        title: "Удалённый SSH",
-        description: "Подключение через SSH-клиент настольного приложения.",
-      },
-      scanQr: {
-        title: "Сканировать QR-код",
-        description: "Зашифрованное подключение через ретранслятор.",
-      },
-      pasteLink: {
-        title: "Вставить ссылку для сопряжения",
-        description: "Зашифрованное подключение через ретранслятор.",
-      },
-    },
-    direct: {
-      title: "Прямое подключение",
-      helper: "Введите адрес сервера Paseo.",
-      fields: {
-        host: "Хост",
-        port: "Порт",
-        password: "Пароль",
-        optional: "Необязательно",
-        useSsl: "Использовать SSL",
-        connectionUri: "URI подключения",
-      },
-      advanced: {
-        label: "Дополнительные параметры",
-        show: "Показать дополнительные параметры",
-        hide: "Скрыть дополнительные параметры",
-      },
-      passwordVisibility: {
-        show: "Показать пароль",
-        hide: "Скрыть пароль",
-      },
-      actions: {
-        cancel: "Отмена",
-        connect: "Подключиться",
-        connecting: "Подключение...",
-      },
-      errors: {
-        hostRequired: "Требуется хост",
-        invalidPort: "Порт должен быть в диапазоне от 1 до 65535.",
-        invalidConnection: "Неверное соединение",
-        failedTitle: "Соединение не удалось",
-        failedToConnect: "Не удалось подключиться к {{endpoint}}.",
-        noAdditionalDetails: "{{detail}} (дополнительные сведения отсутствуют)",
-        timedOut: "Время подключения истекло. Проверьте адрес хоста, порт и сеть.",
-        refused: "В подключении отказано. Демон запущен по этому адресу?",
-        hostNotFound: "Хост не найден. Проверьте имя хоста и повторите попытку.",
-        hostUnreachable: "Хост недоступен. Проверьте сеть и брандмауэр.",
-        tlsError:
-          "Ошибка TLS. Прямые соединения используют SSL только тогда, когда перед демоном находится терминатор TLS.",
-        unableToConnect:
-          "Не удалось подключиться. Проверьте адрес хоста и порт, а также доступность демона.",
-        details: "Подробности: {{detail}}",
-      },
-    },
-    remoteSsh: {
-      title: "Удалённый SSH",
-      helper: "Подключитесь к демону Paseo на удалённом хосте.",
-      fields: {
-        target: "Хост SSH",
-        password: "Пароль демона",
-        optional: "Необязательно",
-      },
-      passwordVisibility: {
-        show: "Показать пароль",
-        hide: "Скрыть пароль",
-      },
-      actions: {
-        cancel: "Отмена",
-        connect: "Подключить",
-        connecting: "Подключение...",
-      },
-      errors: {
-        targetRequired: "Укажите хост SSH",
-        invalidTarget: "Укажите корректный хост ssh://",
-        failedToConnect: "Не удалось подключиться по SSH. {{detail}}",
-      },
-    },
-    link: {
-      title: "Вставить ссылку для сопряжения",
-      helper: "Вставьте ссылку на сопряжение с вашего сервера.",
-      label: "Ссылка на сопряжение",
-      errors: {
-        required: "Вставьте ссылку для сопряжения (.../#offer=...)",
-        missingOffer: "Ссылка должна содержать #offer=...",
-        emptyOffer: "Параметр #offer не содержит данных.",
-        invalid: "Неверная ссылка для сопряжения",
-        unableToPair: "Не удалось выполнить сопряжение с хостом",
-      },
-      alert: {
-        failedTitle: "Сопряжение не удалось",
-      },
-      actions: {
-        cancel: "Отмена",
-        pair: "Подключить",
-        pairing: "Сопряжение...",
-      },
-    },
-    scan: {
-      title: "Сканировать QR-код",
-      webUnavailableTitle: "Недоступно в веб-версии",
-      webUnavailableBody:
-        "Сканирование QR-кодов не поддерживается в веб-сборке. Используйте «Вставить ссылку».",
-      backToSettings: "Вернуться к настройкам",
-      cameraPermissionTitle: "Разрешение камеры",
-      cameraPermissionBody:
-        "Разрешите доступ к камере, чтобы отсканировать QR-код для сопряжения с вашим демоном.",
-      grantPermission: "Предоставить разрешение",
-      pairing: "Сопряжение...",
-      unableToPair: "Не удалось выполнить сопряжение с хостом",
-      errorTitle: "Ошибка",
-    },
-    device: {
-      loadingOffer: "Загрузка данных для сопряжения...",
-      failedToLoadOffer: "Не удалось загрузить данные для сопряжения.",
-      relayDisabled:
-        "Ретранслятор не включён. Включите его, чтобы выполнить сопряжение устройства.",
-      enableTitle: "Включить ретранслятор?",
-      enableDescription:
-        "Ретранслятор позволяет этому устройству подключаться откуда угодно. Трафик сопряжения защищён сквозным шифрованием.",
-      relayDocs: "Как работает ретранслятор",
-      relayDocsAccessibility: "Узнать, как работает ретранслятор Paseo",
-      enableRelay: "Включить ретранслятор",
-      enablingRelay: "Включение ретранслятора...",
-      notNow: "Не сейчас",
-      directConnectionHint:
-        "Без ретранслятора подключайтесь напрямую через TCP, Tailscale или другую VPN. QR-код создаваться не будет.",
-      tailscaleDocs: "Настроить Tailscale",
-      tailscaleDocsAccessibility: "Узнать, как подключиться через Tailscale",
-      updateRequired: "Обновите хост, чтобы включить ретранслятор из Paseo Desktop.",
-      unavailable: "Данные для сопряжения недоступны.",
-      hint: "Отсканируйте этот QR-код с помощью Paseo на телефоне или скопируйте ссылку ниже.",
-      securityWarning:
-        "Обращайтесь с этой ссылкой для сопряжения как с паролем. Любой, у кого она есть, может получить доступ к этому демону.",
-      qrUnavailable: "QR-код недоступен.",
-      qrAccessibility: "QR-код сопряжения",
-      retry: "Повторить попытку",
-      copy: "Копировать",
-      copied: "Скопировано",
     },
   },
   realtimeVoice: {
@@ -2287,7 +2116,6 @@ export const ru: TranslationResources = {
       local: "Локальный",
     },
     backToWorkspace: "Назад",
-    addHost: "Добавить хост",
     enableBuiltInDaemon: "Включить встроенный демон",
     projects: "Проекты",
     projectList: {
@@ -2437,7 +2265,7 @@ export const ru: TranslationResources = {
       sending: "Отправка",
       setup: {
         label: "Первоначальная настройка",
-        description: "Снова пройти оформление, провайдеры, проекты и привязку телефона",
+        description: "Снова пройти оформление, провайдеры, проекты и оркестрацию",
         action: "Показать настройку снова",
       },
       browserData: {
@@ -2814,12 +2642,6 @@ export const ru: TranslationResources = {
         removeErrorTitle: "Ошибка",
         removeErrorMessage: "Не удалось удалить подключение",
         timeout: "Время ожидания истекло",
-      },
-      pairDevices: {
-        title: "Подключение устройств",
-        rowTitle: "Подключить устройство",
-        rowHint:
-          "Отсканируйте QR-код или скопируйте ссылку, чтобы подключить телефон к этому хосту.",
       },
       skills: {
         sectionTitle: "Навыки оркестрации",

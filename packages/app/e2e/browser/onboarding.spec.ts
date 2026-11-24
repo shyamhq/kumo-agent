@@ -11,11 +11,8 @@ import {
   goToSetupStep,
   hostGivesAgentsPaseoTools,
   openAppAsNewUser,
-  openRelayPairingFromSetup,
-  closeRelayPairing,
   emptyHome,
   loadingScreen,
-  openTailscaleDocsFromSetup,
   paseoToolsSwitch,
   pickTheme,
   projectSuggestion,
@@ -35,7 +32,6 @@ import {
   saveSkillSelection,
 } from "../support/helpers/agent-skills";
 import { installDaemonWebSocketGate } from "../support/helpers/daemon-websocket-gate";
-import { enableRelayAndExpectOffer } from "../support/helpers/pair-device";
 import { seedWorkspace } from "../support/helpers/seed-client";
 import {
   installAcpCatalogProvider,
@@ -387,33 +383,17 @@ test("an existing user only sees setup when they ask for it", async ({ page }) =
   }
 });
 
-test("setup choices carry over to Settings and the phone step pairs over relay", async ({
-  page,
-}, testInfo) => {
-  const host = await startSetupHost("phone", { mutableRelay: { enabled: false } });
+test("setup choices carry over to Settings", async ({ page }, testInfo) => {
+  const host = await startSetupHost("carry-over");
 
   try {
     await openAppAsNewUser(page, host);
     await expectSetupStep(page, "Welcome to Paseo");
 
-    await test.step("Paseo tools start on in setup and Continue turns them on", async () => {
+    await test.step("Paseo tools start on in setup, the last step", async () => {
       await goToSetupStep(page, "Orchestration");
       await expectSetupStep(page, "Let agents use Paseo");
       await expect(paseoToolsSwitch(setupModal(page))).toBeChecked();
-      await continueSetup(page);
-    });
-
-    await test.step("Phone offers Tailscale docs and pairs over relay in its own modal", async () => {
-      await expectSetupStep(page, "Take your agents with you");
-      await page.screenshot({ path: testInfo.outputPath("5-phone.png") });
-      expect(await openTailscaleDocsFromSetup(page)).toBe(
-        "https://paseo.sh/docs/connectivity#tailscale",
-      );
-      const pairing = await openRelayPairingFromSetup(page);
-      await expect(pairing.getByText("Enable relay?", { exact: true })).toBeVisible();
-      await enableRelayAndExpectOffer(page);
-      await page.screenshot({ path: testInfo.outputPath("6-phone-qr.png") });
-      await closeRelayPairing(pairing);
     });
 
     await test.step("Finish closes setup and Settings shows the same Paseo tools value", async () => {

@@ -285,8 +285,7 @@ export const fr: TranslationResources = {
       selectedHost: "Hôte sélectionné",
       unknownHost:
         "Impossible d’ouvrir cet agent, car {{serverLabel}} n’est pas configuré sur cet appareil.",
-      addHost:
-        "Pour continuer, ajoutez l’hôte dans Paramètres ou ouvrez un agent sur un serveur configuré.",
+      addHost: "Pour continuer, ouvrez un agent sur un hôte configuré.",
       preparingSession: "Préparation de la session {{serverLabel}}…",
       connecting: "Connexion à {{serverLabel}}…",
       showSoon: "Cet agent va s’afficher dans un instant.",
@@ -1700,10 +1699,6 @@ export const fr: TranslationResources = {
         title: "Configurer les fournisseurs",
         description: "Configurez Claude Code, Codex et plus encore",
       },
-      pairDevice: {
-        title: "Associer un appareil",
-        description: "Connectez votre téléphone à ce daemon",
-      },
     },
   },
   projectPicker: {
@@ -1815,24 +1810,9 @@ export const fr: TranslationResources = {
           description:
             "Laissez vos agents créer des espaces de travail et parler à d'autres agents",
         },
-        phone: {
-          label: "Mobile",
-          title: "Emportez vos agents partout",
-          description:
-            "L'application mobile native complète vous permet de contrôler n'importe quel ordinateur Paseo depuis votre téléphone",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Choisissez comment vous connecter",
-          connectDocs: "Docs",
-          openConnectDocs: "Ouvrir la documentation sur la connectivité",
-          recommended: "Recommandé",
-          relay: { title: "Relais", hint: "Chiffré de bout en bout, scannez un QR code" },
-          tailscale: { title: "Tailscale", hint: "Demande un peu de configuration" },
-        },
       },
     },
     title: "Bienvenue dans Paseo",
-    subtitle: "Connectez votre ordinateur pour commencer",
     actions: {
       settings: "Paramètres",
     },
@@ -1903,10 +1883,6 @@ export const fr: TranslationResources = {
     },
   },
   pairing: {
-    hostPassword: {
-      title: "Mot de passe pour {{host}}",
-      label: "Mot de passe de l’hôte",
-    },
     hostConfirmation: {
       title: "Se connecter à cet hôte ?",
       description:
@@ -1917,152 +1893,6 @@ export const fr: TranslationResources = {
       fingerprintLabel: "Empreinte de la clé",
       relayLabel: "Relais",
       connect: "Se connecter",
-    },
-    connectionMethods: {
-      title: "Ajouter une connexion",
-      direct: {
-        title: "Connexion directe",
-        description: "Réseau local ou VPN.",
-      },
-      remoteSsh: {
-        title: "SSH distant",
-        description: "Connexion via le client SSH de bureau.",
-      },
-      scanQr: {
-        title: "Scanner le code QR",
-        description: "Connexion chiffrée via le relais.",
-      },
-      pasteLink: {
-        title: "Coller le lien d’association",
-        description: "Connexion chiffrée via le relais.",
-      },
-    },
-    direct: {
-      title: "Connexion directe",
-      helper: "Saisissez l’adresse d’un serveur Paseo.",
-      fields: {
-        host: "Hôte",
-        port: "Port",
-        password: "Mot de passe",
-        optional: "Facultatif",
-        useSsl: "Utiliser SSL",
-        connectionUri: "URI de connexion",
-      },
-      advanced: {
-        label: "Options avancées",
-        show: "Afficher les options avancées",
-        hide: "Masquer les options avancées",
-      },
-      passwordVisibility: {
-        show: "Afficher le mot de passe",
-        hide: "Masquer le mot de passe",
-      },
-      actions: {
-        cancel: "Annuler",
-        connect: "Se connecter",
-        connecting: "Connexion…",
-      },
-      errors: {
-        hostRequired: "L’hôte est requis",
-        invalidPort: "Le port doit être compris entre 1 et 65535",
-        invalidConnection: "Connexion invalide",
-        failedTitle: "Échec de la connexion",
-        failedToConnect: "Impossible de se connecter à {{endpoint}}.",
-        noAdditionalDetails: "{{detail}} (aucun détail supplémentaire)",
-        timedOut: "Délai de connexion dépassé. Vérifiez l’hôte, le port et votre réseau.",
-        refused: "Connexion refusée. Le serveur est-il bien lancé à cette adresse ?",
-        hostNotFound: "Hôte introuvable. Vérifiez le nom d’hôte et réessayez.",
-        hostUnreachable: "Hôte inaccessible. Vérifiez votre réseau et votre pare-feu.",
-        tlsError:
-          "Erreur TLS. Les connexions directes n’utilisent SSL que si un terminateur TLS est placé devant le daemon.",
-        unableToConnect:
-          "Impossible de se connecter. Vérifiez l’hôte, le port et que le daemon est joignable.",
-        details: "Détails : {{detail}}",
-      },
-    },
-    remoteSsh: {
-      title: "SSH distant",
-      helper: "Connectez-vous à un daemon Paseo qui tourne sur l’hôte distant.",
-      fields: {
-        target: "Hôte SSH",
-        password: "Mot de passe du daemon",
-        optional: "Facultatif",
-      },
-      passwordVisibility: {
-        show: "Afficher le mot de passe",
-        hide: "Masquer le mot de passe",
-      },
-      actions: {
-        cancel: "Annuler",
-        connect: "Se connecter",
-        connecting: "Connexion…",
-      },
-      errors: {
-        targetRequired: "L’hôte SSH est requis",
-        invalidTarget: "Saisissez un hôte ssh:// valide",
-        failedToConnect: "Impossible de se connecter en SSH. {{detail}}",
-      },
-    },
-    link: {
-      title: "Coller le lien d’association",
-      helper: "Collez le lien d’association fourni par votre serveur.",
-      label: "Lien d’association",
-      errors: {
-        required: "Collez un lien d’association (.../#offer=...)",
-        missingOffer: "Le lien doit contenir #offer=...",
-        emptyOffer: "Le contenu de l’offre est vide",
-        invalid: "Lien d’association invalide",
-        unableToPair: "Impossible d’associer l’hôte",
-      },
-      alert: {
-        failedTitle: "Échec de l’association",
-      },
-      actions: {
-        cancel: "Annuler",
-        pair: "Associer",
-        pairing: "Association…",
-      },
-    },
-    scan: {
-      title: "Scanner le code QR",
-      webUnavailableTitle: "Indisponible sur le web",
-      webUnavailableBody:
-        "Le scan de code QR n’est pas pris en charge dans la version web. Utilisez plutôt « Coller le lien ».",
-      backToSettings: "Retour aux paramètres",
-      cameraPermissionTitle: "Autorisation de la caméra",
-      cameraPermissionBody:
-        "Autorisez l’accès à la caméra pour scanner le code QR d’association affiché par votre daemon.",
-      grantPermission: "Accorder l’autorisation",
-      pairing: "Association…",
-      unableToPair: "Impossible d’associer l’hôte",
-      errorTitle: "Erreur",
-    },
-    device: {
-      loadingOffer: "Chargement de l’offre d’association…",
-      failedToLoadOffer: "Impossible de charger l’offre d’association.",
-      relayDisabled: "Le relais n’est pas activé. Activez-le pour associer un appareil.",
-      enableTitle: "Activer le relais ?",
-      enableDescription:
-        "Le relais permet à cet appareil de se connecter depuis n’importe où. Le trafic d’association est chiffré de bout en bout.",
-      relayDocs: "Fonctionnement du relais",
-      relayDocsAccessibility: "Découvrir le fonctionnement du relais Paseo",
-      enableRelay: "Activer le relais",
-      enablingRelay: "Activation…",
-      notNow: "Pas maintenant",
-      directConnectionHint:
-        "Sans relais, connectez-vous directement via TCP, Tailscale ou un autre VPN. Aucun code QR n’est créé.",
-      tailscaleDocs: "Configurer Tailscale",
-      tailscaleDocsAccessibility: "Lire comment se connecter via Tailscale",
-      updateRequired: "Mettez à jour l’hôte pour activer le relais depuis Paseo Desktop.",
-      unavailable: "Offre d’association indisponible.",
-      hint: "Scannez ce code QR avec Paseo sur votre téléphone, ou copiez le lien ci-dessous.",
-      securityWarning:
-        "Traitez ce lien d’association comme un mot de passe. Toute personne qui le possède peut accéder à ce daemon.",
-      qrUnavailable: "Code QR indisponible.",
-      qrAccessibility: "Code QR d’association",
-      retry: "Réessayer",
-      copy: "Copier",
-      copied: "Copié",
     },
   },
   realtimeVoice: {
@@ -2300,7 +2130,6 @@ export const fr: TranslationResources = {
       local: "Local",
     },
     backToWorkspace: "Retour",
-    addHost: "Ajouter un hôte",
     enableBuiltInDaemon: "Activer le daemon intégré",
     projects: "Projets",
     projectList: {
@@ -2448,8 +2277,7 @@ export const fr: TranslationResources = {
       sending: "Envoi",
       setup: {
         label: "Configuration initiale",
-        description:
-          "Reprendre l'apparence, les fournisseurs, les projets et l'appairage du téléphone",
+        description: "Reprendre l'apparence, les fournisseurs, les projets et l'orchestration",
         action: "Afficher la configuration",
       },
       browserData: {
@@ -2827,11 +2655,6 @@ export const fr: TranslationResources = {
         removeErrorTitle: "Erreur",
         removeErrorMessage: "Impossible de supprimer la connexion",
         timeout: "Délai dépassé",
-      },
-      pairDevices: {
-        title: "Associer des appareils",
-        rowTitle: "Associer un appareil",
-        rowHint: "Scannez un QR code ou copiez un lien pour connecter votre téléphone à cet hôte",
       },
       skills: {
         ...en.settings.host.skills,

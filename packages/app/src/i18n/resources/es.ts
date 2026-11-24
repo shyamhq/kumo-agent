@@ -284,8 +284,7 @@ export const es: TranslationResources = {
       selectedHost: "Anfitrión seleccionado",
       unknownHost:
         "No se puede abrir este agente porque{{serverLabel}}no está configurado en este dispositivo.",
-      addHost:
-        "Agregue el host en Configuración o abra un agente en un servidor configurado para continuar.",
+      addHost: "Abra un agente en un host configurado para continuar.",
       preparingSession: "Preparando sesión{{serverLabel}}...",
       connecting: "Conectando a{{serverLabel}}...",
       showSoon: "Le mostraremos a este agente en un momento.",
@@ -1705,10 +1704,6 @@ export const es: TranslationResources = {
         title: "Proveedores de configuración",
         description: "ConfigurarClaude Code,Codexy más",
       },
-      pairDevice: {
-        title: "Emparejar dispositivo",
-        description: "Conecta tu teléfono a este demonio",
-      },
     },
   },
   projectPicker: {
@@ -1817,24 +1812,9 @@ export const es: TranslationResources = {
           title: "Deja que los agentes usen Paseo",
           description: "Deja que tus agentes creen espacios de trabajo y hablen con otros agentes",
         },
-        phone: {
-          label: "Móvil",
-          title: "Lleva tus agentes contigo",
-          description:
-            "La app móvil nativa completa te permite controlar cualquier ordenador con Paseo desde tu teléfono",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Elige cómo conectarte",
-          connectDocs: "Docs",
-          openConnectDocs: "Abrir la documentación de conectividad",
-          recommended: "Recomendado",
-          relay: { title: "Relé", hint: "Cifrado de extremo a extremo, escanea un código QR" },
-          tailscale: { title: "Tailscale", hint: "Requiere algo de configuración" },
-        },
       },
     },
     title: "Bienvenido aPaseo",
-    subtitle: "Conecte su computadora para comenzar",
     actions: {
       settings: "Ajustes",
     },
@@ -1905,10 +1885,6 @@ export const es: TranslationResources = {
     },
   },
   pairing: {
-    hostPassword: {
-      title: "Contraseña de {{host}}",
-      label: "Contraseña del host",
-    },
     hostConfirmation: {
       title: "¿Conectar con este host?",
       description:
@@ -1919,152 +1895,6 @@ export const es: TranslationResources = {
       fingerprintLabel: "Huella de la clave",
       relayLabel: "Relay",
       connect: "Conectar",
-    },
-    connectionMethods: {
-      title: "Agregar conexión",
-      direct: {
-        title: "Conexión directa",
-        description: "Red local o VPN.",
-      },
-      remoteSsh: {
-        title: "SSH remoto",
-        description: "Conéctate mediante el cliente SSH de escritorio.",
-      },
-      scanQr: {
-        title: "Escanea el códigoQR",
-        description: "Conexión de retransmisión cifrada.",
-      },
-      pasteLink: {
-        title: "Pegar enlace de emparejamiento",
-        description: "Conexión de retransmisión cifrada.",
-      },
-    },
-    direct: {
-      title: "Conexión directa",
-      helper: "Ingrese la dirección de un servidorPaseo.",
-      fields: {
-        host: "Host",
-        port: "Puerto",
-        password: "Contraseña",
-        optional: "Opcional",
-        useSsl: "Usar SSL",
-        connectionUri: "URI de conexión",
-      },
-      advanced: {
-        label: "Avanzado",
-        show: "Mostrar avanzado",
-        hide: "Ocultar avanzado",
-      },
-      passwordVisibility: {
-        show: "Mostrar contraseña",
-        hide: "Ocultar contraseña",
-      },
-      actions: {
-        cancel: "Cancelar",
-        connect: "Conectar",
-        connecting: "Conectando...",
-      },
-      errors: {
-        hostRequired: "Se requiereHost",
-        invalidPort: "El puerto debe estar entre 1 y 65535",
-        invalidConnection: "Conexión no válida",
-        failedTitle: "La conexión falló",
-        failedToConnect: "No pudimos conectarnos a{{endpoint}}.",
-        noAdditionalDetails: "{{detail}}(no se proporcionan detalles adicionales)",
-        timedOut: "Se agotó el tiempo de conexión. Verifique el host/porty su red.",
-        refused: "Conexión rechazada. ¿El servidor se está ejecutando en esta dirección?",
-        hostNotFound: "Hostno encontrado. Verifique el nombre de host e inténtelo nuevamente.",
-        hostUnreachable: "Hostes inalcanzable. Verifique su red y firewall.",
-        tlsError:
-          "Error de TLS. Las conexiones directas utilizan SSL solo cuando hay un terminador TLS delante del demonio.",
-        unableToConnect:
-          "No se puede conectar. Verifique el host/porty que se pueda acceder al demonio.",
-        details: "Detalles:{{detail}}",
-      },
-    },
-    remoteSsh: {
-      title: "SSH remoto",
-      helper: "Conéctate a un daemon de Paseo en el host remoto.",
-      fields: {
-        target: "Host SSH",
-        password: "Contraseña del daemon",
-        optional: "Opcional",
-      },
-      passwordVisibility: {
-        show: "Mostrar contraseña",
-        hide: "Ocultar contraseña",
-      },
-      actions: {
-        cancel: "Cancelar",
-        connect: "Conectar",
-        connecting: "Conectando...",
-      },
-      errors: {
-        targetRequired: "El host SSH es obligatorio",
-        invalidTarget: "Introduce un host ssh:// válido",
-        failedToConnect: "No se pudo conectar por SSH. {{detail}}",
-      },
-    },
-    link: {
-      title: "Pegar enlace de emparejamiento",
-      helper: "Pegue el enlace de emparejamiento de su servidor.",
-      label: "Enlace de emparejamiento",
-      errors: {
-        required: "Pegue un enlace de emparejamiento (.../#offer=...)",
-        missingOffer: "El enlace debe incluir#offer=...",
-        emptyOffer: "La carga útil de la oferta está vacía",
-        invalid: "Enlace de emparejamiento no válido",
-        unableToPair: "No se puede emparejar el host",
-      },
-      alert: {
-        failedTitle: "El emparejamiento falló",
-      },
-      actions: {
-        cancel: "Cancelar",
-        pair: "Par",
-        pairing: "Emparejamiento...",
-      },
-    },
-    scan: {
-      title: "EscanearQR",
-      webUnavailableTitle: "No disponible en la web",
-      webUnavailableBody:
-        'El escaneoQRno es compatible con la compilación web. Utilice "Pegar enlace" en su lugar.',
-      backToSettings: "Volver a configuración",
-      cameraPermissionTitle: "Permiso de cámara",
-      cameraPermissionBody:
-        "Permita el acceso a la cámara para escanear el códigoQRde emparejamiento de su demonio.",
-      grantPermission: "Conceder permiso",
-      pairing: "Emparejamiento...",
-      unableToPair: "No se puede emparejar el host",
-      errorTitle: "Error",
-    },
-    device: {
-      loadingOffer: "Cargando oferta de maridaje...",
-      failedToLoadOffer: "No se pudo cargar la oferta de emparejamiento.",
-      relayDisabled: "El relé no está habilitado. Habilite el relé para emparejar un dispositivo.",
-      enableTitle: "¿Habilitar el relé?",
-      enableDescription:
-        "El relé permite conectar este dispositivo desde cualquier lugar. El tráfico de emparejamiento está cifrado de extremo a extremo.",
-      relayDocs: "Cómo funciona el relé",
-      relayDocsAccessibility: "Leer cómo funciona el relé de Paseo",
-      enableRelay: "Habilitar relé",
-      enablingRelay: "Habilitando...",
-      notNow: "Ahora no",
-      directConnectionHint:
-        "Sin relé, conéctese directamente por TCP, Tailscale u otra VPN. No se crea ningún código QR.",
-      tailscaleDocs: "Configurar Tailscale",
-      tailscaleDocsAccessibility: "Leer cómo conectarse con Tailscale",
-      updateRequired: "Actualice el host para habilitar el relé desde Paseo Desktop.",
-      unavailable: "Oferta de maridaje no disponible.",
-      hint: "Escanee este códigoQRconPaseoen su teléfono o copie el enlace a continuación.",
-      securityWarning:
-        "Trata este enlace de emparejamiento como una contraseña. Cualquiera que lo tenga puede acceder a este daemon.",
-      qrUnavailable: "CódigoQRno disponible.",
-      qrAccessibility: "Código QR de emparejamiento",
-      retry: "Rever",
-      copy: "Copiar",
-      copied: "Copiado",
     },
   },
   realtimeVoice: {
@@ -2300,7 +2130,6 @@ export const es: TranslationResources = {
       local: "Local",
     },
     backToWorkspace: "Atrás",
-    addHost: "Agregar anfitrión",
     enableBuiltInDaemon: "Activar el demonio integrado",
     projects: "Proyectos",
     projectList: {
@@ -2448,8 +2277,7 @@ export const es: TranslationResources = {
       sending: "Envío",
       setup: {
         label: "Configuración inicial",
-        description:
-          "Vuelve a recorrer apariencia, proveedores, proyectos y emparejamiento del teléfono",
+        description: "Vuelve a recorrer apariencia, proveedores, proyectos y orquestación",
         action: "Mostrar configuración de nuevo",
       },
       browserData: {
@@ -2825,11 +2653,6 @@ export const es: TranslationResources = {
         removeErrorTitle: "Error",
         removeErrorMessage: "No se puede eliminar la conexión",
         timeout: "Se acabó el tiempo",
-      },
-      pairDevices: {
-        title: "Emparejar dispositivos",
-        rowTitle: "Emparejar un dispositivo",
-        rowHint: "Escanee un códigoQRo copie un enlace para conectar su teléfono a este host",
       },
       skills: {
         ...en.settings.host.skills,

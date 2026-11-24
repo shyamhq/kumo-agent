@@ -1,4 +1,3 @@
-import { useAddHost } from "@/hosts/add-host";
 import type { CreateWorkspaceRequestOptions } from "@getpaseo/client/internal/daemon-client";
 import type { AgentSnapshotPayload, CreationSnapshot } from "@getpaseo/protocol/messages";
 import { encodeImages } from "@/utils/encode-images";
@@ -1276,8 +1275,6 @@ export function NewWorkspaceScreen({
     openAddProjectPicker(selectedServerId);
   }, [openAddProjectPicker, selectedServerId]);
 
-  const handleAddHost = useAddHost();
-
   const openPicker = useCallback(() => {
     setPickerOpen(true);
   }, []);
@@ -1608,7 +1605,6 @@ export function NewWorkspaceScreen({
       allHosts,
       selectedServerId,
       onSelect: handleSelectWorkspaceHost,
-      onAddHost: handleAddHost,
     },
     isolation: {
       anchorRef: isolationPickerAnchorRef,

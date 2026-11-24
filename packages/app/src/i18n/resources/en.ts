@@ -280,7 +280,7 @@ export const en = {
       selectedHost: "Selected host",
       unknownHost:
         "Cannot open this agent because {{serverLabel}} is not configured on this device.",
-      addHost: "Add the host in Settings or open an agent on a configured server to continue.",
+      addHost: "Open an agent on a configured host to continue.",
       preparingSession: "Preparing {{serverLabel}} session...",
       connecting: "Connecting to {{serverLabel}}...",
       showSoon: "We will show this agent in a moment.",
@@ -1686,10 +1686,6 @@ export const en = {
         title: "Setup providers",
         description: "Configure Claude Code, Codex, and more",
       },
-      pairDevice: {
-        title: "Pair device",
-        description: "Connect your phone to this daemon",
-      },
     },
   },
   projectPicker: {
@@ -1798,24 +1794,9 @@ export const en = {
           title: "Let agents use Paseo",
           description: "Let your agents create workspaces and talk to other agents",
         },
-        phone: {
-          label: "Mobile",
-          title: "Take your agents with you",
-          description:
-            "The fully featured native mobile app allows you to control any Paseo computer from your phone",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Choose how to connect",
-          connectDocs: "Docs",
-          openConnectDocs: "Open connectivity documentation",
-          recommended: "Recommended",
-          relay: { title: "Relay", hint: "End-to-end encrypted, scan a QR code" },
-          tailscale: { title: "Tailscale", hint: "Requires some setup" },
-        },
       },
     },
     title: "Welcome to Paseo",
-    subtitle: "Connect your computer to get started",
     actions: {
       settings: "Settings",
     },
@@ -1886,10 +1867,6 @@ export const en = {
     },
   },
   pairing: {
-    hostPassword: {
-      title: "Password for {{host}}",
-      label: "Host password",
-    },
     hostConfirmation: {
       title: "Connect to this host?",
       description:
@@ -1900,150 +1877,6 @@ export const en = {
       fingerprintLabel: "Key fingerprint",
       relayLabel: "Relay",
       connect: "Connect",
-    },
-    connectionMethods: {
-      title: "Add connection",
-      direct: {
-        title: "Direct connection",
-        description: "Local network or VPN.",
-      },
-      remoteSsh: {
-        title: "Remote SSH",
-        description: "Connect through the desktop SSH client.",
-      },
-      scanQr: {
-        title: "Scan QR code",
-        description: "Encrypted relay connection.",
-      },
-      pasteLink: {
-        title: "Paste pairing link",
-        description: "Encrypted relay connection.",
-      },
-    },
-    direct: {
-      title: "Direct connection",
-      helper: "Enter the address of a Paseo server.",
-      fields: {
-        host: "Host",
-        port: "Port",
-        password: "Password",
-        optional: "Optional",
-        useSsl: "Use SSL",
-        connectionUri: "Connection URI",
-      },
-      advanced: {
-        label: "Advanced",
-        show: "Show advanced",
-        hide: "Hide advanced",
-      },
-      passwordVisibility: {
-        show: "Show password",
-        hide: "Hide password",
-      },
-      actions: {
-        cancel: "Cancel",
-        connect: "Connect",
-        connecting: "Connecting...",
-      },
-      errors: {
-        hostRequired: "Host is required",
-        invalidPort: "Port must be between 1 and 65535",
-        invalidConnection: "Invalid connection",
-        failedTitle: "Connection failed",
-        failedToConnect: "We failed to connect to {{endpoint}}.",
-        noAdditionalDetails: "{{detail}} (no additional details provided)",
-        timedOut: "Connection timed out. Check the host/port and your network.",
-        refused: "Connection refused. Is the server running at this address?",
-        hostNotFound: "Host not found. Check the hostname and try again.",
-        hostUnreachable: "Host is unreachable. Check your network and firewall.",
-        tlsError:
-          "TLS error. Direct connections use SSL only when a TLS terminator is in front of the daemon.",
-        unableToConnect: "Unable to connect. Check the host/port and that the daemon is reachable.",
-        details: "Details: {{detail}}",
-      },
-    },
-    remoteSsh: {
-      title: "Remote SSH",
-      helper: "Connect to a Paseo daemon running on the remote host.",
-      fields: {
-        target: "SSH host",
-        password: "Daemon password",
-        optional: "Optional",
-      },
-      passwordVisibility: {
-        show: "Show password",
-        hide: "Hide password",
-      },
-      actions: {
-        cancel: "Cancel",
-        connect: "Connect",
-        connecting: "Connecting...",
-      },
-      errors: {
-        targetRequired: "SSH host is required",
-        invalidTarget: "Enter a valid ssh:// host",
-        failedToConnect: "Unable to connect over SSH. {{detail}}",
-      },
-    },
-    link: {
-      title: "Paste pairing link",
-      helper: "Paste the pairing link from your server.",
-      label: "Pairing link",
-      errors: {
-        required: "Paste a pairing link (.../#offer=...)",
-        missingOffer: "Link must include #offer=...",
-        emptyOffer: "Offer payload is empty",
-        invalid: "Invalid pairing link",
-        unableToPair: "Unable to pair host",
-      },
-      alert: {
-        failedTitle: "Pairing failed",
-      },
-      actions: {
-        cancel: "Cancel",
-        pair: "Pair",
-        pairing: "Pairing...",
-      },
-    },
-    scan: {
-      title: "Scan QR",
-      webUnavailableTitle: "Not available on web",
-      webUnavailableBody:
-        'QR scanning is not supported in the web build. Use "Paste link" instead.',
-      backToSettings: "Back to Settings",
-      cameraPermissionTitle: "Camera permission",
-      cameraPermissionBody: "Allow camera access to scan the pairing QR code from your daemon.",
-      grantPermission: "Grant permission",
-      pairing: "Pairing...",
-      unableToPair: "Unable to pair host",
-      errorTitle: "Error",
-    },
-    device: {
-      loadingOffer: "Loading pairing offer...",
-      failedToLoadOffer: "Failed to load pairing offer.",
-      relayDisabled: "Relay is not enabled. Enable relay to pair a device.",
-      enableTitle: "Enable relay?",
-      enableDescription:
-        "Relay lets this device connect from anywhere. Pairing traffic is end-to-end encrypted.",
-      relayDocs: "How relay works",
-      relayDocsAccessibility: "Read how Paseo relay works",
-      enableRelay: "Enable relay",
-      enablingRelay: "Enabling...",
-      notNow: "Not now",
-      directConnectionHint:
-        "Without relay, connect directly over TCP, Tailscale, or another VPN. No QR code is created.",
-      tailscaleDocs: "Set up Tailscale",
-      tailscaleDocsAccessibility: "Read how to connect over Tailscale",
-      updateRequired: "Update the host to enable relay from Paseo Desktop.",
-      unavailable: "Pairing offer unavailable.",
-      hint: "Scan this QR code with Paseo on your phone, or copy the link below.",
-      securityWarning:
-        "Treat this pairing link like a password. Anyone with it can access this daemon.",
-      qrUnavailable: "QR code unavailable.",
-      qrAccessibility: "Pairing QR code",
-      retry: "Retry",
-      copy: "Copy",
-      copied: "Copied",
     },
   },
   realtimeVoice: {
@@ -2279,7 +2112,6 @@ export const en = {
       local: "Local",
     },
     backToWorkspace: "Back",
-    addHost: "Add host",
     enableBuiltInDaemon: "Enable built-in daemon",
     projects: "Projects",
     projectList: {
@@ -2530,7 +2362,7 @@ export const en = {
       sending: "Sending",
       setup: {
         label: "First-run setup",
-        description: "Walk through appearance, providers, projects and phone pairing again",
+        description: "Walk through appearance, providers, projects and orchestration again",
         action: "Show setup again",
       },
       browserData: {
@@ -2896,11 +2728,6 @@ export const en = {
         removeErrorTitle: "Error",
         removeErrorMessage: "Unable to remove connection",
         timeout: "Timeout",
-      },
-      pairDevices: {
-        title: "Pair devices",
-        rowTitle: "Pair a device",
-        rowHint: "Scan a QR code or copy a link to connect your phone to this host",
       },
       skills: {
         sectionTitle: "Orchestration skills",

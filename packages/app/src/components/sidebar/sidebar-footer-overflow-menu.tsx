@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronUp, CircleHelp, FolderPlus, Plus, Server, Settings } from "lucide-react-native";
+import { ChevronUp, CircleHelp, FolderPlus, Server, Settings } from "lucide-react-native";
 import { withUnistyles } from "react-native-unistyles";
 import { HostStatusDotSlot } from "@/components/hosts/host-picker";
 import type { SidebarFooterAction } from "@/components/sidebar-footer-layout";
@@ -8,7 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuSubTrigger,
   type MenuPageDefinition,
 } from "@/components/ui/dropdown-menu";
@@ -26,12 +25,10 @@ const ThemedFolderPlus = withUnistyles(FolderPlus);
 const ThemedServer = withUnistyles(Server);
 const ThemedCircleHelp = withUnistyles(CircleHelp);
 const ThemedSettings = withUnistyles(Settings);
-const ThemedPlus = withUnistyles(Plus);
 const addProjectLeading = <ThemedFolderPlus size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const hostsLeading = <ThemedServer size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const helpLeading = <ThemedCircleHelp size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 const settingsLeading = <ThemedSettings size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
-const addHostLeading = <ThemedPlus size={ICON_SIZE.sm} uniProps={mutedIconMapping} />;
 
 const HOSTS_PAGE_ID = "hosts";
 const HELP_PAGE_ID = "help";
@@ -42,7 +39,6 @@ export interface SidebarFooterOverflowMenuProps {
   labels: { addProject: string; hosts: string; settings: string };
   onAddProject: () => void;
   onSettings: () => void;
-  onAddHost: () => void;
   onOpenHostSettings: (serverId: string) => void;
 }
 
@@ -56,7 +52,6 @@ export function SidebarFooterOverflowMenu({
   labels,
   onAddProject,
   onSettings,
-  onAddHost,
   onOpenHostSettings,
 }: SidebarFooterOverflowMenuProps): ReactElement {
   const { t } = useTranslation();
@@ -79,14 +74,14 @@ export function SidebarFooterOverflowMenu({
       result.push({
         id: HOSTS_PAGE_ID,
         title: labels.hosts,
-        content: <HostsPage onAddHost={onAddHost} onOpenHostSettings={onOpenHostSettings} />,
+        content: <HostsPage onOpenHostSettings={onOpenHostSettings} />,
       });
     }
     if (actions.includes("help")) {
       result.push({ id: HELP_PAGE_ID, title: helpLabel, content: <SidebarHelpMenuItems /> });
     }
     return result;
-  }, [actions, helpLabel, labels.hosts, onAddHost, onOpenHostSettings]);
+  }, [actions, helpLabel, labels.hosts, onOpenHostSettings]);
 
   function renderAction(action: SidebarFooterAction): ReactElement {
     switch (action) {
@@ -162,15 +157,12 @@ export function SidebarFooterOverflowMenu({
   );
 }
 
-/** The host picker's choices as a menu page: each host opens its settings, then Add host. */
+/** The host picker's choices as a menu page: each host opens its settings. */
 function HostsPage({
-  onAddHost,
   onOpenHostSettings,
 }: {
-  onAddHost: () => void;
   onOpenHostSettings: (serverId: string) => void;
 }): ReactElement {
-  const { t } = useTranslation();
   const hosts = useHosts();
   const localServerId = useLocalDaemonServerId();
   const orderedHosts = useMemo(
@@ -188,10 +180,6 @@ function HostsPage({
           onOpenHostSettings={onOpenHostSettings}
         />
       ))}
-      {orderedHosts.length > 0 ? <DropdownMenuSeparator /> : null}
-      <DropdownMenuItem testID="sidebar-host-add" leading={addHostLeading} onSelect={onAddHost}>
-        {t("settings.addHost")}
-      </DropdownMenuItem>
     </>
   );
 }

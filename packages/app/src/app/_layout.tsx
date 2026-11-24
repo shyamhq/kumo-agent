@@ -7,7 +7,6 @@ import {
   useWindowLayout,
   resolveDesktopDivisionLayout,
 } from "@/window-layout";
-import { AddHostProvider, AddHostFlowHost } from "@/hosts/add-host";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useActiveWorkspaceSelection } from "@/stores/navigation-active-workspace-store";
 import { useIsExplorerSidebarOpen } from "@/workspace-tabs/explorer-sidebar";
@@ -537,7 +536,6 @@ function AppContainer({ children, chromeEnabled: chromeEnabledOverride }: AppCon
   const surface = (
     <View style={layoutStyles.surfaceFill}>
       {workspaceChrome}
-      <AddHostFlowHost />
       <WorkspaceArchiveShortcutHandler />
       <AppearanceStyleBoundary>
         {!isCompactLayout && appChromeLayout.sidebarToggleOwner === "window" ? (
@@ -1027,13 +1025,11 @@ function RootAppTree() {
     <GestureHandlerRootView style={flexStyle}>
       <View style={layoutStyles.surfaceFill}>
         <LucideProvider strokeWidth={ICON_STROKE_WIDTH}>
-          <AddHostProvider>
-            <RootProviders>
-              <RuntimeProviders>
-                <AppShell />
-              </RuntimeProviders>
-            </RootProviders>
-          </AddHostProvider>
+          <RootProviders>
+            <RuntimeProviders>
+              <AppShell />
+            </RuntimeProviders>
+          </RootProviders>
         </LucideProvider>
       </View>
     </GestureHandlerRootView>
