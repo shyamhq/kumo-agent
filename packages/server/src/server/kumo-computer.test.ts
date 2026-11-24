@@ -6,13 +6,16 @@ import { addKumoWorkspace, readKumoComputer } from "./kumo-computer.js";
 
 describe("readKumoComputer", () => {
   test.each([
-    ["https://6868--kumox-sg-rustic-jackal.staging.mykumo.xyz", "kumox-sg-rustic-jackal"],
-    ["https://6868--deep-badger.mykumo.xyz/", "deep-badger"],
-  ])("reads the computer from %s", (publicUrl, handle) => {
-    expect(readKumoComputer(publicUrl)).toEqual({
-      handle,
-      host: publicUrl.replace(/^https:\/\/\d+--/, "").replace(/\/$/, ""),
-    });
+    [
+      "https://6868--kumox-sg-rustic-jackal.staging.mykumo.xyz",
+      { handle: "kumox-sg-rustic-jackal", host: "kumox-sg-rustic-jackal.staging.mykumo.xyz" },
+    ],
+    [
+      "https://6868--deep-badger.mykumo.xyz/",
+      { handle: "deep-badger", host: "deep-badger.mykumo.xyz" },
+    ],
+  ])("reads the computer from %s", (publicUrl, computer) => {
+    expect(readKumoComputer(publicUrl)).toEqual(computer);
   });
 
   test.each([undefined, "", "http://6868--deep-badger.mykumo.xyz", "https://example.com"])(

@@ -60,7 +60,7 @@ export const DAEMON_SETTING_ENV_KEYS = [
 
 const CONFIG_CONTEXT_ENV_KEYS = [
   "PASEO_NODE_ENV",
-  // Set by Kumo for every app: the web UI may be framed only by that computer's OS. Context, not a
+  // Set by Kumo for every app; it names the Kumo computer (kumo-computer.ts). Context, not a
   // setting, so a managed launch keeps it.
   "PUBLIC_URL",
   "PASEO_DESKTOP_MANAGED",
