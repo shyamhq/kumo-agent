@@ -1676,10 +1676,6 @@ export const ja: TranslationResources = {
         title: "プロバイダーをセットアップ",
         description: "Claude Code、Codexなどを設定",
       },
-      pairDevice: {
-        title: "デバイスをペアリング",
-        description: "このデーモンにスマートフォンを接続",
-      },
     },
   },
   projectPicker: {
@@ -1789,24 +1785,9 @@ export const ja: TranslationResources = {
           description:
             "エージェントがワークスペースを作成し、ほかのエージェントとやり取りできるようにします",
         },
-        phone: {
-          label: "モバイル",
-          title: "エージェントを持ち歩く",
-          description:
-            "フル機能のネイティブモバイルアプリで、スマートフォンからどの Paseo コンピューターでも操作できます",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "接続方法を選択",
-          connectDocs: "ドキュメント",
-          openConnectDocs: "接続のドキュメントを開く",
-          recommended: "おすすめ",
-          relay: { title: "リレー", hint: "エンドツーエンド暗号化、QR コードをスキャン" },
-          tailscale: { title: "Tailscale", hint: "少し設定が必要です" },
-        },
       },
     },
     title: "Paseoへようこそ",
-    subtitle: "始めるにはコンピューターに接続してください",
     actions: {
       settings: "設定",
     },
@@ -2274,7 +2255,6 @@ export const ja: TranslationResources = {
       local: "ローカル",
     },
     backToWorkspace: "戻る",
-    addHost: "ホストを追加",
     enableBuiltInDaemon: "組み込みデーモンを有効にする",
     projects: "プロジェクト",
     projectList: {
@@ -2793,11 +2773,6 @@ export const ja: TranslationResources = {
         removeErrorTitle: "エラー",
         removeErrorMessage: "接続を削除できません",
         timeout: "タイムアウト",
-      },
-      pairDevices: {
-        title: "デバイスをペアリング",
-        rowTitle: "デバイスをペアリング",
-        rowHint: "QRコードをスキャンするかリンクをコピーしてスマートフォンをこのホストに接続",
       },
       skills: {
         ...en.settings.host.skills,

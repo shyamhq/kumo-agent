@@ -1688,10 +1688,6 @@ export const ru: TranslationResources = {
         title: "Настроить провайдеров",
         description: "Настройте Claude Code, Codex и другие провайдеры",
       },
-      pairDevice: {
-        title: "Подключить устройство",
-        description: "Подключите свой телефон к этому демону",
-      },
     },
   },
   projectPicker: {
@@ -1802,24 +1798,9 @@ export const ru: TranslationResources = {
           description:
             "Разрешите агентам создавать рабочие пространства и общаться с другими агентами",
         },
-        phone: {
-          label: "Мобильный",
-          title: "Агенты всегда под рукой",
-          description:
-            "Полнофункциональное нативное мобильное приложение позволяет управлять любым компьютером с Paseo с телефона",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Выберите способ подключения",
-          connectDocs: "Документация",
-          openConnectDocs: "Открыть документацию по подключению",
-          recommended: "Рекомендуется",
-          relay: { title: "Ретранслятор", hint: "Сквозное шифрование, отсканируйте QR-код" },
-          tailscale: { title: "Tailscale", hint: "Требует небольшой настройки" },
-        },
       },
     },
     title: "Добро пожаловать в Paseo",
-    subtitle: "Подключите компьютер, чтобы начать",
     actions: {
       settings: "Настройки",
     },
@@ -2287,7 +2268,6 @@ export const ru: TranslationResources = {
       local: "Локальный",
     },
     backToWorkspace: "Назад",
-    addHost: "Добавить хост",
     enableBuiltInDaemon: "Включить встроенный демон",
     projects: "Проекты",
     projectList: {
@@ -2814,12 +2794,6 @@ export const ru: TranslationResources = {
         removeErrorTitle: "Ошибка",
         removeErrorMessage: "Не удалось удалить подключение",
         timeout: "Время ожидания истекло",
-      },
-      pairDevices: {
-        title: "Подключение устройств",
-        rowTitle: "Подключить устройство",
-        rowHint:
-          "Отсканируйте QR-код или скопируйте ссылку, чтобы подключить телефон к этому хосту.",
       },
       skills: {
         sectionTitle: "Навыки оркестрации",

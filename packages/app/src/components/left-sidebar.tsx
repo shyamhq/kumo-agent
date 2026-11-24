@@ -1,5 +1,4 @@
 import { SidebarViewSlot } from "@/plugins/sidebar-view";
-import { useAddHost } from "@/hosts/add-host";
 import { FolderPlus, GitBranch, Server, Settings, type LucideIcon } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -128,7 +127,6 @@ interface SidebarSharedProps {
   handleImportSession: () => void;
   handleSettings: () => void;
   labels: SidebarLabels;
-  handleAddHost: () => void;
   handleOpenHostSettings: (serverId: string) => void;
 }
 
@@ -210,8 +208,6 @@ export const LeftSidebar = memo(function LeftSidebar({
     openSettingsFromSidebar({ workspace: activeWorkspace, isCompact: isCompactLayout });
   }, [activeWorkspace, isCompactLayout]);
 
-  const handleAddHost = useAddHost();
-
   const handleOpenHostSettings = useCallback(
     (serverId: string) => {
       openSettingsFromSidebar({
@@ -258,7 +254,6 @@ export const LeftSidebar = memo(function LeftSidebar({
     handleOpenProject,
     handleImportSession: openImportSession,
     handleSettings,
-    handleAddHost,
     handleOpenHostSettings,
   };
 
@@ -347,11 +342,9 @@ function FooterIconButton({
 
 function SidebarHostPicker({
   label,
-  onAddHost,
   onOpenHostSettings,
 }: {
   label: string;
-  onAddHost: () => void;
   onOpenHostSettings: (serverId: string) => void;
 }) {
   const hosts = useHosts();
@@ -375,14 +368,11 @@ function SidebarHostPicker({
       open={isOpen}
       onOpenChange={setIsOpen}
       anchorRef={triggerRef}
-      includeAddHost
-      onAddHost={onAddHost}
       showActiveConnection
       onOpenHostSettings={onOpenHostSettings}
       searchable
       desktopPlacement="top-start"
       desktopMinWidth={240}
-      addHostTestID="sidebar-host-add"
       hostOptionTestID={sidebarHostOptionTestID}
     >
       <FooterIconButton
@@ -417,7 +407,6 @@ function SidebarFooter({
   handleOpenProject,
   handleSettings,
   labels,
-  handleAddHost,
   handleOpenHostSettings,
   onBeforeNavigate,
 }: {
@@ -429,7 +418,6 @@ function SidebarFooter({
     settings: string;
     searchHosts: string;
   };
-  handleAddHost: () => void;
   handleOpenHostSettings: (serverId: string) => void;
   onBeforeNavigate?: () => void;
 }) {
@@ -472,11 +460,7 @@ function SidebarFooter({
           />
         ) : null}
         {isInline("hosts") ? (
-          <SidebarHostPicker
-            label={labels.hosts}
-            onAddHost={handleAddHost}
-            onOpenHostSettings={handleOpenHostSettings}
-          />
+          <SidebarHostPicker label={labels.hosts} onOpenHostSettings={handleOpenHostSettings} />
         ) : null}
         <View style={styles.footerSpacer} />
         {isInline("help") ? <SidebarHelpMenu /> : null}
@@ -486,7 +470,6 @@ function SidebarFooter({
             labels={labels}
             onAddProject={handleOpenProject}
             onSettings={handleSettings}
-            onAddHost={handleAddHost}
             onOpenHostSettings={handleOpenHostSettings}
           />
         ) : null}
@@ -552,7 +535,6 @@ function MobileSidebar({
   handleImportSession,
   handleSettings,
   labels,
-  handleAddHost,
   handleOpenHostSettings,
   insetsTop,
   insetsBottom,
@@ -640,7 +622,6 @@ function MobileSidebar({
           handleOpenProject={handleOpenProject}
           handleSettings={handleSettings}
           labels={labels}
-          handleAddHost={handleAddHost}
           handleOpenHostSettings={handleOpenHostSettings}
           onBeforeNavigate={closeSidebar}
         />
@@ -711,7 +692,6 @@ function DesktopSidebar({
   handleImportSession,
   handleSettings,
   labels,
-  handleAddHost,
   handleOpenHostSettings,
   insetsTop,
   active,
@@ -897,7 +877,6 @@ function DesktopSidebar({
             handleOpenProject={handleOpenProject}
             handleSettings={handleSettings}
             labels={labels}
-            handleAddHost={handleAddHost}
             handleOpenHostSettings={handleOpenHostSettings}
             onBeforeNavigate={closeSidebar}
           />

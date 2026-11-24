@@ -114,10 +114,6 @@ export async function expectAddProjectResultVisible(page: Page, text: string): P
     .toBe(true);
 }
 
-export async function chooseAddHostFromProjectFlow(page: Page): Promise<void> {
-  await page.getByRole("button", { name: /Add host.*No connected hosts/ }).click();
-}
-
 export async function navigateAndDismissAddProject(page: Page): Promise<void> {
   // Keep both keys in one task so Escape closes with a selection update still queued.
   await page.evaluate(() => {

@@ -1658,10 +1658,6 @@ export const ar: TranslationResources = {
         title: "موفري الإعداد",
         description: "قم بتكوين Claude Code و Codex والمزيد",
       },
-      pairDevice: {
-        title: "إقران الجهاز",
-        description: "قم بتوصيل هاتفك بهذا البرنامج الخفي",
-      },
     },
   },
   projectPicker: {
@@ -1769,24 +1765,9 @@ export const ar: TranslationResources = {
           title: "اسمح للوكلاء باستخدام Paseo",
           description: "اسمح لوكلائك بإنشاء مساحات عمل والتحدث مع وكلاء آخرين",
         },
-        phone: {
-          label: "الجوال",
-          title: "خذ وكلاءك معك",
-          description:
-            "يتيح لك تطبيق الجوال الأصلي كامل الميزات التحكم في أي كمبيوتر يعمل عليه Paseo من هاتفك",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "اختر طريقة الاتصال",
-          connectDocs: "الوثائق",
-          openConnectDocs: "افتح وثائق الاتصال",
-          recommended: "موصى به",
-          relay: { title: "التتابع", hint: "مشفّر من طرف إلى طرف، امسح رمز QR" },
-          tailscale: { title: "Tailscale", hint: "يتطلب بعض الإعداد" },
-        },
       },
     },
     title: "مرحبا بكم في Paseo",
-    subtitle: "قم بتوصيل جهاز الكمبيوتر الخاص بك للبدء",
     actions: {
       settings: "إعدادات",
     },
@@ -2250,7 +2231,6 @@ export const ar: TranslationResources = {
       local: "محلي",
     },
     backToWorkspace: "خلف",
-    addHost: "أضف مضيفًا",
     enableBuiltInDaemon: "تفعيل البرنامج الخفي المدمج",
     projects: "المشاريع",
     projectList: {
@@ -2765,11 +2745,6 @@ export const ar: TranslationResources = {
         removeErrorTitle: "خطأ",
         removeErrorMessage: "غير قادر على إزالة الاتصال",
         timeout: "نفذ الوقت",
-      },
-      pairDevices: {
-        title: "إقران الأجهزة",
-        rowTitle: "إقران جهاز",
-        rowHint: "امسح رمز QR ضوئيًا أو انسخ رابطًا لتوصيل هاتفك بهذا المضيف",
       },
       skills: {
         ...en.settings.host.skills,

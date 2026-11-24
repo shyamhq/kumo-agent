@@ -1686,10 +1686,6 @@ export const en = {
         title: "Setup providers",
         description: "Configure Claude Code, Codex, and more",
       },
-      pairDevice: {
-        title: "Pair device",
-        description: "Connect your phone to this daemon",
-      },
     },
   },
   projectPicker: {
@@ -1798,24 +1794,9 @@ export const en = {
           title: "Let agents use Paseo",
           description: "Let your agents create workspaces and talk to other agents",
         },
-        phone: {
-          label: "Mobile",
-          title: "Take your agents with you",
-          description:
-            "The fully featured native mobile app allows you to control any Paseo computer from your phone",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Choose how to connect",
-          connectDocs: "Docs",
-          openConnectDocs: "Open connectivity documentation",
-          recommended: "Recommended",
-          relay: { title: "Relay", hint: "End-to-end encrypted, scan a QR code" },
-          tailscale: { title: "Tailscale", hint: "Requires some setup" },
-        },
       },
     },
     title: "Welcome to Paseo",
-    subtitle: "Connect your computer to get started",
     actions: {
       settings: "Settings",
     },
@@ -2279,7 +2260,6 @@ export const en = {
       local: "Local",
     },
     backToWorkspace: "Back",
-    addHost: "Add host",
     enableBuiltInDaemon: "Enable built-in daemon",
     projects: "Projects",
     projectList: {
@@ -2896,11 +2876,6 @@ export const en = {
         removeErrorTitle: "Error",
         removeErrorMessage: "Unable to remove connection",
         timeout: "Timeout",
-      },
-      pairDevices: {
-        title: "Pair devices",
-        rowTitle: "Pair a device",
-        rowHint: "Scan a QR code or copy a link to connect your phone to this host",
       },
       skills: {
         sectionTitle: "Orchestration skills",

@@ -1,7 +1,6 @@
 import { useSettingsContentPresented } from "@/navigation/settings-presentation";
 import { AppearanceText as Text } from "@/appearance/text";
 import { useHardwareKeyboardPresent } from "@/keyboard";
-import { useAddHost } from "@/hosts/add-host";
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { Alert, Pressable, ScrollView, View, type PressableStateCallbackType } from "react-native";
@@ -26,12 +25,10 @@ import {
   Bell,
   Shield,
   Puzzle,
-  Plus,
   FolderGit2,
   SquareTerminal,
   Code2,
   Files,
-  Smartphone,
   Sparkles,
   Mic,
   Blocks,
@@ -99,7 +96,6 @@ import {
 } from "@/i18n/locales";
 import {
   HostConnectionsPage,
-  HostPairDevicePage,
   HostAgentsPage,
   HostSettingsPage,
   HostProvidersPage,
@@ -245,7 +241,6 @@ const HOST_SECTION_ITEMS: HostSectionItem[] = [
   { id: "host", labelKey: "settings.hostSections.host", icon: Server },
   { id: "projects", labelKey: "settings.hostSections.projects", icon: FolderGit2 },
   { id: "connections", labelKey: "settings.hostSections.connections", icon: Network },
-  { id: "pair-device", labelKey: "openProject.tiles.pairDevice.title", icon: Smartphone },
   { id: "agents", labelKey: "settings.hostSections.agents", icon: Bot },
   { id: "metadata", labelKey: "settings.hostSections.metadata", icon: Sparkles },
   { id: "voice", labelKey: "settings.hostSections.voice", icon: Mic },
@@ -264,8 +259,6 @@ function renderHostSettingsContent(
       return <ProjectsScreen serverId={view.serverId} />;
     case "connections":
       return <HostConnectionsPage serverId={view.serverId} />;
-    case "pair-device":
-      return <HostPairDevicePage serverId={view.serverId} />;
     case "agents":
       return <HostAgentsPage serverId={view.serverId} />;
     case "metadata":
@@ -849,7 +842,6 @@ interface HostPickerProps {
   activeServerId: string | null;
   sortedHosts: HostProfile[];
   onSelectHost: (serverId: string) => void;
-  onAddHost: () => void;
   enableBuiltInDaemonOption: EnableBuiltInDaemonOption;
 }
 
@@ -857,14 +849,12 @@ interface HostPickerProps {
  * Scopes the host sections to a host. Reuses the canonical sidebar host
  * switcher pattern (left-sidebar.tsx): a quiet row-styled trigger opening a
  * <Combobox>. The local host is listed first, each row shows the connection it
- * is using right now; an "Add host" row is always reachable from the list —
- * even with a single host.
+ * is using right now.
  */
 function HostPicker({
   activeServerId,
   sortedHosts,
   onSelectHost,
-  onAddHost,
   enableBuiltInDaemonOption,
 }: HostPickerProps) {
   const { t } = useTranslation();
@@ -895,15 +885,12 @@ function HostPicker({
       open={isOpen}
       onOpenChange={setIsOpen}
       anchorRef={triggerRef}
-      includeAddHost
-      onAddHost={onAddHost}
       includeEnableBuiltInDaemon={enableBuiltInDaemonOption.visible}
       onEnableBuiltInDaemon={enableBuiltInDaemonOption.onPress}
       showActiveConnection
       searchable={false}
       title={t("settings.hostPicker.switchHost")}
       desktopMinWidth={240}
-      addHostTestID="settings-add-host"
       hostOptionTestID={hostOptionTestID}
     >
       <ComboboxTrigger
@@ -943,7 +930,6 @@ interface SettingsSidebarProps {
   onSelectSection: (section: SettingsSectionSlug) => void;
   onSelectHostSection: (section: HostSectionSlug) => void;
   onSelectHost: (serverId: string) => void;
-  onAddHost: () => void;
   onBackToWorkspace: () => void;
   activeHostServerId: string | null;
   layout: "desktop" | "mobile";
@@ -954,7 +940,6 @@ function SettingsSidebar({
   onSelectSection,
   onSelectHostSection,
   onSelectHost,
-  onAddHost,
   onBackToWorkspace,
   activeHostServerId,
   layout,
@@ -1009,7 +994,6 @@ function SettingsSidebar({
             activeServerId={activeHostServerId}
             sortedHosts={sortedHosts}
             onSelectHost={onSelectHost}
-            onAddHost={onAddHost}
             enableBuiltInDaemonOption={enableBuiltInDaemonOption}
           />
           {HOST_SECTION_ITEMS.map((item) => (
@@ -1025,22 +1009,6 @@ function SettingsSidebar({
         </SidebarGroup>
       ) : (
         <SidebarGroup>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t("settings.addHost")}
-            onPress={onAddHost}
-            testID="settings-add-host"
-            style={sidebarItemStyle}
-          >
-            <Plus
-              size={densityIconSize(rt, "md")}
-              color={theme.colors.foregroundMuted}
-              strokeWidth={SIDEBAR_ICON_STROKE_WIDTH}
-            />
-            <Text style={sidebarStyles.label} numberOfLines={1}>
-              {t("settings.addHost")}
-            </Text>
-          </Pressable>
           {enableBuiltInDaemonOption.visible ? (
             <Pressable
               accessibilityRole="button"
@@ -1182,21 +1150,6 @@ export default function SettingsScreen({ view }: SettingsScreenProps) {
     }
   }, [isPlaybackTestRunning, t, voiceAudioEngine]);
 
-  const handleHostAdded = useCallback(
-    (serverId: string) => {
-      selectSettingsHost(serverId);
-      const target = buildSettingsHostSectionRoute(serverId, "host");
-      if (isCompactLayout) {
-        router.push(target);
-      } else {
-        router.replace(target);
-      }
-    },
-    [isCompactLayout, router],
-  );
-
-  const handleAddHost = useAddHost({ onAdded: handleHostAdded });
-
   const handleSelectSection = useCallback(
     (section: SettingsSectionSlug) => {
       const target = buildSettingsSectionRoute(section);
@@ -1242,10 +1195,7 @@ export default function SettingsScreen({ view }: SettingsScreenProps) {
 
   const handleSelectHostSection = useCallback(
     (section: HostSectionSlug) => {
-      if (!activeHostServerId) {
-        handleAddHost();
-        return;
-      }
+      if (!activeHostServerId) return;
       const target = buildSettingsHostSectionRoute(activeHostServerId, section);
       if (isCompactLayout) {
         router.push(target);
@@ -1253,7 +1203,7 @@ export default function SettingsScreen({ view }: SettingsScreenProps) {
         router.replace(target);
       }
     },
-    [activeHostServerId, handleAddHost, isCompactLayout, router],
+    [activeHostServerId, isCompactLayout, router],
   );
 
   const handleHostRemoved = useCallback(() => {
@@ -1397,7 +1347,6 @@ export default function SettingsScreen({ view }: SettingsScreenProps) {
             onSelectSection={handleSelectSection}
             onSelectHostSection={handleSelectHostSection}
             onSelectHost={handleSelectHost}
-            onAddHost={handleAddHost}
             onBackToWorkspace={handleBackToWorkspace}
             activeHostServerId={activeHostServerId}
             layout="mobile"
@@ -1434,7 +1383,6 @@ export default function SettingsScreen({ view }: SettingsScreenProps) {
             onSelectSection={handleSelectSection}
             onSelectHostSection={handleSelectHostSection}
             onSelectHost={handleSelectHost}
-            onAddHost={handleAddHost}
             onBackToWorkspace={handleBackToWorkspace}
             activeHostServerId={activeHostServerId}
             layout="desktop"

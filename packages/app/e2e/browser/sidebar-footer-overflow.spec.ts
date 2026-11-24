@@ -66,7 +66,7 @@ test.describe("Sidebar footer on a short, narrow phone", () => {
   // 164pt for buttons holds Settings, Add project and the caret, so Hosts moves behind it.
   test.use({ viewport: { width: 180, height: 360 }, hasTouch: true });
 
-  test("the overflow Hosts page scrolls to its last host and Add host", async ({ page }) => {
+  test("the overflow Hosts page scrolls to its last host", async ({ page }) => {
     await gotoAppShell(page);
     await addOfflineHostsAndReload(
       page,
@@ -85,11 +85,8 @@ test.describe("Sidebar footer on a short, narrow phone", () => {
     await expectFooterMenusInsideViewport(page);
     await chooseFooterOverflowAction(page, "Hosts");
     await expectFooterMenusInsideViewport(page);
-    const addHost = page.getByRole("menuitem", { name: "Add host" });
-    await addHost.scrollIntoViewIfNeeded();
-    await expect(page.getByRole("menuitem", { name: "Overflow host 9" })).toBeVisible();
-    await expect(addHost).toBeInViewport();
-    await addHost.click();
-    await expect(page.getByText("Add connection", { exact: true })).toBeVisible();
+    const lastHost = page.getByRole("menuitem", { name: "Overflow host 9" });
+    await lastHost.scrollIntoViewIfNeeded();
+    await expect(lastHost).toBeInViewport();
   });
 });

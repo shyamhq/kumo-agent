@@ -1668,10 +1668,6 @@ export const ko: TranslationResources = {
         title: "프로바이더 설정",
         description: "Claude Code, Codex 등을 구성합니다",
       },
-      pairDevice: {
-        title: "기기 페어링",
-        description: "휴대폰을 이 데몬에 연결합니다",
-      },
     },
   },
   projectPicker: {
@@ -1780,24 +1776,9 @@ export const ko: TranslationResources = {
           title: "에이전트가 Paseo를 사용하도록 허용",
           description: "에이전트가 워크스페이스를 만들고 다른 에이전트와 대화하게 하세요",
         },
-        phone: {
-          label: "모바일",
-          title: "어디서나 에이전트와 함께",
-          description:
-            "모든 기능을 갖춘 네이티브 모바일 앱으로 휴대폰에서 어떤 Paseo 컴퓨터든 제어할 수 있습니다",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "연결 방법 선택",
-          connectDocs: "문서",
-          openConnectDocs: "연결 문서 열기",
-          recommended: "권장",
-          relay: { title: "릴레이", hint: "엔드투엔드 암호화, QR 코드를 스캔하세요" },
-          tailscale: { title: "Tailscale", hint: "약간의 설정이 필요합니다" },
-        },
       },
     },
     title: "Paseo에 오신 것을 환영합니다",
-    subtitle: "시작하려면 컴퓨터를 연결하세요",
     actions: {
       settings: "설정",
     },
@@ -2261,7 +2242,6 @@ export const ko: TranslationResources = {
       local: "로컬",
     },
     backToWorkspace: "뒤로",
-    addHost: "호스트 추가",
     enableBuiltInDaemon: "내장 데몬 활성화",
     projects: "프로젝트",
     projectList: {
@@ -2779,11 +2759,6 @@ export const ko: TranslationResources = {
         removeErrorTitle: "오류",
         removeErrorMessage: "연결을 제거할 수 없습니다",
         timeout: "시간 초과",
-      },
-      pairDevices: {
-        title: "기기 페어링",
-        rowTitle: "기기 페어링",
-        rowHint: "QR 코드를 스캔하거나 링크를 복사하여 휴대폰을 이 호스트에 연결하세요",
       },
       skills: {
         ...en.settings.host.skills,

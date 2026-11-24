@@ -1700,10 +1700,6 @@ export const fr: TranslationResources = {
         title: "Configurer les fournisseurs",
         description: "Configurez Claude Code, Codex et plus encore",
       },
-      pairDevice: {
-        title: "Associer un appareil",
-        description: "Connectez votre téléphone à ce daemon",
-      },
     },
   },
   projectPicker: {
@@ -1815,24 +1811,9 @@ export const fr: TranslationResources = {
           description:
             "Laissez vos agents créer des espaces de travail et parler à d'autres agents",
         },
-        phone: {
-          label: "Mobile",
-          title: "Emportez vos agents partout",
-          description:
-            "L'application mobile native complète vous permet de contrôler n'importe quel ordinateur Paseo depuis votre téléphone",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Choisissez comment vous connecter",
-          connectDocs: "Docs",
-          openConnectDocs: "Ouvrir la documentation sur la connectivité",
-          recommended: "Recommandé",
-          relay: { title: "Relais", hint: "Chiffré de bout en bout, scannez un QR code" },
-          tailscale: { title: "Tailscale", hint: "Demande un peu de configuration" },
-        },
       },
     },
     title: "Bienvenue dans Paseo",
-    subtitle: "Connectez votre ordinateur pour commencer",
     actions: {
       settings: "Paramètres",
     },
@@ -2300,7 +2281,6 @@ export const fr: TranslationResources = {
       local: "Local",
     },
     backToWorkspace: "Retour",
-    addHost: "Ajouter un hôte",
     enableBuiltInDaemon: "Activer le daemon intégré",
     projects: "Projets",
     projectList: {
@@ -2827,11 +2807,6 @@ export const fr: TranslationResources = {
         removeErrorTitle: "Erreur",
         removeErrorMessage: "Impossible de supprimer la connexion",
         timeout: "Délai dépassé",
-      },
-      pairDevices: {
-        title: "Associer des appareils",
-        rowTitle: "Associer un appareil",
-        rowHint: "Scannez un QR code ou copiez un lien pour connecter votre téléphone à cet hôte",
       },
       skills: {
         ...en.settings.host.skills,

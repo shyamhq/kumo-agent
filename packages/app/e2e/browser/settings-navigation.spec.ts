@@ -33,9 +33,6 @@ import {
   normalizeSettingsFontSizes,
   changeSettingsInterfaceFontSizeKeepingSidebarPosition,
   expectSettingsHeader,
-  openAddHostFlow,
-  selectHostConnectionType,
-  toggleHostAdvanced,
   openCompactSettings,
   expectCompactSettingsList,
   expectSettingsSidebarVisible,
@@ -46,15 +43,6 @@ import {
   clickSettingsBackToWorkspace,
   verifyLegacyHostSettingsRedirect,
   openCompactSettingsHost,
-  expectAddHostMethodOptions,
-  fillDirectHostUri,
-  expectDirectHostFormValues,
-  expectDirectHostSslEnabled,
-  expectDirectHostSslDisabled,
-  fillDirectHostAddress,
-  toggleDirectHostSsl,
-  expectDirectHostUriValue,
-  expectDirectHostUriHidden,
   expectDiagnosticsContent,
   expectAboutContent,
   expectGeneralContent,
@@ -331,46 +319,6 @@ test.describe("Settings sidebar navigation", () => {
     await verifyLegacyHostSettingsRedirect(page);
   });
 
-  test("direct connection advanced URI round-trips SSL and password into the form", async ({
-    page,
-  }) => {
-    await gotoAppShell(page);
-    await openSettings(page);
-    await openAddHostFlow(page);
-    await expectAddHostMethodOptions(page);
-    await selectHostConnectionType(page, "direct");
-
-    await fillDirectHostAddress(page, "example.paseo.test", "7443");
-    await expectDirectHostSslDisabled(page);
-    await toggleDirectHostSsl(page);
-    await expectDirectHostSslEnabled(page);
-    await toggleHostAdvanced(page);
-    await expectDirectHostUriValue(page, "tcp://example.paseo.test:7443?ssl=true");
-    await toggleHostAdvanced(page);
-    await toggleDirectHostSsl(page);
-    await expectDirectHostSslDisabled(page);
-
-    await toggleHostAdvanced(page);
-    await fillDirectHostUri(page, "tcp://example.paseo.test:7443?ssl=true&password=shared-secret");
-    await toggleHostAdvanced(page);
-
-    await expectDirectHostFormValues(page, {
-      host: "example.paseo.test",
-      port: "7443",
-      password: "shared-secret",
-    });
-    await expectDirectHostSslEnabled(page);
-    await expectDirectHostUriHidden(page);
-
-    await toggleHostAdvanced(page);
-    await expectDirectHostUriValue(
-      page,
-      "tcp://example.paseo.test:7443?ssl=true&password=shared-secret",
-    );
-    await toggleHostAdvanced(page);
-    await expectDirectHostUriHidden(page);
-  });
-
   test("Escape lets settings dropdowns and modals close before leaving settings", async ({
     page,
   }) => {
@@ -385,16 +333,6 @@ test.describe("Settings sidebar navigation", () => {
       await page.keyboard.press("Escape");
 
       await expect(page.getByRole("menuitem", { name: "GitHub", exact: true })).toHaveCount(0);
-      await expect(page).toHaveURL(/\/settings(\/|$)/);
-    });
-
-    await test.step("a modal owns Escape", async () => {
-      await openAddHostFlow(page);
-      await expect(page.getByText("Add connection", { exact: true })).toBeVisible();
-
-      await page.keyboard.press("Escape");
-
-      await expect(page.getByText("Add connection", { exact: true })).toHaveCount(0);
       await expect(page).toHaveURL(/\/settings(\/|$)/);
     });
 
@@ -624,7 +562,7 @@ test.describe("Settings — compact master-detail", () => {
     await closeCompactSettings(page);
 
     await expect(page).toHaveURL(/\/welcome$/);
-    await expect(page.getByTestId("welcome-direct-connection")).toBeVisible();
+    await expect(page.getByTestId("welcome-screen")).toBeVisible();
   });
 });
 

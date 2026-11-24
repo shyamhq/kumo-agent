@@ -84,7 +84,6 @@ export interface NewWorkspaceFormProps {
     allHosts: HostProfile[];
     selectedServerId: string;
     onSelect: (id: string) => void;
-    onAddHost: () => void;
   };
   isolation: PickerControl & {
     choice: IsolationChoice;
@@ -432,9 +431,6 @@ export function useNewWorkspaceForm(props: NewWorkspaceFormProps): ReactElement 
       open={host.openState}
       onOpenChange={host.onOpenChange}
       anchorRef={host.anchorRef}
-      includeAddHost
-      onAddHost={host.onAddHost}
-      addHostTestID="new-workspace-host-picker-add-host"
       searchable={false}
       title={t("newWorkspace.fields.host")}
       desktopPlacement="bottom-start"

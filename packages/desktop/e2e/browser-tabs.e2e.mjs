@@ -204,14 +204,6 @@ async function settleDesktopStartup(page) {
   await expect(
     page.getByRole("button", { name: "Desktop browser workspace 1", exact: true }),
   ).toBeVisible({ timeout: timeoutMs });
-  // The dev launcher supplies its package directory as an open-project request.
-  // Before the local host connects, that request opens the connection prompt.
-  // Finish startup before exercising the unrelated Settings/browser workflows.
-  const connectionPrompt = page.getByTestId("add-host-method-modal");
-  if (await connectionPrompt.isVisible()) {
-    await connectionPrompt.getByRole("button", { name: "Close", exact: true }).click();
-    await expect(connectionPrompt).toBeHidden();
-  }
 }
 
 const CSP_PAGE_PATH = "/csp-no-eval";

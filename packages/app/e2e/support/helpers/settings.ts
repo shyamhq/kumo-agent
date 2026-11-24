@@ -76,7 +76,6 @@ export type SettingsSection = keyof typeof SECTION_LABELS;
 type HostSection =
   | "projects"
   | "connections"
-  | "pair-device"
   | "agents"
   | "metadata"
   | "voice"
@@ -228,49 +227,6 @@ export async function expectSettingsHeader(page: Page, title: string): Promise<v
   await expect(page.getByTestId("page-title")).toHaveText(title);
 }
 
-export async function openAddHostFlow(page: Page): Promise<void> {
-  // "Add host" is now an item inside the host picker (a Combobox); open the
-  // picker first, then pick it. The picker renders whenever a host exists.
-  await page.getByTestId("settings-host-picker").click();
-  await page.getByTestId("settings-add-host").click();
-  await expect(page.getByText("Add connection", { exact: true })).toBeVisible();
-}
-
-export async function selectHostConnectionType(
-  page: Page,
-  type: "direct" | "relay",
-): Promise<void> {
-  const label = type === "direct" ? "Direct connection" : "Paste pairing link";
-  await page.getByRole("button", { name: label }).click();
-}
-
-export async function addDirectHostFromSettings(
-  page: Page,
-  input: { host: string; port: number; password?: string },
-): Promise<void> {
-  await openAddHostFlow(page);
-  await selectHostConnectionType(page, "direct");
-  await page.getByTestId("direct-host-input").fill(input.host);
-  await page.getByTestId("direct-port-input").fill(String(input.port));
-  if (input.password) {
-    await page.getByTestId("direct-password-input").fill(input.password);
-  }
-  await page.getByTestId("direct-host-submit").click();
-  await expect(page.getByTestId("add-host-modal")).toHaveCount(0, { timeout: 30_000 });
-}
-
-export async function expectAddHostFieldDrawnAsInput(page: Page, testId: string): Promise<void> {
-  const field = page.getByTestId(testId);
-  await expect(field).toBeVisible();
-  await expect(field).toHaveCSS("border-top-width", "1px");
-  await expect(field).not.toHaveCSS("padding-left", "0px");
-  await expect(field).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-}
-
-export async function toggleHostAdvanced(page: Page): Promise<void> {
-  await page.getByTestId("direct-host-advanced-toggle").click();
-}
-
 export async function openCompactSettings(page: Page, expectedStartRoute: string): Promise<void> {
   await expectAppRoute(page, expectedStartRoute, { timeout: 15_000 });
   await page.getByRole("button", { name: "Open menu", exact: true }).first().click();
@@ -401,51 +357,6 @@ export async function openCompactSettingsHost(page: Page): Promise<void> {
   const serverId = getServerId();
   await openSettingsHost(page, serverId);
   await expectHostSettingsUrl(page, serverId);
-}
-
-export async function expectAddHostMethodOptions(page: Page): Promise<void> {
-  await expect(page.getByRole("button", { name: "Direct connection" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Paste pairing link" })).toBeVisible();
-}
-
-export async function fillDirectHostUri(page: Page, uri: string): Promise<void> {
-  await page.getByTestId("direct-host-uri-input").fill(uri);
-}
-
-export async function expectDirectHostFormValues(
-  page: Page,
-  fields: { host: string; port: string; password: string },
-): Promise<void> {
-  await expect(page.getByTestId("direct-host-input")).toHaveValue(fields.host);
-  await expect(page.getByTestId("direct-port-input")).toHaveValue(fields.port);
-  await expect(page.getByTestId("direct-password-input")).toHaveValue(fields.password);
-}
-
-export async function expectDirectHostSslEnabled(page: Page): Promise<void> {
-  await expect(page.getByRole("checkbox", { name: "Use SSL", exact: true })).toBeChecked();
-  await expect(page.getByTestId("direct-ssl-toggle-checked")).toBeVisible();
-}
-
-export async function fillDirectHostAddress(page: Page, host: string, port: string): Promise<void> {
-  await page.getByRole("textbox", { name: "Host", exact: true }).fill(host);
-  await page.getByRole("textbox", { name: "Port", exact: true }).fill(port);
-}
-
-export async function toggleDirectHostSsl(page: Page): Promise<void> {
-  await page.getByRole("checkbox", { name: "Use SSL", exact: true }).click();
-}
-
-export async function expectDirectHostSslDisabled(page: Page): Promise<void> {
-  await expect(page.getByRole("checkbox", { name: "Use SSL", exact: true })).not.toBeChecked();
-  await expect(page.getByTestId("direct-ssl-toggle-checked")).toHaveCount(0);
-}
-
-export async function expectDirectHostUriValue(page: Page, uri: string): Promise<void> {
-  await expect(page.getByTestId("direct-host-uri-input")).toHaveValue(uri);
-}
-
-export async function expectDirectHostUriHidden(page: Page): Promise<void> {
-  await expect(page.getByTestId("direct-host-uri-input")).toHaveCount(0);
 }
 
 export async function expectDiagnosticsContent(page: Page): Promise<void> {

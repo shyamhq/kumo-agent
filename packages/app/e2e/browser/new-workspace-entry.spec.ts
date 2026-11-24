@@ -95,7 +95,7 @@ test.describe("New workspace entry points", () => {
     }
   });
 
-  test("the New Workspace screen shows the host selector with Add host when there is only one host", async ({
+  test("the New Workspace screen shows the host selector, without Add host, when there is only one host", async ({
     page,
   }) => {
     const seeded: SeededWorkspace = await seedWorkspace({ repoPrefix: "entry-single-host-" });
@@ -124,11 +124,7 @@ test.describe("New workspace entry points", () => {
       await expect(hostTrigger).toContainText("localhost", { timeout: 30_000 });
       const originalUrl = page.url();
       await hostTrigger.click();
-      await expect(page.getByTestId("new-workspace-host-picker-add-host")).toBeVisible();
-      await page.getByTestId("new-workspace-host-picker-add-host").click();
-      await expect(
-        page.getByRole("button", { name: "Direct connection", exact: true }),
-      ).toBeVisible();
+      await expect(page.getByRole("button", { name: "Add host", exact: true })).toHaveCount(0);
       await expect(page).toHaveURL(originalUrl);
     } finally {
       await seeded.cleanup();

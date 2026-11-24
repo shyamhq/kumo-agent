@@ -1641,10 +1641,6 @@ export const zhCN: TranslationResources = {
         title: "设置 providers",
         description: "配置 Claude Code、Codex 等",
       },
-      pairDevice: {
-        title: "配对设备",
-        description: "将手机连接到此 daemon",
-      },
     },
   },
   projectPicker: {
@@ -1752,23 +1748,9 @@ export const zhCN: TranslationResources = {
           title: "让代理使用 Paseo",
           description: "让你的代理创建工作区并与其他代理对话",
         },
-        phone: {
-          label: "移动端",
-          title: "随身带上你的代理",
-          description: "功能完整的原生移动应用让你可以在手机上控制任意一台 Paseo 电脑",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "选择连接方式",
-          connectDocs: "文档",
-          openConnectDocs: "打开连接文档",
-          recommended: "推荐",
-          relay: { title: "中继", hint: "端到端加密，扫描二维码" },
-          tailscale: { title: "Tailscale", hint: "需要一些设置" },
-        },
       },
     },
     title: "欢迎使用 Paseo",
-    subtitle: "连接你的电脑即可开始",
     actions: {
       settings: "设置",
     },
@@ -2227,7 +2209,6 @@ export const zhCN: TranslationResources = {
       local: "本机",
     },
     backToWorkspace: "返回",
-    addHost: "添加主机",
     enableBuiltInDaemon: "启用内置 daemon",
     projects: "项目",
     projectList: {
@@ -2735,11 +2716,6 @@ export const zhCN: TranslationResources = {
         removeErrorTitle: "错误",
         removeErrorMessage: "无法移除连接",
         timeout: "超时",
-      },
-      pairDevices: {
-        title: "配对设备",
-        rowTitle: "配对设备",
-        rowHint: "扫描二维码或复制链接，将手机连接到这个 Host",
       },
       skills: {
         ...en.settings.host.skills,

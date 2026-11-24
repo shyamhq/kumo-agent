@@ -5,7 +5,6 @@ import path from "node:path";
 import { test, expect } from "../support/fixtures";
 import {
   addProjectFlow,
-  chooseAddHostFromProjectFlow,
   addProjectFlowBack,
   addProjectFlowHost,
   addProjectFlowInput,
@@ -22,7 +21,6 @@ import {
 } from "../support/helpers/add-project-flow";
 import { gotoAppShell } from "../support/helpers/app";
 import {
-  disconnectAllHostsAndReload,
   addConnectedHostAndReload,
   addConnectedHostsAndReload,
   addOfflineHostAndReload,
@@ -72,19 +70,6 @@ async function expectProjectHasNoWorkspaces(projectId: string): Promise<void> {
 
 test.describe("Add Project command-center flow", () => {
   test.describe.configure({ timeout: 180_000 });
-
-  test("Add host replaces the project dialog when no hosts are connected", async ({ page }) => {
-    await gotoAppShell(page);
-    await disconnectAllHostsAndReload(page);
-    await openAddProjectHostSelection(page);
-    const originalUrl = page.url();
-    await chooseAddHostFromProjectFlow(page);
-    await expect(addProjectFlow(page)).toBeHidden();
-    await expect(
-      page.getByRole("button", { name: "Direct connection", exact: true }),
-    ).toBeVisible();
-    await expect(page).toHaveURL(originalUrl);
-  });
 
   test("method selection shows the daemon's available project sources without search", async ({
     page,

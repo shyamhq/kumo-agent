@@ -1705,10 +1705,6 @@ export const es: TranslationResources = {
         title: "Proveedores de configuración",
         description: "ConfigurarClaude Code,Codexy más",
       },
-      pairDevice: {
-        title: "Emparejar dispositivo",
-        description: "Conecta tu teléfono a este demonio",
-      },
     },
   },
   projectPicker: {
@@ -1817,24 +1813,9 @@ export const es: TranslationResources = {
           title: "Deja que los agentes usen Paseo",
           description: "Deja que tus agentes creen espacios de trabajo y hablen con otros agentes",
         },
-        phone: {
-          label: "Móvil",
-          title: "Lleva tus agentes contigo",
-          description:
-            "La app móvil nativa completa te permite controlar cualquier ordenador con Paseo desde tu teléfono",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Elige cómo conectarte",
-          connectDocs: "Docs",
-          openConnectDocs: "Abrir la documentación de conectividad",
-          recommended: "Recomendado",
-          relay: { title: "Relé", hint: "Cifrado de extremo a extremo, escanea un código QR" },
-          tailscale: { title: "Tailscale", hint: "Requiere algo de configuración" },
-        },
       },
     },
     title: "Bienvenido aPaseo",
-    subtitle: "Conecte su computadora para comenzar",
     actions: {
       settings: "Ajustes",
     },
@@ -2300,7 +2281,6 @@ export const es: TranslationResources = {
       local: "Local",
     },
     backToWorkspace: "Atrás",
-    addHost: "Agregar anfitrión",
     enableBuiltInDaemon: "Activar el demonio integrado",
     projects: "Proyectos",
     projectList: {
@@ -2825,11 +2805,6 @@ export const es: TranslationResources = {
         removeErrorTitle: "Error",
         removeErrorMessage: "No se puede eliminar la conexión",
         timeout: "Se acabó el tiempo",
-      },
-      pairDevices: {
-        title: "Emparejar dispositivos",
-        rowTitle: "Emparejar un dispositivo",
-        rowHint: "Escanee un códigoQRo copie un enlace para conectar su teléfono a este host",
       },
       skills: {
         ...en.settings.host.skills,

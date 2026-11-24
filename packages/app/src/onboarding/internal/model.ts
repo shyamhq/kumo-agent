@@ -1,12 +1,6 @@
-export type OnboardingStepId = "appearance" | "providers" | "projects" | "orchestration" | "phone";
+export type OnboardingStepId = "appearance" | "providers" | "projects" | "orchestration";
 
-const STEPS_WITHOUT_PHONE: readonly OnboardingStepId[] = [
-  "appearance",
-  "providers",
-  "projects",
-  "orchestration",
-];
-const STEPS_WITH_PHONE: readonly OnboardingStepId[] = [...STEPS_WITHOUT_PHONE, "phone"];
+const STEPS: readonly OnboardingStepId[] = ["appearance", "providers", "projects", "orchestration"];
 
 export interface OnboardingCompletionStorage {
   isCompleted(): Promise<boolean>;
@@ -19,11 +13,6 @@ export interface OnboardingSetupHost {
   isConnected: boolean;
   hasHydratedWorkspaces: boolean;
   hasProjects: boolean;
-}
-
-export interface OnboardingStepOptions {
-  /** False when the client is itself a phone, where pairing a phone makes no sense. */
-  includePhoneStep: boolean;
 }
 
 export type OnboardingState =
@@ -43,8 +32,8 @@ export interface OnboardingModel {
   ready: Promise<void>;
   getState(): OnboardingState;
   subscribe(listener: () => void): () => void;
-  applySetupHost(host: OnboardingSetupHost | null, options: OnboardingStepOptions): void;
-  reopen(serverId: string, options: OnboardingStepOptions): void;
+  applySetupHost(host: OnboardingSetupHost | null): void;
+  reopen(serverId: string): void;
   /**
    * Moves on from the step visit the caller saw; from the last step, that finishes setup. A no-op
    * once that visit ended, so an action that finishes late never moves a step the user left or
@@ -61,7 +50,6 @@ type Completion = "loading" | "completed" | "pending";
 
 interface PendingHost {
   host: OnboardingSetupHost | null;
-  options: OnboardingStepOptions;
 }
 
 function isReadyForSetup(host: OnboardingSetupHost | null): host is OnboardingSetupHost {
@@ -77,12 +65,12 @@ export function createOnboardingModel(input: {
   let pendingHost: PendingHost | null = null;
   let visits = 0;
 
-  function openState(serverId: string, options: OnboardingStepOptions): OnboardingState {
+  function openState(serverId: string): OnboardingState {
     visits += 1;
     return {
       status: "open",
       serverId,
-      steps: options.includePhoneStep ? STEPS_WITH_PHONE : STEPS_WITHOUT_PHONE,
+      steps: STEPS,
       stepIndex: 0,
       visit: visits,
     };
@@ -105,9 +93,7 @@ export function createOnboardingModel(input: {
     }
     const host = pendingHost?.host ?? null;
     if (!pendingHost || !isReadyForSetup(host)) return;
-    setState(
-      host.hasProjects ? { status: "hidden" } : openState(host.serverId, pendingHost.options),
-    );
+    setState(host.hasProjects ? { status: "hidden" } : openState(host.serverId));
   }
 
   function moveTo(stepIndex: number) {
@@ -145,12 +131,12 @@ export function createOnboardingModel(input: {
         listeners.delete(listener);
       };
     },
-    applySetupHost(host, options) {
-      pendingHost = { host, options };
+    applySetupHost(host) {
+      pendingHost = { host };
       decide();
     },
-    reopen(serverId, options) {
-      setState(openState(serverId, options));
+    reopen(serverId) {
+      setState(openState(serverId));
     },
     next(visit) {
       if (state.status !== "open" || state.visit !== visit) return;

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, type ReactElement, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { Plus, Server, Settings } from "lucide-react-native";
+import { Server, Settings } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { HostStatusDot } from "@/components/host-status-dot";
 import { Combobox, ComboboxItem, type ComboboxProps } from "@/components/ui/combobox";
@@ -8,18 +8,12 @@ import { useLocalDaemonServerId } from "@/hooks/use-is-local-daemon";
 import { useHostRuntimeSnapshot, type ActiveConnection } from "@/runtime/host-runtime";
 import { orderHostsLocalFirst } from "@/types/host-connection";
 import {
-  ADD_HOST_OPTION_ID,
   ALL_HOSTS_OPTION_ID,
   ENABLE_BUILT_IN_DAEMON_OPTION_ID,
   getHostPickerLabel,
 } from "./host-picker-constants";
 
-export {
-  ADD_HOST_OPTION_ID,
-  ALL_HOSTS_OPTION_ID,
-  ENABLE_BUILT_IN_DAEMON_OPTION_ID,
-  getHostPickerLabel,
-};
+export { ALL_HOSTS_OPTION_ID, ENABLE_BUILT_IN_DAEMON_OPTION_ID, getHostPickerLabel };
 
 const SEARCHABLE_THRESHOLD = 10;
 type RenderHostOption = NonNullable<ComboboxProps["renderOption"]>;
@@ -116,8 +110,7 @@ export function HostPickerOption({
   );
 }
 
-const SYSTEM_HOST_PICKER_OPTION_LABELS: Record<"add" | "all" | "enableBuiltInDaemon", string> = {
-  add: "Add host",
+const SYSTEM_HOST_PICKER_OPTION_LABELS: Record<"all" | "enableBuiltInDaemon", string> = {
   all: "All hosts",
   enableBuiltInDaemon: "Enable built-in daemon",
 };
@@ -132,15 +125,14 @@ function SystemHostPickerOption({
   active: boolean;
   selected?: boolean;
   onPress: () => void;
-  kind: "add" | "all" | "enableBuiltInDaemon";
+  kind: "all" | "enableBuiltInDaemon";
   testID?: string;
 }): ReactElement {
   const { theme } = useUnistyles();
-  const Icon = kind === "add" ? Plus : Server;
   const label = SYSTEM_HOST_PICKER_OPTION_LABELS[kind];
   const leadingSlot = useMemo(
-    () => <Icon size={theme.iconSize.sm} color={theme.colors.foregroundMuted} />,
-    [Icon, theme.colors.foregroundMuted, theme.iconSize.sm],
+    () => <Server size={theme.iconSize.sm} color={theme.colors.foregroundMuted} />,
+    [theme.colors.foregroundMuted, theme.iconSize.sm],
   );
 
   return (
@@ -163,8 +155,6 @@ export interface HostPickerProps {
   onOpenChange: (open: boolean) => void;
   anchorRef: React.RefObject<View | null>;
   includeAllHost?: boolean;
-  includeAddHost?: boolean;
-  onAddHost?: () => void;
   includeEnableBuiltInDaemon?: boolean;
   onEnableBuiltInDaemon?: () => void;
   showActiveConnection?: boolean;
@@ -173,7 +163,6 @@ export interface HostPickerProps {
   title?: string;
   desktopPlacement?: ComboboxProps["desktopPlacement"];
   desktopMinWidth?: number;
-  addHostTestID?: string;
   hostOptionTestID?: (serverId: string) => string;
   children: ReactNode;
 }
@@ -186,8 +175,6 @@ export function HostPicker({
   onOpenChange,
   anchorRef,
   includeAllHost,
-  includeAddHost,
-  onAddHost,
   includeEnableBuiltInDaemon,
   onEnableBuiltInDaemon,
   showActiveConnection,
@@ -196,7 +183,6 @@ export function HostPicker({
   title,
   desktopPlacement = "bottom-start",
   desktopMinWidth,
-  addHostTestID,
   hostOptionTestID,
   children,
 }: HostPickerProps): ReactElement {
@@ -209,29 +195,26 @@ export function HostPicker({
   const options = useMemo(() => {
     const hostOptions = orderedHosts.map((host) => ({ id: host.serverId, label: host.label }));
     if (includeAllHost) hostOptions.unshift({ id: ALL_HOSTS_OPTION_ID, label: "All hosts" });
-    if (includeAddHost) hostOptions.push({ id: ADD_HOST_OPTION_ID, label: "Add host" });
     if (includeEnableBuiltInDaemon)
       hostOptions.push({
         id: ENABLE_BUILT_IN_DAEMON_OPTION_ID,
         label: "Enable built-in daemon",
       });
     return hostOptions;
-  }, [orderedHosts, includeAllHost, includeAddHost, includeEnableBuiltInDaemon]);
+  }, [orderedHosts, includeAllHost, includeEnableBuiltInDaemon]);
 
   const isSearchable = searchable === true && orderedHosts.length > SEARCHABLE_THRESHOLD;
 
   const handleSelect = useCallback(
     (id: string) => {
-      if (id === ADD_HOST_OPTION_ID) {
-        onAddHost?.();
-      } else if (id === ENABLE_BUILT_IN_DAEMON_OPTION_ID) {
+      if (id === ENABLE_BUILT_IN_DAEMON_OPTION_ID) {
         onEnableBuiltInDaemon?.();
       } else {
         onSelect(id);
       }
       onOpenChange(false);
     },
-    [onAddHost, onEnableBuiltInDaemon, onOpenChange, onSelect],
+    [onEnableBuiltInDaemon, onOpenChange, onSelect],
   );
 
   const handleOpenHostSettings = useCallback(
@@ -244,16 +227,6 @@ export function HostPicker({
 
   const renderOption = useCallback<RenderHostOption>(
     ({ option, selected, active, onPress }) => {
-      if (option.id === ADD_HOST_OPTION_ID) {
-        return (
-          <SystemHostPickerOption
-            kind="add"
-            active={active}
-            onPress={onPress}
-            testID={addHostTestID}
-          />
-        );
-      }
       if (option.id === ALL_HOSTS_OPTION_ID) {
         return (
           <SystemHostPickerOption
@@ -283,13 +256,7 @@ export function HostPicker({
         />
       );
     },
-    [
-      addHostTestID,
-      hostOptionTestID,
-      onOpenHostSettings,
-      showActiveConnection,
-      handleOpenHostSettings,
-    ],
+    [hostOptionTestID, onOpenHostSettings, showActiveConnection, handleOpenHostSettings],
   );
 
   return (

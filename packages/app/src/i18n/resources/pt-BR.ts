@@ -1690,10 +1690,6 @@ export const ptBR: TranslationResources = {
         title: "Configurar provedores",
         description: "Configure Claude Code, Codex e outros",
       },
-      pairDevice: {
-        title: "Parear dispositivo",
-        description: "Conecte seu celular a este daemon",
-      },
     },
   },
   projectPicker: {
@@ -1802,24 +1798,9 @@ export const ptBR: TranslationResources = {
           title: "Deixe os agentes usarem o Paseo",
           description: "Deixe seus agentes criarem workspaces e conversarem com outros agentes",
         },
-        phone: {
-          label: "Celular",
-          title: "Leve seus agentes com você",
-          description:
-            "O app móvel nativo completo permite controlar qualquer computador com Paseo pelo seu celular",
-          appStore: "App Store",
-          googlePlay: "Google Play",
-          connectTitle: "Escolha como se conectar",
-          connectDocs: "Docs",
-          openConnectDocs: "Abrir documentação de conectividade",
-          recommended: "Recomendado",
-          relay: { title: "Relay", hint: "Criptografia de ponta a ponta, escaneie um código QR" },
-          tailscale: { title: "Tailscale", hint: "Requer alguma configuração" },
-        },
       },
     },
     title: "Bem-vindo ao Paseo",
-    subtitle: "Conecte seu computador para começar",
     actions: {
       settings: "Configurações",
     },
@@ -2285,7 +2266,6 @@ export const ptBR: TranslationResources = {
       local: "Local",
     },
     backToWorkspace: "Voltar",
-    addHost: "Adicionar host",
     enableBuiltInDaemon: "Ativar o daemon integrado",
     projects: "Projetos",
     projectList: {
@@ -2806,11 +2786,6 @@ export const ptBR: TranslationResources = {
         removeErrorTitle: "Erro",
         removeErrorMessage: "Não foi possível remover a conexão",
         timeout: "Timeout",
-      },
-      pairDevices: {
-        title: "Parear dispositivos",
-        rowTitle: "Parear um dispositivo",
-        rowHint: "Escaneie um QR code ou copie um link para conectar seu celular a este host",
       },
       skills: {
         ...en.settings.host.skills,
