@@ -30,7 +30,10 @@ How it runs under Kumo:
   keys, so give a custom endpoint its own profile. OpenCode gets none: any launch env would start a
   separate OpenCode server per agent.
 - The worker's `~/.kumo/instructions.md` is written for Kumo's own chat (threads, `@kumo`, a
-  `kumo-view` tool these agents don't have), so this daemon doesn't use it.
+  `kumo-view` tool these agents don't have), so this daemon doesn't use it. The worker also writes
+  `~/.kumo/computer.md`, the computer's browsers and preview links without chat's conventions; the
+  `kumo` plugin adds it to the system prompt of every stock Claude, Codex and OpenCode agent on
+  open, the agents the worker gives Kumo's MCP servers to.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
 - Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
 
