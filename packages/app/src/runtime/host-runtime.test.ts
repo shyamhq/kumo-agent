@@ -5581,6 +5581,26 @@ describe("readInitialDaemonConnectionHint", () => {
     });
   });
 
+  it("dials the address the page was loaded from, not the Host the daemon saw", () => {
+    (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = {
+      listen: "10.90.0.12:6868",
+      useTls: true,
+    };
+    vi.stubGlobal("location", {
+      hostname: "6868--box.example.com",
+      port: "",
+      protocol: "https:",
+    });
+    try {
+      expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toEqual({
+        listen: "6868--box.example.com:443",
+        useTls: true,
+      });
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("ignores invalid shapes", () => {
     (globalThis as Record<string, unknown>).__PASEO_INITIAL_DAEMON_CONNECTION__ = "localhost:6767";
     expect(readInitialDaemonConnectionHint({ isWebRuntime: true })).toBeNull();
