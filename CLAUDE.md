@@ -21,7 +21,9 @@ How it runs under Kumo:
   sets the daemon's own `PASEO_HOME`. The relay stays off (its default), since Kumo's gate replaces
   it. Get any of these wrong and the web app can't load or connect. The daemon also
   reads `PUBLIC_URL` so that only that computer's Kumo OS (`https://os--<handle>.<zone>`) may frame
-  the web UI; without it, `frame-ancestors 'self'`.
+  the web UI; without it, `frame-ancestors 'self'`. From the same address it names the host by the
+  computer's handle (its Linux hostname is a random container id), and with no projects it adds
+  `~/workspace`, where Kumo keeps them (`packages/server/src/server/kumo-computer.ts`).
 - Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
   (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`

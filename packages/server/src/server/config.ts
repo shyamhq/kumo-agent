@@ -1,5 +1,6 @@
 import { configurationEnvironment } from "./config-environment.js";
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolvePaseoNodeEnv } from "./paseo-env.js";
@@ -25,6 +26,7 @@ import { resolveSpeechConfig } from "./speech/speech-config-resolver.js";
 import { readSpeechSettings } from "./speech/speech-settings.js";
 import { mergeHostnames, parseHostnamesEnv, type HostnamesConfig } from "./hostnames.js";
 import { resolveGitProcessPolicy } from "../utils/git-process-scheduler.js";
+import { readKumoComputer } from "./kumo-computer.js";
 
 export {
   loadPersistedConfig,
@@ -394,14 +396,13 @@ interface ResolvedWebUi {
 }
 
 /**
- * Who may frame the web UI on a Kumo computer. Kumo sets `PUBLIC_URL` to the app's own address,
- * `https://<port>--<handle>.<zone>`, and only that computer's OS, `https://os--<handle>.<zone>`,
- * may frame it: every other page in the zone is the same site and could frame a signed-in shell.
- * Anywhere else, undefined: the web UI's own default.
+ * Who may frame the web UI on a Kumo computer: only that computer's OS, `https://os--<handle>.<zone>`.
+ * Every other page in the zone is the same site and could frame a signed-in shell. Anywhere else,
+ * undefined: the web UI's own default.
  */
 function kumoFrameAncestors(publicUrl: string | undefined): string | undefined {
-  const host = /^https:\/\/\d+--([^/]+)\/?$/.exec(publicUrl ?? "")?.[1];
-  return host ? `frame-ancestors https://os--${host}` : undefined;
+  const computer = readKumoComputer(publicUrl);
+  return computer ? `frame-ancestors https://os--${computer.host}` : undefined;
 }
 
 function resolveWebUiConfig(
@@ -655,6 +656,7 @@ export function resolveConfigFromPersisted(
     relayPublicUseTls: relay.publicUseTls,
     serviceProxy: resolveServiceProxyConfig(env, persisted),
     webUi: resolveWebUiConfig(paseoHome, env, cli, persisted),
+    kumoWorkspace: readKumoComputer(env.PUBLIC_URL) ? path.join(homedir(), "workspace") : undefined,
     auth: resolveAuthConfig(env, persisted),
     openai,
     speech,
