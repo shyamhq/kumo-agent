@@ -49,7 +49,9 @@ How it runs under Kumo:
   as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
 - Cut for Kumo, so don't port upstream work on them: the Usage view (plan limits; the context-window
   meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
-  the onboarding phone step. Kumo will list a person's other computers as hosts instead. Four
+  the onboarding phone step. Kumo will list a person's other computers as hosts instead. Paseo's
+  website, its release workflows (npm, app stores, Docker, Nix, desktop rollout), F-Droid and the
+  store screenshots. The plugin directory is off (`PLUGIN_DIRECTORY_ENABLED`), not removed. Four
   usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/` as fixtures for
   the usage-source tests, out of the built-in list.
 - Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
@@ -68,7 +70,6 @@ This is an npm workspace monorepo:
 - `packages/cli` — Docker-style CLI (`paseo run/ls/logs/wait`)
 - `packages/relay` — E2E encrypted relay for remote access
 - `packages/desktop` — Electron desktop wrapper
-- `packages/website` — Marketing site (paseo.sh)
 
 ## Docs
 
@@ -98,7 +99,6 @@ At the start of non-trivial work, list `docs/` and skim anything relevant to the
 | [docs/forge-providers.md](docs/forge-providers.md)                   | Adding a git forge: registry/manifest, drop-in checklist, self-host/GHES, the two facts tiers                                  |
 | [docs/custom-providers.md](docs/custom-providers.md)                 | Custom provider config: Z.AI, Alibaba/Qwen, ACP agents, profiles, custom binaries                                              |
 | [docs/plugins.md](docs/plugins.md)                                   | Local plugin manifest, directory source config, RPCs, native surfaces, and attachment sources                                  |
-| [docs/website-i18n.md](docs/website-i18n.md)                         | Website languages: locale URLs, translated Markdown pairs, `{#id}` anchors, Chinese style                                      |
 | [docs/service-proxy.md](docs/service-proxy.md)                       | Service proxy: exposing workspace scripts at public URLs, DNS setup, reverse proxy config                                      |
 | [docs/relay-endpoint-security.md](docs/relay-endpoint-security.md)   | Relay E2EE modes: Noise NK mapping, record framing, negotiation, the `requireProtectedSecurity` flag, close codes              |
 | [docs/development.md](docs/development.md)                           | Dev server, build sync gotchas, CLI reference, agent state, Playwright MCP                                                     |
@@ -121,9 +121,9 @@ At the start of non-trivial work, list `docs/` and skim anything relevant to the
 | [docs/explorer-sidebar.md](docs/explorer-sidebar.md)                 | Explorer sidebar, side-pane, and compact workspace sheet host contracts, lifecycle, placement, routing preferences             |
 | [docs/ad-hoc-daemon-testing.md](docs/ad-hoc-daemon-testing.md)       | Isolated in-process daemon test harness                                                                                        |
 | [docs/browser-capture-harness.md](docs/browser-capture-harness.md)   | Real-Electron browser screenshot harness and compositor-surface gotcha                                                         |
-| [docs/android.md](docs/android.md)                                   | App variants, local/cloud builds, EAS workflows, version codes, F-Droid source builds and store metadata                       |
+| [docs/android.md](docs/android.md)                                   | App variants, local/cloud builds, EAS workflows, version codes                                                                 |
 | [docs/docker.md](docs/docker.md)                                     | Running the daemon and bundled web UI in Docker, volumes, agent images, security                                               |
-| [docs/release.md](docs/release.md)                                   | Release playbook, draft releases, completion checklist                                                                         |
+| [docs/release.md](docs/release.md)                                   | Cutting a kumo-agent release: version, pack, GitHub Release, catalogue row                                                     |
 | [docs/terminal-worker.md](docs/terminal-worker.md)                   | Terminal worker process model, socket/record/secret, protocol-bump rule and draining, the worker's file copy, Windows desktop  |
 | [docs/terminal-activity.md](docs/terminal-activity.md)               | Terminal activity indicators — source-agnostic tracker, agent hook reporting, adding a new hook provider                       |
 | [SECURITY.md](SECURITY.md)                                           | Relay threat model, E2E encryption, DNS rebinding, agent auth                                                                  |
@@ -173,11 +173,9 @@ When Mo requests an APK, use `npm run build:apk:arm64` for an ARM64 build: write
 
 See [docs/development.md](docs/development.md) for full setup, build sync requirements, and debugging.
 
-## Release branches
+## Releases
 
-Merge normal PRs into `main`, including while a beta soaks or a release is being finalized. Each
-release builds in a short-lived release workspace from `origin/main` or a release tag; see
-[release base and source](docs/release.md#release-base-and-source).
+Merge PRs into `main`. Releases are cut from `main` by hand; see [docs/release.md](docs/release.md).
 
 ## Critical rules
 
