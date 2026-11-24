@@ -5779,7 +5779,7 @@ export class Session {
       const entries = await searchDirectoryEntries({
         root: workspaceCwd ? expandTilde(workspaceCwd) : homeRoot,
         query: listsKumoWorkspace ? "~/workspace/" : query,
-        ...(listsKumoWorkspace ? { maxDepth: 1 } : {}),
+        maxDepth: listsKumoWorkspace ? 1 : undefined,
         pathFormat: searchesWorkspace ? "relative" : "absolute",
         pathQueryPolicy: searchesWorkspace ? "slashes" : "rooted",
         blankQueryBehavior: searchesWorkspace ? "children" : "none",
