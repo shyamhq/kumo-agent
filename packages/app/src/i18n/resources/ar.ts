@@ -281,7 +281,7 @@ export const ar: TranslationResources = {
     unavailable: {
       selectedHost: "المضيف المختار",
       unknownHost: "لا يمكن فتح هذا الوكيل لأنه لم يتم تكوين{{serverLabel}}على هذا الجهاز.",
-      addHost: "أضف المضيف في الإعدادات أو افتح وكيلًا على خادم تم تكوينه للمتابعة.",
+      addHost: "افتح وكيلًا على مضيف تم تكوينه للمتابعة.",
       preparingSession: "جارٍ تحضير جلسة{{serverLabel}}...",
       connecting: "جارٍ الاتصال بـ{{serverLabel}}...",
       showSoon: "سوف نعرض هذا الوكيل في لحظة.",
@@ -2230,7 +2230,7 @@ export const ar: TranslationResources = {
       sending: "الإرسال",
       setup: {
         label: "الإعداد الأولي",
-        description: "أعد المرور على المظهر والمزوّدين والمشاريع وإقران الهاتف",
+        description: "أعد المرور على المظهر والمزوّدين والمشاريع والتنسيق",
         action: "إظهار الإعداد مجددًا",
       },
       browserData: {

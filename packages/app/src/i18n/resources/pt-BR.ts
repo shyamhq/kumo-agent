@@ -283,8 +283,7 @@ export const ptBR: TranslationResources = {
       selectedHost: "Host selecionado",
       unknownHost:
         "Não é possível abrir este agente porque {{serverLabel}} não está configurado neste dispositivo.",
-      addHost:
-        "Adicione o host nas Configurações ou abra um agente em um servidor configurado para continuar.",
+      addHost: "Abra um agente em um host configurado para continuar.",
       preparingSession: "Preparando sessão de {{serverLabel}}...",
       connecting: "Conectando a {{serverLabel}}...",
       showSoon: "Mostraremos este agente em instantes.",
@@ -2263,7 +2262,7 @@ export const ptBR: TranslationResources = {
       sending: "Envio",
       setup: {
         label: "Configuração inicial",
-        description: "Rever aparência, provedores, projetos e pareamento do celular",
+        description: "Rever aparência, provedores, projetos e orquestração",
         action: "Mostrar configuração novamente",
       },
       browserData: {

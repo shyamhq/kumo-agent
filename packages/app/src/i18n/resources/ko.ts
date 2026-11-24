@@ -282,7 +282,7 @@ export const ko: TranslationResources = {
       selectedHost: "선택된 호스트",
       unknownHost:
         "{{serverLabel}}이(가) 이 기기에 구성되어 있지 않아 이 에이전트를 열 수 없습니다.",
-      addHost: "계속하려면 설정에서 호스트를 추가하거나 구성된 서버에서 에이전트를 여세요.",
+      addHost: "계속하려면 구성된 호스트에서 에이전트를 여세요.",
       preparingSession: "{{serverLabel}} 세션 준비 중...",
       connecting: "{{serverLabel}}에 연결하는 중...",
       showSoon: "잠시 후 이 에이전트를 표시합니다.",
@@ -2241,7 +2241,7 @@ export const ko: TranslationResources = {
       sending: "전송",
       setup: {
         label: "초기 설정",
-        description: "모양, 제공자, 프로젝트, 휴대폰 페어링을 다시 진행합니다",
+        description: "모양, 제공자, 프로젝트, 오케스트레이션을 다시 진행합니다",
         action: "설정 다시 보기",
       },
       browserData: {

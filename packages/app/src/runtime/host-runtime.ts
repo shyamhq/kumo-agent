@@ -1768,11 +1768,15 @@ const INITIAL_DAEMON_CONNECTION_HINT_GLOBAL_KEY = "__PASEO_INITIAL_DAEMON_CONNEC
 export interface InitialDaemonConnectionHint {
   listen: string;
   useTls?: boolean;
+  /** The daemon's host name; on a Kumo computer, its handle. */
+  label?: string;
 }
 
 const InitialDaemonConnectionHintSchema: z.ZodType<InitialDaemonConnectionHint> = z.object({
   listen: z.string().trim().min(1),
   useTls: z.boolean().optional().default(false),
+  // A bad label must not cost the connection, so it falls back to none.
+  label: z.string().trim().min(1).optional().catch(undefined),
 });
 
 export function readInitialDaemonConnectionHint(input?: {
@@ -1794,7 +1798,7 @@ export function readInitialDaemonConnectionHint(input?: {
   const location = globalThis.location;
   const useTls = location.protocol === "https:";
   const port = location.port || (useTls ? "443" : "80");
-  return { listen: `${location.hostname}:${port}`, useTls };
+  return { listen: `${location.hostname}:${port}`, useTls, label: result.data.label };
 }
 
 function hintConnection(hint: InitialDaemonConnectionHint): HostConnection | null {

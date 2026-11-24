@@ -284,8 +284,7 @@ export const ja: TranslationResources = {
       selectedHost: "選択中のホスト",
       unknownHost:
         "{{serverLabel}}がこのデバイスで設定されていないため、このエージェントを開けません。",
-      addHost:
-        "続行するには設定でホストを追加するか、設定済みのサーバーでエージェントを開いてください。",
+      addHost: "続行するには、設定済みのホストでエージェントを開いてください。",
       preparingSession: "{{serverLabel}}セッションを準備中...",
       connecting: "{{serverLabel}}に接続中...",
       showSoon: "このエージェントはすぐに表示されます。",
@@ -2252,8 +2251,7 @@ export const ja: TranslationResources = {
       sending: "送信",
       setup: {
         label: "初回セットアップ",
-        description:
-          "外観、プロバイダー、プロジェクト、スマートフォンのペアリングをもう一度設定します",
+        description: "外観、プロバイダー、プロジェクト、オーケストレーションをもう一度設定します",
         action: "セットアップを再表示",
       },
       browserData: {

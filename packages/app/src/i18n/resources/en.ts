@@ -280,7 +280,7 @@ export const en = {
       selectedHost: "Selected host",
       unknownHost:
         "Cannot open this agent because {{serverLabel}} is not configured on this device.",
-      addHost: "Add the host in Settings or open an agent on a configured server to continue.",
+      addHost: "Open an agent on a configured host to continue.",
       preparingSession: "Preparing {{serverLabel}} session...",
       connecting: "Connecting to {{serverLabel}}...",
       showSoon: "We will show this agent in a moment.",
@@ -2362,7 +2362,7 @@ export const en = {
       sending: "Sending",
       setup: {
         label: "First-run setup",
-        description: "Walk through appearance, providers, projects and phone pairing again",
+        description: "Walk through appearance, providers, projects and orchestration again",
         action: "Show setup again",
       },
       browserData: {

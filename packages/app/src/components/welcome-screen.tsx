@@ -5,7 +5,12 @@ import { useRouter } from "expo-router";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { RotateCw, Settings } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getHostRuntimeStore, isHostRuntimeConnected, useHosts } from "@/runtime/host-runtime";
+import {
+  getHostRuntimeStore,
+  isHostRuntimeConnected,
+  readInitialDaemonConnectionHint,
+  useHosts,
+} from "@/runtime/host-runtime";
 import { Button } from "@/components/ui/button";
 import { resolveAppVersion } from "@/utils/app-version";
 import { formatVersionWithPrefix } from "@/desktop/updates/desktop-updates";
@@ -97,7 +102,8 @@ function useAnyHostOnline(serverIds: string[]): string | null {
 
 /**
  * Shown while no host is online. On a Kumo computer that means the page's own kumo-agent hasn't
- * answered yet: the runtime keeps retrying it and this screen moves on by itself once it does.
+ * answered yet: the runtime keeps retrying it and this screen moves on by itself once it does. The
+ * host isn't saved until it answers, so its name comes from the page the daemon served.
  */
 export function WelcomeScreen() {
   const { theme } = useUnistyles();
@@ -107,7 +113,7 @@ export function WelcomeScreen() {
   const appVersionText = formatVersionWithPrefix(resolveAppVersion());
   const hosts = useHosts();
   const anyOnlineServerId = useAnyHostOnline(hosts.map((h) => h.serverId));
-  const host = hosts[0];
+  const servedBy = readInitialDaemonConnectionHint()?.label;
 
   useEffect(() => {
     if (!anyOnlineServerId) return;
@@ -139,8 +145,8 @@ export function WelcomeScreen() {
           <PaseoLogo size={96} />
           <View style={styles.copyBlock}>
             <Text style={styles.title}>
-              {host
-                ? t("agentPanel.unavailable.connecting", { serverLabel: host.label })
+              {servedBy
+                ? t("agentPanel.unavailable.connecting", { serverLabel: servedBy })
                 : t("onboarding.title")}
             </Text>
           </View>

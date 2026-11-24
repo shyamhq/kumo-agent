@@ -284,8 +284,7 @@ export const es: TranslationResources = {
       selectedHost: "Anfitrión seleccionado",
       unknownHost:
         "No se puede abrir este agente porque{{serverLabel}}no está configurado en este dispositivo.",
-      addHost:
-        "Agregue el host en Configuración o abra un agente en un servidor configurado para continuar.",
+      addHost: "Abra un agente en un host configurado para continuar.",
       preparingSession: "Preparando sesión{{serverLabel}}...",
       connecting: "Conectando a{{serverLabel}}...",
       showSoon: "Le mostraremos a este agente en un momento.",
@@ -2278,8 +2277,7 @@ export const es: TranslationResources = {
       sending: "Envío",
       setup: {
         label: "Configuración inicial",
-        description:
-          "Vuelve a recorrer apariencia, proveedores, proyectos y emparejamiento del teléfono",
+        description: "Vuelve a recorrer apariencia, proveedores, proyectos y orquestación",
         action: "Mostrar configuración de nuevo",
       },
       browserData: {

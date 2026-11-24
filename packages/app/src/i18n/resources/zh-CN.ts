@@ -281,7 +281,7 @@ export const zhCN: TranslationResources = {
     unavailable: {
       selectedHost: "选中的 Host",
       unknownHost: "无法打开此 Agent，因为此设备上未配置 {{serverLabel}}。",
-      addHost: "请在设置中添加 Host，或打开已配置 server 上的 Agent 后继续。",
+      addHost: "请打开已配置 Host 上的 Agent 后继续。",
       preparingSession: "正在准备 {{serverLabel}} 会话...",
       connecting: "正在连接 {{serverLabel}}...",
       showSoon: "稍后将显示此 Agent。",
@@ -2211,7 +2211,7 @@ export const zhCN: TranslationResources = {
       sending: "发送",
       setup: {
         label: "首次设置",
-        description: "重新设置外观、提供方、项目和手机配对",
+        description: "重新设置外观、提供方、项目和编排",
         action: "再次显示设置",
       },
       browserData: {
