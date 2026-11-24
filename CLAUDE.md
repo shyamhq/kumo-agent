@@ -1,5 +1,33 @@
 # CLAUDE.md
 
+## kumo-agent runs under Kumo OS
+
+This repo is **kumo-agent**, a fork of [Paseo](https://github.com/getpaseo/paseo) that runs under
+**Kumo OS** ([kumo.computer](https://kumo.computer)), a computer in the cloud for you, your team and
+your AI agents. Upstream Paseo is a reference we review once a quarter. Everything below this section
+is Paseo's own guidance and still applies, except release, deploy and store publishing: those steps
+are Paseo's and don't apply here.
+
+How it runs under Kumo:
+
+- Each Kumo computer is an Ubuntu box with a Kumo worker. The worker installs this daemon as a Kumo
+  app (a systemd unit, run as the `dev` user) and keeps it running. This daemon starts its own
+  agents; Kumo's chat agents are separate and run by the worker.
+- The browser reaches the daemon at the computer's Kumo preview address, behind Kumo's sign-in
+  gate. The app's run line in Kumo's apps catalogue sets the daemon's env: `PASEO_RELAY_ENABLED=false`
+  (Kumo's gate replaces the relay), its own `PASEO_HOME`, a listen address Kumo's proxy can reach,
+  and an allowed origin and hostnames that match the preview address (the worker passes it to apps
+  as `PUBLIC_URL`). Get any of these wrong and the web app can't load or connect.
+- Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
+  (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
+  `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`
+  entries' port and token change on every worker start, so an agent started before a worker restart
+  holds dead entries.
+- Kumo's instructions for agents are in `~/.kumo/instructions.md`, rewritten each time the worker
+  starts. Agents this daemon starts don't get them yet.
+- Kumo itself lives in a separate repo, `shyamhq/kumo-computer`.
+- Push and open PRs against `shyamhq/kumo-agent` only, never `getpaseo/paseo` (`upstream`).
+
 Paseo is a mobile app for monitoring and controlling your local AI coding agents from anywhere. Your dev environment, in your pocket. Connects directly to your actual development environment — your code stays on your machine.
 
 **Supported agents:** Claude Code, Codex, GitHub Copilot, OpenCode, Pi, Antigravity, and Muse Code.

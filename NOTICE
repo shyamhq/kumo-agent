@@ -1,0 +1,8 @@
+kumo-agent
+Copyright (c) 2026-present Ghanashyam Meher
+
+This product is a modified version of Paseo (https://github.com/getpaseo/paseo),
+Copyright (c) 2025-present Mohamed Boudra, licensed under the Apache License,
+Version 2.0 (see LICENSE). Changes from Paseo are recorded in this repository's
+git history, starting after upstream commit
+7bcd598f09315334b8ae72a7da927b43ba70d809.
