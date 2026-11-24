@@ -21,6 +21,7 @@ import invariant from "tiny-invariant";
 import { shallow, useShallow } from "zustand/shallow";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { useAgentStreamTail } from "@/agent-stream/use-agent-stream-tail";
+import { useIsSharedChat } from "@/agent-stream/use-is-shared-chat";
 import { AgentStreamView, type AgentStreamViewHandle } from "@/agent-stream/view";
 import { CHAT_COLUMN_RAIL_DATASET, ChatColumnRailSurface } from "@/chat-rail";
 import { ArchivedAgentCallout } from "@/components/archived-agent-callout";
@@ -1653,6 +1654,8 @@ function ActiveAgentComposer({
     { initialIsBelow: isCompactFormFactor },
   );
   const paneContext = usePaneContext();
+  const isSharedChat = useIsSharedChat(serverId, agentId);
+  const { t } = useTranslation();
   const openInSidePane = useSettings((settings) => settings.openInSidePane);
   const { workspaceId, tabId, retargetCurrentTab } = paneContext;
   const { archiveAgent } = useArchiveAgent();
@@ -1747,6 +1750,8 @@ function ActiveAgentComposer({
         onMessageSent={onMessageSent}
         onClientSlashCommand={handleClientSlashCommand}
         isCompactLayout={isCompactComposerLayout}
+        isSharedChat={isSharedChat}
+        placeholder={isSharedChat ? t("composer.placeholders.shared") : undefined}
       />
     </View>
   );

@@ -9244,10 +9244,11 @@ export class Session {
           beforeDispatch,
           logger: this.sessionLogger,
         };
+        const hasAttachments = Boolean(msg.images?.length || msg.attachments?.length);
         const result = this.person
-          ? await sendFromPerson({ ...params, person: this.person, text: msg.text })
+          ? await sendFromPerson({ ...params, person: this.person, text: msg.text, hasAttachments })
           : await sendPromptToAgent(params);
-        if (result.disposition === "turn_started") {
+        if (result?.disposition === "turn_started") {
           await waitForAgentRunStartWithTimeout(
             this.agentManager,
             agentId,

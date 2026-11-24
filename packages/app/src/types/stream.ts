@@ -147,6 +147,23 @@ export function createUserMessage(input: UserMessageInput): UserMessageItem {
   };
 }
 
+const sharedByTail = new WeakMap<readonly StreamItem[], boolean>();
+
+/**
+ * Whether a chat is shared (docs/glossary.md): the daemon names a message's author only once it
+ * is, so one authored row says so. Cached per tail array, so a store selector stays O(1) while
+ * the tail is unchanged. ponytail: reads the loaded tail, like Kumo's isSharedSession; a chat whose
+ * authored rows all scrolled out reads as unshared until someone writes again.
+ */
+export function isSharedChat(items: readonly StreamItem[] | undefined): boolean {
+  if (!items) return false;
+  const known = sharedByTail.get(items);
+  if (known !== undefined) return known;
+  const shared = items.some((item) => item.kind === "user_message" && item.author !== undefined);
+  sharedByTail.set(items, shared);
+  return shared;
+}
+
 export function isUnreconciledLocalUserMessage(message: UserMessageItem): boolean {
   return (
     message.clientMessageId !== undefined &&

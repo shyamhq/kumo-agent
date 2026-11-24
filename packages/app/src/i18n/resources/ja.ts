@@ -137,6 +137,7 @@ export const ja: TranslationResources = {
       mobile: "メッセージ、@ファイル、/コマンド",
       fallback: "メッセージ...",
       terminal: "Prompt",
+      shared: "全員にメッセージ · @kumo でエージェントに質問",
     },
     input: {
       accessibilityLabel: "エージェントにメッセージ...",

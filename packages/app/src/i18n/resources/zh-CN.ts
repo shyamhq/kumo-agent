@@ -136,6 +136,7 @@ export const zhCN: TranslationResources = {
       mobile: "发消息，@files，/commands",
       fallback: "输入消息...",
       terminal: "Prompt",
+      shared: "发给所有人 · @kumo 询问代理",
     },
     input: {
       accessibilityLabel: "给 Agent 发消息...",

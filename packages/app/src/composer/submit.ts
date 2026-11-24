@@ -1,3 +1,4 @@
+import { isForPeople } from "@getpaseo/protocol/shared-chat";
 import { i18n } from "@/i18n/i18next";
 
 export type AgentInputSubmitResult = "noop" | "queued" | "submitted" | "failed";
@@ -9,6 +10,8 @@ export interface AgentInputSubmitActionInput<TAttachment> {
   allowEmptySubmit?: boolean;
   submitBehavior?: "clear" | "preserve-and-lock";
   forceSend?: boolean;
+  /** A shared chat's message for people is a post: it starts no turn, so it never waits for one. */
+  isSharedChat?: boolean;
   isAgentRunning: boolean;
   canSubmit: boolean;
   queueMessage: (input: { message: string; attachments: TAttachment[] }) => void;
@@ -42,7 +45,8 @@ export async function submitAgentInput<TAttachment>(
     return "noop";
   }
 
-  if (input.isAgentRunning && !input.forceSend) {
+  const isPost = Boolean(input.isSharedChat) && isForPeople(trimmedMessage);
+  if (input.isAgentRunning && !input.forceSend && !isPost) {
     input.queueMessage({ message: trimmedMessage, attachments });
     if (shouldClearOnSubmit) {
       input.setUserInput("");

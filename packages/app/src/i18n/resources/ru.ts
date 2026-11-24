@@ -137,6 +137,7 @@ export const ru: TranslationResources = {
       mobile: "Сообщение,@files,/commands",
       fallback: "Сообщение...",
       terminal: "Prompt",
+      shared: "Сообщение всем · @kumo — вопрос агенту",
     },
     input: {
       accessibilityLabel: "Написать агенту...",

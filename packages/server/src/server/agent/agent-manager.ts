@@ -82,7 +82,7 @@ import {
   foldHookFeatureValues,
   type ProviderOptionsPatch,
 } from "./option-controls.js";
-import type { StoredAgentRecord, AgentStorage } from "./agent-storage.js";
+import type { StoredAgentRecord, AgentStorage, StoredPost } from "./agent-storage.js";
 import type { AgentOwner } from "./agent-owner.js";
 import {
   InMemoryAgentTimelineStore,
@@ -5155,10 +5155,21 @@ export class AgentManager {
         typeof broadcast === "function" ? broadcast() : broadcast,
         typeof broadcastTimeline === "function" ? broadcastTimeline() : broadcastTimeline,
       );
-      return;
+    } else {
+      await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
     }
+    // A replay rebuilds the timeline from the provider, which has not seen these yet.
+    for (const post of (await this.registry?.get(agent.id))?.thread?.posts ?? []) {
+      this.recordSubmittedPromptItem(agent, post);
+    }
+  }
 
-    await this.primeTimelineFromLegacyProviderHistory(agent, broadcast);
+  /**
+   * Shows a shared chat's post (docs/glossary.md) to every client without sending it anywhere.
+   * Recorded like a submitted prompt, so the prompt that later carries it skips it by id.
+   */
+  recordPost(agentId: string, post: StoredPost): void {
+    this.recordSubmittedPromptItem(this.requireAgent(agentId), post);
   }
 
   private async forceHydrateTimelineFromLegacyProviderHistory(

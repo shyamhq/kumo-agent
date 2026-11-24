@@ -93,6 +93,8 @@ interface DirectPrompt {
   messageId?: string;
   sessionMode?: string;
   unarchive?: boolean;
+  /** Envelopes that go first in the same provider prompt: a shared chat's posts. */
+  ahead?: readonly string[];
 }
 /** The provider prompt a direct prompt became. Unchanged when nothing was queued. */
 interface JoinedPrompt {
@@ -481,7 +483,8 @@ export function createAgentMessageDelivery(dependencies: Dependencies): AgentMes
   }
 
   function join(queued: Admitted[], direct: DirectPrompt): JoinedPrompt {
-    if (!queued.length) {
+    const ahead = direct.ahead ?? [];
+    if (!queued.length && !ahead.length) {
       const own = prepareAgentMessage(direct.prompt, direct.source, direct.messageId);
       return {
         prompt: own.prompt,
@@ -494,7 +497,7 @@ export function createAgentMessageDelivery(dependencies: Dependencies): AgentMes
     // a separate row with its own identity.
     const own = envelopeMessage(direct.prompt, direct.source ?? null, direct.messageId);
     return {
-      prompt: combine([...queued.map(envelope), own.prompt]),
+      prompt: combine([...ahead, ...queued.map(envelope), own.prompt]),
       messageId: own.messageId,
       sessionMode:
         direct.sessionMode ?? queued.findLast((message) => message.sessionMode)?.sessionMode,

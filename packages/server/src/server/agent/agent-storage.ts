@@ -51,15 +51,25 @@ const PERSISTENCE_HANDLE_SCHEMA = z
   .nullable()
   .optional();
 
+/** A post (docs/glossary.md) no provider has seen yet, kept as the row it is shown as. */
+const STORED_POST_SCHEMA = z.object({
+  type: z.literal("user_message"),
+  text: z.string(),
+  clientMessageId: z.string(),
+  author: z.object({ id: z.string(), name: z.string() }),
+});
+export type StoredPost = z.infer<typeof STORED_POST_SCHEMA>;
+
 /**
- * Who has written in a shared chat (docs/glossary.md). `writers` holds person ids up to two:
- * two different people make a chat shared, for good.
+ * A shared chat's state (docs/glossary.md). `writers` holds person ids up to two: two different
+ * people make a chat shared, for good. `posts` waits for the next prompt to carry it.
  */
 const AGENT_THREAD_SCHEMA = z.object({
   writers: z.array(z.string()),
+  posts: z.array(STORED_POST_SCHEMA).default([]),
 });
 export type AgentThread = z.infer<typeof AGENT_THREAD_SCHEMA>;
-const EMPTY_THREAD: AgentThread = { writers: [] };
+const EMPTY_THREAD: AgentThread = { writers: [], posts: [] };
 
 const RAW_STORED_AGENT_SCHEMA = z.object({
   id: z.string(),

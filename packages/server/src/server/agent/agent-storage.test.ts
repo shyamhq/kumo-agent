@@ -489,12 +489,19 @@ describe("AgentStorage", () => {
   test("an agent's thread survives snapshots and a daemon restart", async () => {
     await storage.applySnapshot(createManagedAgent({ id: "agent-shared" }));
 
-    const before = await storage.updateThread("agent-shared", () => ({ writers: ["u_a", "u_b"] }));
+    const post = {
+      type: "user_message" as const,
+      text: "build fails",
+      clientMessageId: "m1",
+      author: { id: "u_a", name: "Alice" },
+    };
+    const thread = { writers: ["u_a", "u_b"], posts: [post] };
+    const before = await storage.updateThread("agent-shared", () => thread);
     await storage.applySnapshot(createManagedAgent({ id: "agent-shared", lifecycle: "running" }));
 
-    expect(before).toEqual({ writers: [] });
+    expect(before).toEqual({ writers: [], posts: [] });
     const reloaded = new AgentStorage(storagePath, createTestLogger());
-    expect((await reloaded.get("agent-shared"))?.thread).toEqual({ writers: ["u_a", "u_b"] });
+    expect((await reloaded.get("agent-shared"))?.thread).toEqual(thread);
   });
 
   test("stores titles independently of snapshots", async () => {

@@ -134,6 +134,7 @@ export const en = {
       mobile: "Message, @files, /commands",
       fallback: "Message...",
       terminal: "Prompt",
+      shared: "Message everyone · @kumo asks the agent",
     },
     input: {
       accessibilityLabel: "Message agent...",

@@ -10,6 +10,11 @@ then replaces the previous tool state or merges into the current text item. Inte
 are never retained for history or catch-up. Provider history is the durable transcript authority
 and rebuilds the projection when an agent resumes.
 
+A shared chat's posts are the one exception until the agent sees them: no provider holds them, so
+they live in the agent record's `thread` and are recorded again after every replay. The prompt that
+carries them puts them in the provider's history, inside `person-post` envelopes the projection
+turns back into the same rows.
+
 Pagination bounds each read, not total resident history. Active and idle agents retain their
 projected transcript; archive releases it and later history reads rebuild it from the provider.
 Streaming overhead must remain proportional to the retained transcript. Cumulative text snapshots

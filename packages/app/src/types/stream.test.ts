@@ -13,6 +13,7 @@ import {
   type AgentToolCallItem,
   type StreamItem,
   isAgentToolCallItem,
+  isSharedChat,
   upsertUserMessage,
   upsertUserMessageAcrossStream,
 } from "./stream";
@@ -461,6 +462,22 @@ function findToolByCallId(state: StreamItem[], callId: string): AgentToolCallIte
       isAgentToolCallItem(item) && item.payload.data.callId === callId,
   );
 }
+
+describe("isSharedChat", () => {
+  const timestamp = new Date("2026-11-25T10:00:00.000Z");
+
+  it("is shared once a row names its author, as only a shared chat's do", () => {
+    const alone = [createUserMessage({ id: "m1", text: "hi", timestamp })];
+    const shared = [
+      ...alone,
+      createUserMessage({ id: "m2", text: "hi", author: { id: "u_b", name: "Bob" }, timestamp }),
+    ];
+
+    expect(isSharedChat(undefined)).toBe(false);
+    expect(isSharedChat(alone)).toBe(false);
+    expect(isSharedChat(shared)).toBe(true);
+  });
+});
 
 describe("stream reducer tool call idempotency", () => {
   it("returns the same detail reference when tool call detail is identical", () => {

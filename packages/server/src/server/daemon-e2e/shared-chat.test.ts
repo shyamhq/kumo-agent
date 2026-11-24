@@ -3,6 +3,7 @@ import path from "node:path";
 import { expect, test } from "vitest";
 
 import type { AgentPromptInput } from "../agent/agent-sdk-types.js";
+import { parseAgentMessages } from "../agent/agent-messages/envelope.js";
 import { createTestAgentClients } from "../test-utils/fake-agent-client.js";
 import { createTestPaseoDaemon } from "../test-utils/paseo-daemon.js";
 import { DaemonClient } from "../test-utils/daemon-client.js";
@@ -15,30 +16,56 @@ async function sharedChatDaemon() {
   await mkdir(artifacts, { recursive: true });
   const root = await mkdtemp(path.join(artifacts, "shared-chat-"));
   const prompts: string[] = [];
-  const daemon = await createTestPaseoDaemon({
-    agentClients: createTestAgentClients({
-      onStartTurn: (prompt: AgentPromptInput) =>
-        prompts.push(typeof prompt === "string" ? prompt : JSON.stringify(prompt)),
-    }),
-    paseoHomeRoot: path.join(root, "daemon"),
-    staticDir: path.join(root, "static"),
-    cleanup: false,
-  });
-  const url = `ws://127.0.0.1:${daemon.port}/ws`;
   const clients: DaemonClient[] = [];
+  const start = () =>
+    createTestPaseoDaemon({
+      agentClients: createTestAgentClients({
+        onStartTurn: (prompt: AgentPromptInput) =>
+          prompts.push(typeof prompt === "string" ? prompt : JSON.stringify(prompt)),
+      }),
+      paseoHomeRoot: path.join(root, "daemon"),
+      staticDir: path.join(root, "static"),
+      cleanup: false,
+    });
+  let daemon = await start();
   async function connect(headers: Record<string, string> = {}) {
-    const client = new DaemonClient({ url, headers });
+    const client = new DaemonClient({ url: `ws://127.0.0.1:${daemon.port}/ws`, headers });
     clients.push(client);
     await client.connect();
     await client.fetchAgents({ subscribe: {} });
     return client;
+  }
+  /** Stops the daemon and starts another on the same home, as an update does. */
+  async function restart() {
+    await Promise.all(clients.splice(0).map((client) => client.close()));
+    await daemon.close();
+    daemon = await start();
   }
   async function close() {
     await Promise.all(clients.map((client) => client.close()));
     await daemon.close();
     await rm(root, { recursive: true, force: true });
   }
-  return { root, prompts, connect, close };
+  return { root, prompts, connect, restart, close };
+}
+
+/** Alice and Bob have each written in a fresh chat, so it is shared. */
+async function sharedAgent(daemon: Awaited<ReturnType<typeof sharedChatDaemon>>) {
+  const alice = await daemon.connect(gate("u_alice", "Alice"));
+  const bob = await daemon.connect(gate("u_bob", "Bob"));
+  const agent = await alice.createAgent({ provider: "claude", cwd: daemon.root });
+  await alice.sendMessage(agent.id, "hello");
+  await alice.waitForFinish(agent.id, 10_000);
+  await bob.sendMessage(agent.id, "hi");
+  await bob.waitForFinish(agent.id, 10_000);
+  return { alice, bob, agent };
+}
+
+async function peopleSaid(client: DaemonClient, agentId: string) {
+  const timeline = await client.fetchAgentTimeline(agentId, { direction: "tail", limit: 50 });
+  return timeline.entries.flatMap((entry) =>
+    entry.item.type === "user_message" ? [`${entry.item.author?.name}: ${entry.item.text}`] : [],
+  );
 }
 
 test("a chat turns shared at its second writer, and then names every writer to the agent", async () => {
@@ -52,7 +79,7 @@ test("a chat turns shared at its second writer, and then names every writer to t
     await alice.waitForFinish(agent.id, 10_000);
     await bob.sendMessage(agent.id, "I join");
     await bob.waitForFinish(agent.id, 10_000);
-    await alice.sendMessage(agent.id, "Both of us now");
+    await alice.sendMessage(agent.id, "@kumo both of us now");
     await alice.waitForFinish(agent.id, 10_000);
 
     expect(prompts[0]).toBe("Alone, so as always");
@@ -68,7 +95,7 @@ test("a chat turns shared at its second writer, and then names every writer to t
     expect(said).toEqual([
       ["Alone, so as always", undefined],
       ["I join", { id: "u_bob", name: "Bob" }],
-      ["Both of us now", { id: "u_alice", name: "Alice Ng" }],
+      ["@kumo both of us now", { id: "u_alice", name: "Alice Ng" }],
     ]);
   } finally {
     await close();
@@ -109,5 +136,71 @@ test("a connection the gate names no one behaves as today", async () => {
     expect(prompts).toEqual(["one", "two"]);
   } finally {
     await close();
+  }
+});
+
+test("a post reaches everyone, starts no turn, and rides the next @kumo ahead of it", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const { alice, bob, agent } = await sharedAgent(daemon);
+    const turns = daemon.prompts.length;
+
+    await alice.sendMessage(agent.id, "build fails on node 24");
+    expect(await peopleSaid(bob, agent.id)).toContain("Alice: build fails on node 24");
+    expect(daemon.prompts).toHaveLength(turns);
+
+    await bob.sendMessage(agent.id, "@kumo why?");
+    await bob.waitForFinish(agent.id, 10_000);
+    const carried = parseAgentMessages(daemon.prompts.at(-1) ?? "");
+    expect(carried?.map((message) => [message.source, message.text])).toEqual([
+      [{ kind: "person-post", author: { id: "u_alice", name: "Alice" } }, "build fails on node 24"],
+      [{ kind: "person-message", author: { id: "u_bob", name: "Bob" } }, "@kumo why?"],
+    ]);
+    expect(await peopleSaid(alice, agent.id)).toEqual([
+      "undefined: hello",
+      "Bob: hi",
+      "Alice: build fails on node 24",
+      "Bob: @kumo why?",
+    ]);
+
+    await bob.sendMessage(agent.id, "@kumo and now?");
+    await bob.waitForFinish(agent.id, 10_000);
+    expect(parseAgentMessages(daemon.prompts.at(-1) ?? "")).toHaveLength(1);
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("a post the agent has not seen survives a daemon restart", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const { alice, agent } = await sharedAgent(daemon);
+    await alice.sendMessage(agent.id, "remember the flaky test");
+    await daemon.restart();
+
+    const bob = await daemon.connect(gate("u_bob", "Bob"));
+    expect(await peopleSaid(bob, agent.id)).toContain("Alice: remember the flaky test");
+    await bob.sendMessage(agent.id, "@kumo fix it");
+    await bob.waitForFinish(agent.id, 10_000);
+    expect(daemon.prompts.at(-1)).toContain("remember the flaky test");
+  } finally {
+    await daemon.close();
+  }
+});
+
+test("a post with a file is refused, since only the agent can take it", async () => {
+  const daemon = await sharedChatDaemon();
+  try {
+    const { alice, agent } = await sharedAgent(daemon);
+    const turns = daemon.prompts.length;
+
+    await expect(
+      alice.sendMessage(agent.id, "look at this", {
+        images: [{ data: "aGk=", mimeType: "image/png" }],
+      }),
+    ).rejects.toThrow("Add @kumo to send files to the agent.");
+    expect(daemon.prompts).toHaveLength(turns);
+  } finally {
+    await daemon.close();
   }
 });

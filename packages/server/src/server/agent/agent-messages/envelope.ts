@@ -8,6 +8,7 @@ import type {
 } from "../agent-sdk-types.js";
 
 const agentIdSchema = z.string().min(1);
+const messageAuthorSchema = z.object({ id: z.string().min(1), name: z.string() });
 const sourceSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("change-request-update"),
@@ -19,11 +20,10 @@ const sourceSchema = z.discriminatedUnion("kind", [
     serverId: z.string().min(1).optional(),
     title: z.string().min(1).optional(),
   }),
-  // A person writing in a shared chat, named by Kumo's gate (MessageAuthor), never by the text.
-  z.object({
-    kind: z.literal("person-message"),
-    author: z.object({ id: z.string().min(1), name: z.string() }),
-  }),
+  // A person writing in a shared chat, named by Kumo's gate (MessageAuthor), never by the text:
+  // to the agent, or (a post) to the people in the chat, carried ahead of the next prompt.
+  z.object({ kind: z.literal("person-message"), author: messageAuthorSchema }),
+  z.object({ kind: z.literal("person-post"), author: messageAuthorSchema }),
   z.object({
     kind: z.literal("agent-notification"),
     agentId: agentIdSchema,
@@ -80,7 +80,7 @@ export function formatAgentMessage(message: AgentMessage): string {
   if (source?.kind === "change-request-update") {
     return `<paseo-system version="1" kind="change-request-update" source-url="${escapeXml(source.url)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
   }
-  if (source?.kind === "person-message") {
+  if (source?.kind === "person-message" || source?.kind === "person-post") {
     return `<paseo-system version="1" kind="${source.kind}" author-id="${escapeXml(source.author.id)}" author-name="${escapeXml(source.author.name)}" message-id="${escapeXml(message.id)}">\n${escapeXml(message.text)}\n</paseo-system>`;
   }
   const attributes = source
@@ -220,7 +220,7 @@ function projectAgentMessage(item: AgentTimelineItem): AgentTimelineItem | null 
   if (!source) {
     return { ...item, text: message.text, clientMessageId: message.id };
   }
-  if (source.kind === "person-message") {
+  if (source.kind === "person-message" || source.kind === "person-post") {
     return { ...item, text: message.text, clientMessageId: message.id, author: source.author };
   }
   if (source.kind === "change-request-update") {

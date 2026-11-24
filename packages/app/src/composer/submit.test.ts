@@ -141,6 +141,35 @@ describe("submitAgentInput", () => {
     expect(clearDraft).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["sends a post at once", "looks wrong to me", "submitted"],
+    ["queues a message for the agent", "@kumo why?", "queued"],
+    ["queues a command", "/compact", "queued"],
+  ] as const)("in a shared chat while the agent runs, %s", async (_, message, outcome) => {
+    const queueMessage = vi.fn();
+    const submitMessage = vi.fn(async () => {});
+
+    await expect(
+      submitAgentInput({
+        message,
+        attachments: [],
+        isSharedChat: true,
+        isAgentRunning: true,
+        canSubmit: true,
+        queueMessage,
+        submitMessage,
+        clearDraft: vi.fn(),
+        setUserInput: vi.fn(),
+        setAttachments: vi.fn(),
+        setSendError: vi.fn(),
+        setIsProcessing: vi.fn(),
+      }),
+    ).resolves.toBe(outcome);
+
+    expect(submitMessage).toHaveBeenCalledTimes(outcome === "submitted" ? 1 : 0);
+    expect(queueMessage).toHaveBeenCalledTimes(outcome === "queued" ? 1 : 0);
+  });
+
   it("restores the composer when submit fails", async () => {
     const submitError = new Error("No host selected");
     const queueMessage = vi.fn();

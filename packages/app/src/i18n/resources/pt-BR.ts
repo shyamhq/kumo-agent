@@ -137,6 +137,7 @@ export const ptBR: TranslationResources = {
       mobile: "Mensagem, @files, /commands",
       fallback: "Mensagem...",
       terminal: "Prompt",
+      shared: "Mensagem para todos · @kumo pergunta ao agente",
     },
     input: {
       accessibilityLabel: "Enviar mensagem ao agente...",

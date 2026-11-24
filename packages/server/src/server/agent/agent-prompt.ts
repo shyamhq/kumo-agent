@@ -269,6 +269,8 @@ export interface SendPromptToAgentParams {
   prompt: AgentPromptInput;
   source?: AgentPromptSource;
   messageId?: string;
+  /** Envelopes delivered first in the same provider prompt (`DirectPrompt.ahead`). */
+  ahead?: readonly string[];
   activeTurnBehavior?: ActiveTurnBehavior;
   runOptions?: AgentRunOptions;
   /** Optional mode to set on the agent before the run starts. */
@@ -384,13 +386,14 @@ async function resolvePromptSource(
 export async function sendPromptToAgent(
   params: SendDirectPromptParams,
 ): Promise<PromptDispatchResult> {
-  const { agentMessages, source, messageId, ...send } = params;
+  const { agentMessages, source, messageId, ahead, ...send } = params;
   return agentMessages.sendDirect(
     {
       recipientId: params.agentId,
       prompt: params.prompt,
       source: await resolvePromptSource(source, params.agentManager, params.agentStorage),
       messageId,
+      ahead,
       sessionMode: params.sessionMode,
       unarchive: params.unarchive,
     },
