@@ -83,17 +83,6 @@ describe("server config", () => {
     expect(loadConfig(paseoHome, { env: {} }).webUi?.frameAncestors).toBeUndefined();
   });
 
-  test("opens ~/workspace on a Kumo computer only", async () => {
-    const paseoHome = await mkdtemp(path.join(os.tmpdir(), "paseo-config-kumo-workspace-"));
-    roots.push(paseoHome);
-
-    expect(
-      loadConfig(paseoHome, { env: { PUBLIC_URL: "https://6868--deep-badger.mykumo.xyz" } })
-        .kumoWorkspace,
-    ).toBe(path.join(os.homedir(), "workspace"));
-    expect(loadConfig(paseoHome, { env: {} }).kumoWorkspace).toBeUndefined();
-  });
-
   test("idle runtime cleanup defaults on and supports a host-wide opt-out", async () => {
     const paseoHome = await mkdtemp(path.join(os.tmpdir(), "paseo-config-idle-cleanup-"));
     roots.push(paseoHome);

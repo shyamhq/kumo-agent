@@ -679,7 +679,9 @@ export function AddProjectFlow({ request, onClose }: AddProjectFlowProps) {
         : parents;
       const filteredParents = buildProjectPickerOptions({
         recommendedPaths: orderedParents,
-        serverPaths: directoryPaths,
+        // With nothing typed the daemon may list existing projects (Kumo's ~/workspace), and a
+        // clone does not belong inside one.
+        serverPaths: page.query.trim() ? directoryPaths : EMPTY_PATHS,
         query: page.query,
       }).map((option) => option.path);
       return buildCloneLocationOptions({

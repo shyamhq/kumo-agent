@@ -1,6 +1,5 @@
 import { configurationEnvironment } from "./config-environment.js";
 import { existsSync } from "node:fs";
-import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolvePaseoNodeEnv } from "./paseo-env.js";
@@ -405,12 +404,6 @@ function kumoFrameAncestors(publicUrl: string | undefined): string | undefined {
   return computer ? `frame-ancestors https://os--${computer.host}` : undefined;
 }
 
-/** On a Kumo computer, `~/workspace`, where Kumo keeps its projects. */
-function resolveKumoWorkspace(env: NodeJS.ProcessEnv): string | undefined {
-  if (!readKumoComputer(env.PUBLIC_URL)) return undefined;
-  return path.join(homedir(), "workspace");
-}
-
 function resolveWebUiConfig(
   paseoHome: string,
   env: NodeJS.ProcessEnv,
@@ -662,7 +655,6 @@ export function resolveConfigFromPersisted(
     relayPublicUseTls: relay.publicUseTls,
     serviceProxy: resolveServiceProxyConfig(env, persisted),
     webUi: resolveWebUiConfig(paseoHome, env, cli, persisted),
-    kumoWorkspace: resolveKumoWorkspace(env),
     auth: resolveAuthConfig(env, persisted),
     openai,
     speech,
