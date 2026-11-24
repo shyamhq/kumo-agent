@@ -1792,9 +1792,6 @@ export function readInitialDaemonConnectionHint(input?: {
   // own location is the one to dial. The hint is built from the Host the daemon saw, which a
   // proxy in front (Kumo's gate) rewrites to an address the browser cannot reach.
   const location = globalThis.location;
-  if (!location?.hostname) {
-    return result.data;
-  }
   const useTls = location.protocol === "https:";
   const port = location.port || (useTls ? "443" : "80");
   return { listen: `${location.hostname}:${port}`, useTls };
