@@ -5088,6 +5088,33 @@ describe("HostRuntimeStore", () => {
     store.syncHosts([]);
   });
 
+  it("gives a Kumo computer saved before its daemon answered the daemon's real server id", async () => {
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async () => ({
+          client: makeConnectedProbeClient(5) as unknown as DaemonClient,
+          serverId: "srv_kumo",
+          hostname: null,
+        }),
+        getClientId: async () => "cid_test_runtime",
+      },
+    });
+
+    await store.upsertDirectConnection({
+      serverId: "kumo:noble-heron",
+      endpoint: "6868--noble-heron.mykumo.xyz:443",
+      useTls: true,
+      label: "noble-heron",
+    });
+
+    await vi.waitFor(() =>
+      expect(store.getHosts()).toMatchObject([{ serverId: "srv_kumo", label: "noble-heron" }]),
+    );
+
+    store.syncHosts([]);
+  });
+
   it("uses the advertised hostname when adding a relay host from a pairing offer", async () => {
     const store = createPairingStore({ hostname: "mbp" });
     answerHostConfirmations(store, true);

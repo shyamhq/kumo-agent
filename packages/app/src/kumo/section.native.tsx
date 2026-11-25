@@ -7,7 +7,11 @@ import { StyleSheet } from "react-native-unistyles";
 import { Button } from "@/components/ui/button";
 import { useFetchQuery } from "@/data/query";
 import { queryClient } from "@/data/query-client";
-import { useHostRegistryLoaded, useHosts } from "@/runtime/host-runtime";
+import {
+  useHostRegistryLoaded,
+  useHostRuntimeConnectionStatuses,
+  useHosts,
+} from "@/runtime/host-runtime";
 import {
   computersQuery,
   KumoRefusedError,
@@ -17,13 +21,17 @@ import {
   startComputer,
 } from "./api";
 import { syncComputers } from "./sync";
-import { type Computer, planSync } from "./plan";
+import { type Computer, kumoHostsByHandle } from "./plan";
 
 const NO_COMPUTERS: readonly Computer[] = [];
 
-function refetchWhileStarting(query: Query<Computer[]>): number | false {
+/**
+ * Kumo can't tell the phone when a computer starts, stops or is shared, so the list is polled
+ * while the app is open: every few seconds while one is starting, half a minute otherwise.
+ */
+function refetchInterval(query: Query<Computer[]>): number {
   const starting = query.state.data?.some((computer) => computer.status === "provisioning");
-  return starting ? 3_000 : false;
+  return starting ? 3_000 : 30_000;
 }
 
 function refreshKumo(): void {
@@ -32,8 +40,7 @@ function refreshKumo(): void {
 
 /**
  * Keeps the host list in step with the person's Kumo computers: on sign-in, whenever the app
- * comes back to the foreground, and every few seconds while one is starting. Signed out, every
- * Kumo host goes.
+ * comes back to the foreground, and on every poll. Signed out, every Kumo host goes.
  */
 export function KumoSync() {
   const signedIn = useFetchQuery(signedInQuery).data;
@@ -41,7 +48,7 @@ export function KumoSync() {
   const computers = useFetchQuery({
     ...computersQuery,
     enabled: signedIn === true,
-    refetchInterval: refetchWhileStarting,
+    refetchInterval,
   }).data;
   const target = signedIn === false ? NO_COMPUTERS : computers;
 
@@ -68,7 +75,7 @@ function FailureText({ error }: { error: Error | null }) {
   return <Text style={styles.error}>{sentence}</Text>;
 }
 
-// A ready computer only gets a row while its kumo-agent isn't answering.
+// A ready computer gets a row only once its host has failed to connect.
 const STATUS_LABEL = {
   provisioning: "kumo.status.starting",
   ready: "kumo.status.notRunning",
@@ -120,14 +127,22 @@ function SignedIn() {
   const leave = useMutation({ mutationFn: signOut });
   const { mutate: mutateSignOut } = leave;
   const handleSignOut = useCallback(() => mutateSignOut(), [mutateSignOut]);
-  // A computer with a live host is already in the host list; the rest need a row.
+  const serverIdByHandle = useMemo(() => kumoHostsByHandle(hosts), [hosts]);
+  const serverIds = useMemo(() => [...serverIdByHandle.values()], [serverIdByHandle]);
+  const statuses = useHostRuntimeConnectionStatuses(serverIds);
+  // A ready computer is in the host list; it also needs a row once its host can't connect (no
+  // kumo-agent answering), but not while the host is still trying.
   const rows = useMemo(() => {
+    const unreachable = new Set<string>();
+    for (const [handle, serverId] of serverIdByHandle) {
+      const status = statuses.get(serverId);
+      if (status === "offline" || status === "error") unreachable.add(handle);
+    }
     const list = computers.data ?? NO_COMPUTERS;
-    const unanswered = new Set(planSync(list, hosts).add);
     return list.filter(
-      (computer) => computer.status !== "ready" || unanswered.has(computer.handle),
+      (computer) => computer.status !== "ready" || unreachable.has(computer.handle),
     );
-  }, [computers.data, hosts]);
+  }, [computers.data, serverIdByHandle, statuses]);
 
   return (
     <View style={styles.section} testID="kumo-section">

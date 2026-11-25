@@ -49,7 +49,10 @@ How it runs under Kumo:
   as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
 - Cut for Kumo, so don't port upstream work on them: the Usage view (plan limits; the context-window
   meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
-  the onboarding phone step. Kumo will list a person's other computers as hosts instead. Paseo's
+  the onboarding phone step. On the phone, the person's Kumo computers are the hosts instead
+  (`packages/app/src/kumo/`, native only): sign in to Kumo, and each computer they reach becomes a
+  host once its kumo-agent answers through Kumo's gate, with a fresh port grant on every connection
+  attempt (the client's `connectHeaders`). Paseo's
   website, its release workflows (npm, app stores, Docker, Nix, desktop rollout), F-Droid, the
   store screenshots and the Nix packaging. The plugin directory is off (`PLUGIN_DIRECTORY_ENABLED`), not removed. The bundled
   skills are `kumo-agent*` (renamed from `paseo*`; `paseo-help` and `paseo-plugin` dropped): port upstream

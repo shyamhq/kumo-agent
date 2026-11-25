@@ -1843,7 +1843,8 @@ export function hasConfiguredLocalDaemonOverride(): boolean {
 }
 
 function isPlaceholderServerId(serverId: string): boolean {
-  return serverId.startsWith("local:");
+  // `kumo:` is a Kumo computer saved before its kumo-agent first answered (kumo/sync.ts).
+  return serverId.startsWith("local:") || serverId.startsWith("kumo:");
 }
 
 function delay(ms: number): Promise<void> {

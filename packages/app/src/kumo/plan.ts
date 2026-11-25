@@ -31,7 +31,8 @@ export function kumoHandleOf(endpoint: string): string | null {
   return /^[a-z0-9-]+$/.test(handle) ? handle : null;
 }
 
-function kumoHostsByHandle(hosts: readonly HostProfile[]): Map<string, string> {
+/** The server id of each Kumo computer's host, by the computer's handle. */
+export function kumoHostsByHandle(hosts: readonly HostProfile[]): Map<string, string> {
   const serverIdByHandle = new Map<string, string>();
   for (const host of hosts) {
     for (const connection of host.connections) {
