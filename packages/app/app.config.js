@@ -141,7 +141,6 @@ export default {
         },
       ],
       "expo-audio",
-      "expo-web-browser",
       "expo-secure-store",
       [
         "expo-gradle-jvmargs",
