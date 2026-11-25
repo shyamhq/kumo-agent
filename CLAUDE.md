@@ -60,8 +60,8 @@ How it runs under Kumo:
   native only). After a Kumo sign-in, each ready computer is saved as a host at once, under a
   `kumo:` placeholder id that becomes the daemon's own id when kumo-agent first answers. It is
   reached through Kumo's gate with a fresh port grant on every connection attempt (the client's
-  `connectHeaders`), only over TLS. Computers that aren't connected are rows in a Kumo section, with
-  Start for a stopped one.
+  `connectHeaders`), only over TLS. A computer that is stopped, starting, or whose kumo-agent doesn't
+  answer is a row in a Kumo section, with Start for a stopped one.
 - Several people can share a computer. Kumo's gate names the visitor on every request with
   `X-Kumo-User` and a percent-encoded `X-Kumo-Name`; the daemon keeps that person on the
   connection (`packages/server/src/server/kumo-person.ts`), with no peer check because only the gate

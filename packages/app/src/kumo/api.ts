@@ -126,7 +126,9 @@ export const computersQuery = {
   queryKey: ["kumo", "computers"],
   queryFn: async (): Promise<Computer[]> =>
     listSchema.parse(await (await kumoFetch("/boxes")).json()).boxes,
-  dataShape: "list" as const,
+  // A value, not a list: a list keeps its previous data while refetching, and the only previous
+  // data this query can have is the last session's computers.
+  dataShape: "value" as const,
   staleTimeMs: 30_000,
 };
 
