@@ -312,10 +312,21 @@ function resolveConnectionAuth(
   config: DaemonClientConfig,
 ): ReturnType<typeof chooseConnectionAuth> | Promise<ReturnType<typeof chooseConnectionAuth>> {
   const resolution = config.localCredential?.();
+  if (config.connectHeaders) return withConnectHeaders(config, resolution, config.connectHeaders);
   if (resolution instanceof Promise) {
     return resolution.then((credential) => chooseConnectionAuth(config, credential));
   }
   return chooseConnectionAuth(config, resolution);
+}
+
+async function withConnectHeaders(
+  config: DaemonClientConfig,
+  resolution: string | undefined | Promise<string | undefined>,
+  connectHeaders: () => Promise<Record<string, string>>,
+): Promise<ReturnType<typeof chooseConnectionAuth>> {
+  const selected = chooseConnectionAuth(config, await resolution);
+  const extra = await connectHeaders();
+  return { ...selected, headers: { ...selected.headers, ...extra } };
 }
 
 function extractCorrelatedResponseIdentity(input: unknown): CorrelatedResponseIdentity | null {
@@ -450,6 +461,9 @@ export interface DaemonClientConfig {
   runtimeGeneration?: number | null;
   password?: string;
   localCredential?: () => string | undefined | Promise<string | undefined>;
+  /** Resolved again on every connection attempt, for a credential that a gate in front of the
+   * daemon checks only at upgrade and that expires (Kumo's port grant cookie). */
+  connectHeaders?: () => Promise<Record<string, string>>;
   authHeader?: string;
   suppressSendErrors?: boolean;
   transportFactory?: DaemonTransportFactory;

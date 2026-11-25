@@ -1097,6 +1097,75 @@ test("uses the saved host password when the desktop bridge has no credential for
   });
 });
 
+test("resolves connect headers again for every connection attempt", async () => {
+  useHeartbeatClock();
+  try {
+    const first = createMockTransport();
+    const second = createMockTransport();
+    const transports = [first, second];
+    const transportFactory = vi.fn(() => {
+      const next = transports.shift();
+      if (!next) throw new Error("unexpected extra attempt");
+      return next.transport;
+    });
+    let minted = 0;
+    const client = new DaemonClient({
+      url: "ws://test",
+      clientId: "clsk_connect_headers",
+      connectHeaders: async () => ({ Cookie: `grant=${++minted}` }),
+      reconnect: { enabled: true, baseDelayMs: 1_500, maxDelayMs: 1_500 },
+      transportFactory,
+    });
+    clients.push(client);
+
+    const connected = client.connect();
+    await vi.advanceTimersByTimeAsync(0);
+    first.triggerOpen();
+    await connected;
+    first.triggerClose({ code: 1006, reason: "network lost" });
+    await vi.advanceTimersByTimeAsync(1_500);
+
+    expect(transportFactory.mock.calls).toEqual([
+      [{ url: "ws://test", headers: { Cookie: "grant=1" } }],
+      [{ url: "ws://test", headers: { Cookie: "grant=2" } }],
+    ]);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test("retries with fresh connect headers when resolving them fails", async () => {
+  useHeartbeatClock();
+  try {
+    const mock = createMockTransport();
+    const transportFactory = vi.fn(() => mock.transport);
+    const connectHeaders = vi
+      .fn<() => Promise<Record<string, string>>>()
+      .mockRejectedValueOnce(new Error("computer is not ready"))
+      .mockResolvedValueOnce({ Cookie: "grant=fresh" });
+    const client = new DaemonClient({
+      url: "ws://test",
+      clientId: "clsk_connect_headers_retry",
+      connectHeaders,
+      reconnect: { enabled: true, baseDelayMs: 1_500, maxDelayMs: 1_500 },
+      transportFactory,
+    });
+    clients.push(client);
+
+    await expect(client.connect()).rejects.toThrow("computer is not ready");
+    expect(transportFactory).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1_500);
+
+    expect(connectHeaders).toHaveBeenCalledTimes(2);
+    expect(transportFactory).toHaveBeenCalledWith({
+      url: "ws://test",
+      headers: { Cookie: "grant=fresh" },
+    });
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
 test("advertises client capabilities in hello", async () => {
   const logger = createMockLogger();
   const mock = createMockTransport();
