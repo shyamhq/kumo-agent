@@ -1,4 +1,5 @@
 import type { DaemonClientConfig } from "@getpaseo/client/internal/daemon-client";
+import type { DirectTcpHostConnection } from "@/types/host-connection";
 import { z } from "zod";
 import { queryClient } from "@/data/query-client";
 import { computersQuery, kumoFetch } from "./api";
@@ -27,7 +28,9 @@ async function grantHeaders(handle: string): Promise<Record<string, string>> {
   const computers = await queryClient.ensureQueryData(computersQuery);
   const computer = computers.find((candidate) => candidate.handle === handle);
   if (!computer) throw new KumoComputerGoneError(handle);
-  const response = await kumoFetch(`/boxes/${computer.id}/ports/${kumo.port}/grant`, "POST");
+  const response = await kumoFetch(`/boxes/${computer.id}/ports/${kumo.port}/grant`, {
+    method: "POST",
+  });
   const { url } = grantSchema.parse(await response.json());
   const grant = /[?&]__kumo_grant=([^&#]+)/.exec(url)?.[1];
   if (!grant) throw new Error(`Kumo's grant for ${handle} carried no grant`);
@@ -37,8 +40,10 @@ async function grantHeaders(handle: string): Promise<Record<string, string>> {
   };
 }
 
-/** The connect options a host's endpoint needs: a fresh grant on every attempt for a Kumo computer. */
-export function kumoConnectOptions(endpoint: string): Pick<DaemonClientConfig, "connectHeaders"> {
-  const handle = kumoHandleOf(endpoint);
+/** The connect options a host connection needs: a fresh grant on every attempt to a Kumo computer. */
+export function kumoConnectOptions(
+  connection: DirectTcpHostConnection,
+): Pick<DaemonClientConfig, "connectHeaders"> {
+  const handle = kumoHandleOf(connection);
   return handle ? { connectHeaders: () => grantHeaders(handle) } : {};
 }

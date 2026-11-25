@@ -308,11 +308,20 @@ function chooseConnectionAuth(
   };
 }
 
+type ConnectionAuth = ReturnType<typeof chooseConnectionAuth>;
+
 function resolveConnectionAuth(
   config: DaemonClientConfig,
-): ReturnType<typeof chooseConnectionAuth> | Promise<ReturnType<typeof chooseConnectionAuth>> {
+): ConnectionAuth | Promise<ConnectionAuth> {
+  const auth = resolveCredentialAuth(config);
+  if (!config.connectHeaders) return auth;
+  return withConnectHeaders(auth, config.connectHeaders);
+}
+
+function resolveCredentialAuth(
+  config: DaemonClientConfig,
+): ConnectionAuth | Promise<ConnectionAuth> {
   const resolution = config.localCredential?.();
-  if (config.connectHeaders) return withConnectHeaders(config, resolution, config.connectHeaders);
   if (resolution instanceof Promise) {
     return resolution.then((credential) => chooseConnectionAuth(config, credential));
   }
@@ -320,11 +329,10 @@ function resolveConnectionAuth(
 }
 
 async function withConnectHeaders(
-  config: DaemonClientConfig,
-  resolution: string | undefined | Promise<string | undefined>,
+  auth: ConnectionAuth | Promise<ConnectionAuth>,
   connectHeaders: () => Promise<Record<string, string>>,
-): Promise<ReturnType<typeof chooseConnectionAuth>> {
-  const selected = chooseConnectionAuth(config, await resolution);
+): Promise<ConnectionAuth> {
+  const selected = await auth;
   const extra = await connectHeaders();
   return { ...selected, headers: { ...selected.headers, ...extra } };
 }
@@ -1479,6 +1487,7 @@ export class DaemonClient {
   private checkoutStatusInFlight: Map<string, Promise<CheckoutStatusPayload>> = new Map();
   private connectionListeners: Set<(status: ConnectionState) => void> = new Set();
   private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+  private attemptInFlight: Promise<void> | null = null;
   private connectTimeout: ReturnType<typeof setTimeout> | null = null;
   private pendingGenericTransportErrorTimeout: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
@@ -1612,7 +1621,19 @@ export class DaemonClient {
     return this.connectPromise;
   }
 
-  private async attemptConnect(): Promise<void> {
+  /**
+   * One attempt at a time. The state turns `connecting` only once the transport exists, after the
+   * attempt's auth resolves, which can take a network round trip (`connectHeaders`); a second
+   * attempt started meanwhile would open a second socket and replace the first.
+   */
+  private attemptConnect(): Promise<void> {
+    this.attemptInFlight ??= this.runConnectAttempt().finally(() => {
+      this.attemptInFlight = null;
+    });
+    return this.attemptInFlight;
+  }
+
+  private async runConnectAttempt(): Promise<void> {
     if (this.connectionState.status === "disposed") {
       this.rejectConnect(new Error("Daemon client is disposed"));
       return;

@@ -35,6 +35,7 @@ import type { ReplicaRow, ReplicaRowStore } from "./replica-cache/row-store";
 import { subscriptionFixture } from "./subscription-fixture";
 import { readDesktopManagedLocalCredential } from "@/desktop/daemon/local-credential";
 import type { HostConfirmationRequest } from "./host-confirmation";
+import { KUMO_PLACEHOLDER_PREFIX, kumoEndpoint } from "@/kumo/plan";
 
 it("requests the managed connection credential through desktop main without a web hint", async () => {
   const requests: string[] = [];
@@ -5102,8 +5103,8 @@ describe("HostRuntimeStore", () => {
     });
 
     await store.upsertDirectConnection({
-      serverId: "kumo:noble-heron",
-      endpoint: "6868--noble-heron.mykumo.xyz:443",
+      serverId: `${KUMO_PLACEHOLDER_PREFIX}noble-heron`,
+      endpoint: kumoEndpoint("noble-heron"),
       useTls: true,
       label: "noble-heron",
     });

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useFetchQuery } from "@/data/query";
 import { queryClient } from "@/data/query-client";
 import {
+  getHostRuntimeStore,
   useHostRegistryLoaded,
   useHostRuntimeConnectionStatuses,
   useHosts,
@@ -15,13 +16,14 @@ import {
 import {
   computersQuery,
   KumoRefusedError,
+  KumoSignedOutError,
   signIn,
   signOut,
   signedInQuery,
   startComputer,
 } from "./api";
 import { syncComputers } from "./sync";
-import { type Computer, kumoHostsByHandle } from "./plan";
+import { type Computer, computersNeedingRows, kumoHostsByHandle } from "./plan";
 
 const NO_COMPUTERS: readonly Computer[] = [];
 
@@ -40,7 +42,8 @@ function refreshKumo(): void {
 
 /**
  * Keeps the host list in step with the person's Kumo computers: on sign-in, whenever the app
- * comes back to the foreground, and on every poll. Signed out, every Kumo host goes.
+ * comes back to the foreground, and whenever a poll brings a change. Signed out, every Kumo
+ * host goes.
  */
 export function KumoSync() {
   const signedIn = useFetchQuery(signedInQuery).data;
@@ -61,7 +64,7 @@ export function KumoSync() {
 
   useEffect(() => {
     if (!registryLoaded || !target) return;
-    void syncComputers(target);
+    void syncComputers(getHostRuntimeStore(), target);
   }, [registryLoaded, target]);
 
   return null;
@@ -69,13 +72,14 @@ export function KumoSync() {
 
 function FailureText({ error }: { error: Error | null }) {
   const { t } = useTranslation();
-  if (!error) return null;
+  // Signed out isn't a failure: the section turns into Sign in.
+  if (!error || error instanceof KumoSignedOutError) return null;
   // Kumo writes its refusals for the person reading them; anything else gets ours.
   const sentence = error instanceof KumoRefusedError ? error.message : t("kumo.errors.generic");
   return <Text style={styles.error}>{sentence}</Text>;
 }
 
-// A ready computer gets a row only once its host has failed to connect.
+// `ready` has a row only while its host fails to connect (`computersNeedingRows`).
 const STATUS_LABEL = {
   provisioning: "kumo.status.starting",
   ready: "kumo.status.notRunning",
@@ -127,22 +131,12 @@ function SignedIn() {
   const leave = useMutation({ mutationFn: signOut });
   const { mutate: mutateSignOut } = leave;
   const handleSignOut = useCallback(() => mutateSignOut(), [mutateSignOut]);
-  const serverIdByHandle = useMemo(() => kumoHostsByHandle(hosts), [hosts]);
-  const serverIds = useMemo(() => [...serverIdByHandle.values()], [serverIdByHandle]);
+  const serverIds = useMemo(() => [...kumoHostsByHandle(hosts).values()], [hosts]);
   const statuses = useHostRuntimeConnectionStatuses(serverIds);
-  // A ready computer is in the host list; it also needs a row once its host can't connect (no
-  // kumo-agent answering), but not while the host is still trying.
-  const rows = useMemo(() => {
-    const unreachable = new Set<string>();
-    for (const [handle, serverId] of serverIdByHandle) {
-      const status = statuses.get(serverId);
-      if (status === "offline" || status === "error") unreachable.add(handle);
-    }
-    const list = computers.data ?? NO_COMPUTERS;
-    return list.filter(
-      (computer) => computer.status !== "ready" || unreachable.has(computer.handle),
-    );
-  }, [computers.data, serverIdByHandle, statuses]);
+  const rows = useMemo(
+    () => computersNeedingRows(computers.data ?? NO_COMPUTERS, hosts, statuses),
+    [computers.data, hosts, statuses],
+  );
 
   return (
     <View style={styles.section} testID="kumo-section">

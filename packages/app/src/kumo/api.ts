@@ -41,9 +41,11 @@ async function refusal(response: Response): Promise<KumoRefusedError> {
   return new KumoRefusedError(response.status, message);
 }
 
+/** Ends the session here. The person's computer list goes with it: nothing may read it after. */
 async function forgetSession(): Promise<void> {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
-  await queryClient.invalidateQueries({ queryKey: ["kumo"] });
+  queryClient.removeQueries({ queryKey: computersQuery.queryKey });
+  await queryClient.invalidateQueries({ queryKey: signedInQuery.queryKey });
 }
 
 /**
@@ -85,22 +87,24 @@ export async function signIn(): Promise<void> {
 }
 
 /**
- * Ends this phone's Kumo session. Signed out here even when Kumo can't be reached: the session
- * then lapses on its own within a week.
+ * Ends this phone's Kumo session: here at once, then on Kumo when it answers. A Kumo that can't be
+ * reached lets the session lapse on its own within a week.
  */
 export async function signOut(): Promise<void> {
   const token = await SecureStore.getItemAsync(TOKEN_KEY);
-  if (token) {
-    await fetch(`${kumo.api}/auth/logout`, {
-      method: "POST",
-      headers: { authorization: `Bearer ${token}` },
-    }).catch(() => undefined);
-  }
   await forgetSession();
+  if (!token) return;
+  void fetch(`${kumo.api}/auth/logout`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${token}` },
+  }).catch(() => undefined);
 }
 
 /** A control-plane call as the signed-in person. A 401 means the session is over: sign in again. */
-export async function kumoFetch(path: string, method: "GET" | "POST" = "GET"): Promise<Response> {
+export async function kumoFetch(
+  path: string,
+  { method = "GET" }: { method?: "GET" | "POST" } = {},
+): Promise<Response> {
   const token = await SecureStore.getItemAsync(TOKEN_KEY);
   if (!token) throw new KumoSignedOutError();
   const response = await fetch(`${kumo.api}${path}`, {
@@ -128,5 +132,5 @@ export const computersQuery = {
 
 /** Anyone a computer is shared with may start it; its owner's credit pays. */
 export async function startComputer(id: string): Promise<void> {
-  await kumoFetch(`/boxes/${id}/start`, "POST");
+  await kumoFetch(`/boxes/${id}/start`, { method: "POST" });
 }

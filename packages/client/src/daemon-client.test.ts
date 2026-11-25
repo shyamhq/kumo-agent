@@ -1134,6 +1134,31 @@ test("resolves connect headers again for every connection attempt", async () => 
   }
 });
 
+test("joins the attempt in progress while its connect headers resolve", async () => {
+  const mock = createMockTransport();
+  const transportFactory = vi.fn(() => mock.transport);
+  const pending = Promise.withResolvers<Record<string, string>>();
+  const connectHeaders = vi.fn(() => pending.promise);
+  const client = new DaemonClient({
+    url: "ws://test",
+    clientId: "clsk_connect_headers_once",
+    connectHeaders,
+    reconnect: { enabled: false },
+    transportFactory,
+  });
+  clients.push(client);
+
+  const connected = client.connect();
+  client.ensureConnected();
+  pending.resolve({ Cookie: "grant=1" });
+  await vi.waitFor(() => expect(transportFactory).toHaveBeenCalled());
+  mock.triggerOpen();
+  await connected;
+
+  expect(connectHeaders).toHaveBeenCalledOnce();
+  expect(transportFactory).toHaveBeenCalledOnce();
+});
+
 test("retries with fresh connect headers when resolving them fails", async () => {
   useHeartbeatClock();
   try {

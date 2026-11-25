@@ -195,7 +195,7 @@ export async function buildClientConfig(
   if (connection.type === "directTcp") {
     return {
       ...base,
-      ...kumoConnectOptions(connection.endpoint),
+      ...kumoConnectOptions(connection),
       url: buildDaemonWebSocketUrl(connection.endpoint, { useTls: connection.useTls ?? false }),
     };
   }

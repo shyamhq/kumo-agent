@@ -141,7 +141,8 @@ export default {
         },
       ],
       "expo-audio",
-      "expo-secure-store",
+      // Only the Kumo session is kept there, with no biometric prompt.
+      ["expo-secure-store", { faceIDPermission: false }],
       [
         "expo-gradle-jvmargs",
         {
