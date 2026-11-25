@@ -63,7 +63,8 @@ export default {
     version: nativeReleaseVersion.appVersion,
     orientation: "default",
     icon: "./assets/images/icon.png",
-    scheme: "paseo",
+    // Kumo sign-in returns here (kumo-agent://oauth), registered with Kumo's Clerk client.
+    scheme: "kumo-agent",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
@@ -140,6 +141,8 @@ export default {
         },
       ],
       "expo-audio",
+      "expo-web-browser",
+      "expo-secure-store",
       [
         "expo-gradle-jvmargs",
         {

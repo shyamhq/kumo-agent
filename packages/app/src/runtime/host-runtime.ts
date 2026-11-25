@@ -43,6 +43,7 @@ import { HostConfirmations, type HostConfirmationRequest } from "./host-confirma
 import { shouldUseDesktopDaemon } from "@/desktop/daemon/desktop-daemon";
 import { isWeb } from "@/constants/platform";
 import { connectToDaemon, getConnectionAuthFailureReason } from "@/utils/test-daemon-connection";
+import { kumoConnectOptions } from "@/kumo/connect";
 import { getOrCreateClientId } from "@/utils/client-id";
 import { z } from "zod";
 import { readValidatedString } from "@/storage/validated-storage";
@@ -632,6 +633,7 @@ function createDefaultDeps(
         return new DaemonClient({
           ...base,
           ...webSocketConfig,
+          ...kumoConnectOptions(connection.endpoint),
           url: buildDaemonWebSocketUrl(connection.endpoint, {
             useTls: connection.useTls ?? false,
           }),

@@ -1768,6 +1768,21 @@ export const fr: TranslationResources = {
         "L’état de la zone de saisie de configuration de l’espace de travail est requis",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Se connecter à Kumo",
+    signOut: "Se déconnecter",
+    start: "Démarrer",
+    status: {
+      starting: "Démarrage",
+      notRunning: "kumo-agent ne s'exécute pas",
+      stopped: "Arrêté",
+      failed: "Échec",
+    },
+    errors: {
+      generic: "Impossible de joindre Kumo. Réessayez.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

@@ -148,6 +148,7 @@ import {
 import { PluginCatalogSync } from "@/plugins";
 import { NotificationOpenRouter } from "@/notification-open/react";
 import { ensureOsNotificationPermission } from "@/utils/os-notifications";
+import { KumoSync } from "@/kumo/section";
 
 polyfillCrypto();
 
@@ -702,6 +703,7 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
         <DesktopWindowControlsSync />
         <OfferLinkListener />
         <HostSessionManager />
+        <KumoSync />
         <FaviconStatusSync />
         {children}
       </VoiceProvider>

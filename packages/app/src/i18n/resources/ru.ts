@@ -1755,6 +1755,21 @@ export const ru: TranslationResources = {
       composerStateRequired: "Редактор настройки рабочего пространства ещё не готов.",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Войти в Kumo",
+    signOut: "Выйти",
+    start: "Запустить",
+    status: {
+      starting: "Запускается",
+      notRunning: "kumo-agent не запущен",
+      stopped: "Остановлен",
+      failed: "Ошибка",
+    },
+    errors: {
+      generic: "Не удалось связаться с Kumo. Попробуйте ещё раз.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

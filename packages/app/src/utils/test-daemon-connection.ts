@@ -5,6 +5,7 @@ import {
   type DaemonAuthFailureReason,
 } from "@getpaseo/client/internal/daemon-client";
 import type { DaemonClientConfig } from "@getpaseo/client/internal/daemon-client";
+import { kumoConnectOptions } from "@/kumo/connect";
 import type { HostConnection } from "@/types/host-connection";
 import { createAppWebSocketFactory } from "@/runtime/websocket-factory";
 import { createHostLogger } from "@/runtime/host-logger";
@@ -194,6 +195,7 @@ export async function buildClientConfig(
   if (connection.type === "directTcp") {
     return {
       ...base,
+      ...kumoConnectOptions(connection.endpoint),
       url: buildDaemonWebSocketUrl(connection.endpoint, { useTls: connection.useTls ?? false }),
     };
   }

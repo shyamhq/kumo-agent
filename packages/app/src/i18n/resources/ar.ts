@@ -1724,6 +1724,21 @@ export const ar: TranslationResources = {
       composerStateRequired: "مطلوب حالة مؤلف إعداد Workspace",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "تسجيل الدخول إلى Kumo",
+    signOut: "تسجيل الخروج",
+    start: "تشغيل",
+    status: {
+      starting: "جارٍ التشغيل",
+      notRunning: "kumo-agent لا يعمل",
+      stopped: "متوقف",
+      failed: "فشل",
+    },
+    errors: {
+      generic: "تعذّر الوصول إلى Kumo. حاول مرة أخرى.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

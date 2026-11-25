@@ -1753,6 +1753,21 @@ export const en = {
       composerStateRequired: "Workspace setup composer state is required",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Sign in to Kumo",
+    signOut: "Sign out",
+    start: "Start",
+    status: {
+      starting: "Starting",
+      notRunning: "kumo-agent isn't running",
+      stopped: "Stopped",
+      failed: "Failed",
+    },
+    errors: {
+      generic: "Couldn't reach Kumo. Try again.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",
