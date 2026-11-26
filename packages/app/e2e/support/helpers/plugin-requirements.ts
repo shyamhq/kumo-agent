@@ -104,7 +104,7 @@ export async function openRequirementHost(page: Page, host: { serverId: string; 
 export async function expectAppMismatch(page: Page) {
   await expectPluginFailed(page, PLUGIN_ID);
   await expect(
-    page.getByText(/Plugin "requirements-example" requires Paseo \^99.0.0. Your app is/),
+    page.getByText(/Plugin "requirements-example" requires Kumo Agent \^99.0.0. Your app is/),
   ).toBeVisible();
 }
 
