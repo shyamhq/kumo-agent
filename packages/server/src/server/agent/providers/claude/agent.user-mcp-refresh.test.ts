@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Query, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
@@ -84,5 +84,6 @@ test("a changed user MCP server restarts Claude on the next turn, resuming the s
     expect(resumes[1]).toBe("mcp-session");
   } finally {
     await session.close();
+    rmSync(configDir, { recursive: true, force: true });
   }
 });

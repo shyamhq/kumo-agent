@@ -2745,8 +2745,12 @@ class ClaudeAgentSession implements AgentSession {
       // Kumo's worker writes its MCP entries (`kumo`, `kumo-connected-apps`) with a new port and
       // token each time it restarts, and a running Claude keeps the dead ones. Changed servers
       // restart Claude, which resumes this chat with the new ones.
-      // ponytail: the restart also ends this chat's background helpers, as a mode change does.
-      if (this.query && (await this.userMcpServersChanged())) this.queryRestartNeeded = true;
+      // ponytail: the restart also ends this chat's background shells and helpers, as turning
+      // thinking off or a rewind does. `query.setMcpServers` could swap them live if that bites.
+      if (this.query) {
+        const now = await readUserMcpServers(this.harnessEnvironment);
+        if (now !== null && now !== this.userMcpServers) this.queryRestartNeeded = true;
+      }
       await this.ensureQuery();
       if (cancelIssued) {
         // Stopped while Claude was still starting up: withdrawn by never sending it.
@@ -3834,7 +3838,7 @@ class ClaudeAgentSession implements AgentSession {
     let options: ClaudeOptions;
     try {
       options = await this.buildOptions(launchMode);
-      this.userMcpServers = await readUserMcpServers(this.buildSdkEnv());
+      this.userMcpServers = await readUserMcpServers(this.harnessEnvironment);
       // Closure can finish while launch options are being prepared.
       if (this.closed) throw new Error("Claude session is closed");
     } catch (error) {
@@ -3874,12 +3878,6 @@ class ClaudeAgentSession implements AgentSession {
     // ensureQuery() (for listCommands()/setMode()), and sharing the same query
     // control plane can cause those calls to wait behind supportedModels().
     return this.query;
-  }
-
-  private async userMcpServersChanged(): Promise<boolean> {
-    if (this.userMcpServers === null) return false;
-    const now = await readUserMcpServers(this.buildSdkEnv());
-    return now !== null && now !== this.userMcpServers;
   }
 
   private async awaitWithTimeout(
