@@ -43,6 +43,8 @@ import { HostConfirmations, type HostConfirmationRequest } from "./host-confirma
 import { shouldUseDesktopDaemon } from "@/desktop/daemon/desktop-daemon";
 import { isWeb } from "@/constants/platform";
 import { connectToDaemon, getConnectionAuthFailureReason } from "@/utils/test-daemon-connection";
+import { kumoConnectOptions } from "@/kumo/connect";
+import { KUMO_PLACEHOLDER_PREFIX } from "@/kumo/plan";
 import { getOrCreateClientId } from "@/utils/client-id";
 import { z } from "zod";
 import { readValidatedString } from "@/storage/validated-storage";
@@ -632,6 +634,7 @@ function createDefaultDeps(
         return new DaemonClient({
           ...base,
           ...webSocketConfig,
+          ...kumoConnectOptions(connection),
           url: buildDaemonWebSocketUrl(connection.endpoint, {
             useTls: connection.useTls ?? false,
           }),
@@ -1841,7 +1844,7 @@ export function hasConfiguredLocalDaemonOverride(): boolean {
 }
 
 function isPlaceholderServerId(serverId: string): boolean {
-  return serverId.startsWith("local:");
+  return serverId.startsWith("local:") || serverId.startsWith(KUMO_PLACEHOLDER_PREFIX);
 }
 
 function delay(ms: number): Promise<void> {

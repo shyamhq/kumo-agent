@@ -1707,6 +1707,21 @@ export const zhCN: TranslationResources = {
       composerStateRequired: "Workspace setup composer 状态必填",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "登录 Kumo",
+    signOut: "退出登录",
+    start: "启动",
+    status: {
+      starting: "正在启动",
+      notRunning: "kumo-agent 未在运行",
+      stopped: "已停止",
+      failed: "失败",
+    },
+    errors: {
+      generic: "无法连接 Kumo，请重试。",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

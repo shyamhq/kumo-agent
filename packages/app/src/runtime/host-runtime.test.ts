@@ -35,6 +35,7 @@ import type { ReplicaRow, ReplicaRowStore } from "./replica-cache/row-store";
 import { subscriptionFixture } from "./subscription-fixture";
 import { readDesktopManagedLocalCredential } from "@/desktop/daemon/local-credential";
 import type { HostConfirmationRequest } from "./host-confirmation";
+import { KUMO_PLACEHOLDER_PREFIX, kumoEndpoint } from "@/kumo/plan";
 
 it("requests the managed connection credential through desktop main without a web hint", async () => {
   const requests: string[] = [];
@@ -5084,6 +5085,33 @@ describe("HostRuntimeStore", () => {
 
     expect(store.getHosts().map((host) => host.serverId)).toEqual(["srv_real_direct"]);
     expect(store.getHosts()[0]?.label).toBe("mbp");
+
+    store.syncHosts([]);
+  });
+
+  it("gives a Kumo computer saved before its daemon answered the daemon's real server id", async () => {
+    const store = new HostRuntimeStore({
+      deps: {
+        createClient: () => new FakeDaemonClient() as unknown as DaemonClient,
+        connectToDaemon: async () => ({
+          client: makeConnectedProbeClient(5) as unknown as DaemonClient,
+          serverId: "srv_kumo",
+          hostname: null,
+        }),
+        getClientId: async () => "cid_test_runtime",
+      },
+    });
+
+    await store.upsertDirectConnection({
+      serverId: `${KUMO_PLACEHOLDER_PREFIX}noble-heron`,
+      endpoint: kumoEndpoint("noble-heron"),
+      useTls: true,
+      label: "noble-heron",
+    });
+
+    await vi.waitFor(() =>
+      expect(store.getHosts()).toMatchObject([{ serverId: "srv_kumo", label: "noble-heron" }]),
+    );
 
     store.syncHosts([]);
   });

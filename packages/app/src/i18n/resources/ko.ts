@@ -1735,6 +1735,21 @@ export const ko: TranslationResources = {
       composerStateRequired: "워크스페이스 설정 작성기 상태가 필요합니다",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Kumo에 로그인",
+    signOut: "로그아웃",
+    start: "시작",
+    status: {
+      starting: "시작하는 중",
+      notRunning: "kumo-agent가 실행되고 있지 않습니다",
+      stopped: "중지됨",
+      failed: "실패",
+    },
+    errors: {
+      generic: "Kumo에 연결할 수 없습니다. 다시 시도하세요.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

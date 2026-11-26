@@ -1742,6 +1742,21 @@ export const ja: TranslationResources = {
       composerStateRequired: "ワークスペースセットアップのコンポーザー状態が必要です",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Kumo にサインイン",
+    signOut: "サインアウト",
+    start: "起動",
+    status: {
+      starting: "起動中",
+      notRunning: "kumo-agent が実行されていません",
+      stopped: "停止中",
+      failed: "失敗",
+    },
+    errors: {
+      generic: "Kumo に接続できませんでした。もう一度お試しください。",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

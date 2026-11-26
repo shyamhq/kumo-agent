@@ -49,13 +49,19 @@ How it runs under Kumo:
   as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
 - Cut for Kumo, so don't port upstream work on them: the Usage view (plan limits; the context-window
   meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
-  the onboarding phone step. Kumo will list a person's other computers as hosts instead. Paseo's
+  the onboarding phone step (the phone's hosts are Kumo computers, below). Paseo's
   website, its release workflows (npm, app stores, Docker, Nix, desktop rollout), F-Droid, the
   store screenshots and the Nix packaging. The plugin directory is off (`PLUGIN_DIRECTORY_ENABLED`), not removed. The bundled
   skills are `kumo-agent*` (renamed from `paseo*`; `paseo-help` and `paseo-plugin` dropped): port upstream
   skill changes into the renamed files. Four
   usage-source plugins (claude, codex, cursor, openrouter-host) stay in `plugins/` as fixtures for
   the usage-source tests, out of the built-in list.
+- On the phone, the hosts are the Kumo computers the person reaches (`packages/app/src/kumo/`,
+  native only). After a Kumo sign-in, each ready computer is saved as a host at once, under a
+  `kumo:` placeholder id that becomes the daemon's own id when kumo-agent first answers. It is
+  reached through Kumo's gate with a fresh port grant on every connection attempt (the client's
+  `connectHeaders`), only over TLS. A computer that is stopped, starting, or whose kumo-agent doesn't
+  answer is a row in a Kumo section, with Start for a stopped one.
 - Several people can share a computer. Kumo's gate names the visitor on every request with
   `X-Kumo-User` and a percent-encoded `X-Kumo-Name`; the daemon keeps that person on the
   connection (`packages/server/src/server/kumo-person.ts`), with no peer check because only the gate

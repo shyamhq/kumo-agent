@@ -1771,6 +1771,21 @@ export const es: TranslationResources = {
       composerStateRequired: "Se requiere el estado del compositor de configuraciónWorkspace",
     },
   },
+  kumo: {
+    title: "Kumo",
+    signIn: "Iniciar sesión en Kumo",
+    signOut: "Cerrar sesión",
+    start: "Iniciar",
+    status: {
+      starting: "Iniciando",
+      notRunning: "kumo-agent no se está ejecutando",
+      stopped: "Detenido",
+      failed: "Falló",
+    },
+    errors: {
+      generic: "No se pudo conectar con Kumo. Inténtalo de nuevo.",
+    },
+  },
   onboarding: {
     setup: {
       title: "Paseo",

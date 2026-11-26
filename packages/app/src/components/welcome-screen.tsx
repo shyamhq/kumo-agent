@@ -17,6 +17,7 @@ import { formatVersionWithPrefix } from "@/desktop/updates/desktop-updates";
 import { buildOpenProjectRoute } from "@/utils/host-routes";
 import { PaseoLogo } from "@/components/icons/paseo-logo";
 import { isWeb } from "@/constants/platform";
+import { KumoSection } from "@/kumo/section";
 
 const styles = StyleSheet.create((theme) => ({
   root: {
@@ -161,6 +162,8 @@ export function WelcomeScreen() {
               {t("common.actions.reload")}
             </Button>
           ) : null}
+
+          <KumoSection />
 
           <Button
             variant="ghost"

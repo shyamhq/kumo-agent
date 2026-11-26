@@ -97,6 +97,7 @@ import { useActiveWorkspaceSelection } from "@/stores/navigation-active-workspac
 import { openSettingsFromSidebar } from "@/navigation/settings-navigation";
 import { SidebarAgentListSkeleton } from "./sidebar-agent-list-skeleton";
 import { SidebarCalloutSlot } from "./sidebar-callout-slot";
+import { KumoSection } from "@/kumo/section";
 import { SidebarWorkspaceList } from "./sidebar-workspace-list";
 
 type SidebarTheme = ReturnType<typeof useUnistyles>["theme"];
@@ -587,6 +588,7 @@ function MobileSidebar({
       <View style={styles.sidebarContent} pointerEvents="auto">
         <WindowChromeSafeArea placement="below" />
         <SidebarNavScroll closeGestureRef={closeGestureRef}>{navRows}</SidebarNavScroll>
+        <KumoSection />
 
         <SidebarViewSlot dismiss={handleWorkspacePress}>
           <SidebarToastRegion active={active}>
@@ -840,6 +842,7 @@ function DesktopSidebar({
               <SidebarNavRows style={styles.sidebarHeaderGroup} onBeforeNavigate={closeSidebar} />
             </SidebarNavScroll>
           ) : null}
+          <KumoSection />
 
           <SidebarViewSlot dismiss={closeSidebar}>
             <SidebarToastRegion active={active}>
