@@ -51,7 +51,7 @@ export interface DaemonSessionOptions {
   listProjects: () => Promise<PersistedProjectRecord[]>;
   listWorkspaces: () => Promise<PersistedWorkspaceRecord[]>;
   listProviderAvailability: () => Promise<ProviderAvailability[]>;
-  /** Why this host's terminals cannot be served (held by a newer Paseo's worker), if so. */
+  /** Why this host's terminals cannot be served (held by a newer Kumo Agent's worker), if so. */
   getTerminalsUnavailable?: () => string | null;
   getWebSocketRuntimeMetrics?: () => DaemonWebSocketRuntimeDiagnosticSnapshot | null;
   getObservationMetrics?: () => Record<string, number>;

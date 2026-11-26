@@ -1,19 +1,9 @@
 import { expect, test, type Page } from "../support/fixtures";
 import { gotoAppShell, openSettings } from "../support/helpers/app";
 import { openSettingsSection } from "../support/helpers/settings";
-import {
-  allChangesToggle,
-  hideAllChanges,
-  openWhatsNew,
-  release,
-  serveChangelog,
-  showAllChanges,
-} from "../support/helpers/changelog";
-
-const CHANGELOG_DESTINATION = /^https:\/\/paseo\.sh\/changelog(?:[/?#]|$)/;
 // The name and the version are separate cells of a key/value row, so they meet with no space
 // between them in the row's text content.
-const APP_VERSION = /^Paseo\s*v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
+const APP_VERSION = /^Kumo Agent\s*v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 
 async function openHelpMenu(page: Page): Promise<void> {
   await page.getByTestId("sidebar-help").click();
@@ -33,18 +23,6 @@ async function closeSheet(page: Page, testID: string): Promise<void> {
   await expect(sheet).not.toBeVisible();
 }
 
-async function expectExternalPage(
-  page: Page,
-  actionTestID: string,
-  expectedUrl: RegExp,
-): Promise<void> {
-  const popupPromise = page.waitForEvent("popup");
-  await page.getByTestId(actionTestID).click();
-  const popup = await popupPromise;
-  expect(popup.url()).toMatch(expectedUrl);
-  await popup.close();
-}
-
 test("opens troubleshooting destinations", async ({ page }) => {
   await gotoAppShell(page);
   await expect(page.getByTestId("sidebar-help")).toBeVisible();
@@ -53,7 +31,7 @@ test("opens troubleshooting destinations", async ({ page }) => {
     await openHelpMenu(page);
     await expect(page.getByText("Help", { exact: true })).toBeVisible();
     await expect(page.getByText("Report an issue", { exact: true })).toHaveCount(0);
-    await expect(page.getByText("What's new", { exact: true })).toBeVisible();
+    await expect(page.getByText("What's new", { exact: true })).toHaveCount(0);
     await expect(page.getByTestId("sidebar-help-version")).toHaveText(APP_VERSION);
 
     await page.getByTestId("sidebar-help-diagnostics").click();
@@ -65,73 +43,6 @@ test("opens troubleshooting destinations", async ({ page }) => {
     await expect(page.getByTestId("keyboard-shortcuts-dialog")).toBeVisible();
     await closeSheet(page, "keyboard-shortcuts-dialog");
   });
-});
-
-test("renders the changelog in the app and links the website", async ({ page }) => {
-  // Highlights, a section name the app has never seen, a callout, and a fenced
-  // sample whose contents look like a release heading.
-  await serveChangelog(page, [
-    "# Changelog",
-    "",
-    "## 9.1.0 - 2026-03-04",
-    "",
-    "- **Background tasks:** Paseo now shows the tasks an agent is running.",
-    "",
-    "### Sparkles",
-    "",
-    "- Added a brand new thing",
-    "",
-    "> [!WARNING]",
-    "> Read this before upgrading.",
-    "",
-    "```md",
-    "## 0.0.0 - 1999-01-01",
-    "```",
-    "",
-    "### Fixed",
-    "",
-    "- Fixed a crash",
-    "",
-    "## 9.0.0 - 2026-02-01",
-    "",
-    "### Fixed",
-    "",
-    "- Fixed an older thing",
-    "",
-  ]);
-  await gotoAppShell(page);
-
-  const sheet = await openWhatsNew(page);
-  const latest = release(sheet, "9.1.0");
-  const older = release(sheet, "9.0.0");
-
-  await test.step("leads a release with its highlights and tucks the rest away", async () => {
-    await expect(latest.getByText("March 4, 2026", { exact: true })).toBeVisible();
-    await expect(latest.getByText("Paseo now shows the tasks an agent is running.")).toBeVisible();
-    await expect(latest.getByText("Added a brand new thing")).toHaveCount(0);
-    await expect(latest.getByText("Fixed a crash")).toHaveCount(0);
-  });
-
-  await test.step("shows every section on request and tucks them away again", async () => {
-    await showAllChanges(latest);
-    await expect(latest.getByText("Sparkles", { exact: true })).toBeVisible();
-    await expect(latest.getByText("Added a brand new thing")).toBeVisible();
-    await expect(latest.getByText("Read this before upgrading.")).toBeVisible();
-    await expect(latest.getByText("Fixed a crash")).toBeVisible();
-    await expect(release(sheet, "0.0.0")).toHaveCount(0);
-
-    await hideAllChanges(latest);
-    await expect(latest.getByText("Added a brand new thing")).toHaveCount(0);
-    await expect(latest.getByText("Paseo now shows the tasks an agent is running.")).toBeVisible();
-  });
-
-  await test.step("shows a release without highlights whole", async () => {
-    await expect(older.getByText("Fixed an older thing")).toBeVisible();
-    await expect(allChangesToggle(older)).toHaveCount(0);
-  });
-
-  await expectExternalPage(page, "changelog-open-website", CHANGELOG_DESTINATION);
-  await closeSheet(page, "changelog-sheet");
 });
 
 test("searches keyboard shortcuts from the sidebar help menu", async ({ page }) => {

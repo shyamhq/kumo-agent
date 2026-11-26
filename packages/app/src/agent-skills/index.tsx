@@ -23,7 +23,6 @@ const OP_KIND_ORDER: Record<AgentSkillOperation["kind"], number> = {
   delete: 2,
 };
 const ThemedSettings = withUnistyles(Settings2);
-const SKILLS_DOCS_URL = "https://paseo.sh/docs/skills";
 const mutedMapping = (theme: Theme) => ({ color: theme.colors.foregroundMuted });
 
 function formatUpdateMessage(ops: readonly AgentSkillOperation[], t: TFunction): string {
@@ -61,18 +60,10 @@ export function AgentSkillsSection({ serverId }: { serverId: string }) {
     },
     [reconcile, uninstall],
   );
-  const docsLink = useMemo(
-    () => ({
-      href: SKILLS_DOCS_URL,
-      label: t("settings.host.skills.docs"),
-      accessibilityLabel: t("settings.host.skills.openDocs"),
-    }),
-    [t],
-  );
 
   if (!connected || !supported) {
     return (
-      <SettingsSection title={t("settings.host.skills.sectionTitle")} link={docsLink}>
+      <SettingsSection title={t("settings.host.skills.sectionTitle")}>
         <View style={settingsStyles.card} testID="host-agent-skills-unavailable">
           <View style={styles.emptyCard}>
             <Text style={styles.mutedText}>
@@ -87,7 +78,7 @@ export function AgentSkillsSection({ serverId }: { serverId: string }) {
   }
 
   return (
-    <SettingsSection title={t("settings.host.skills.sectionTitle")} link={docsLink}>
+    <SettingsSection title={t("settings.host.skills.sectionTitle")}>
       <SettingsCard testID="host-agent-skills-card">
         <AgentSkillsRow
           skills={skills}

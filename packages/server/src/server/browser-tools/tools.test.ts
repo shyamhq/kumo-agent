@@ -20,7 +20,7 @@ const BROWSER_ID_MESSAGE =
 const WAIT_CONDITION_MESSAGE = "browser_wait requires exactly one of text or url";
 const HTTP_URL_MESSAGE = "URL must use http/https only";
 const WORKSPACE_CONTEXT_MESSAGE =
-  "This browser tool needs a workspace. Start the agent from a Paseo workspace before calling browser_new_tab or browser_list_tabs.";
+  "This browser tool needs a workspace. Start the agent from a Kumo Agent workspace before calling browser_new_tab or browser_list_tabs.";
 
 interface RegisteredTool {
   config: PaseoToolConfig;

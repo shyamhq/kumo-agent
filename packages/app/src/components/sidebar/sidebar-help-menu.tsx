@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { View } from "react-native";
-import { Activity, CircleHelp, Gift, Keyboard } from "lucide-react-native";
+import { Activity, CircleHelp, Keyboard } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import {
@@ -21,10 +21,8 @@ import { ICON_SIZE, type Theme } from "@/styles/theme";
 import type { HostProfile } from "@/types/host-connection";
 import { formatVersionWithPrefix } from "@/desktop/updates/desktop-updates";
 import { resolveAppVersion } from "@/utils/app-version";
-import { openChangelog } from "@/changelog";
 
 const ThemedActivity = withUnistyles(Activity);
-const ThemedGift = withUnistyles(Gift);
 const ThemedKeyboard = withUnistyles(Keyboard);
 const foregroundMutedColorMapping = (theme: Theme) => ({
   color: theme.colors.foregroundMuted,
@@ -34,9 +32,6 @@ const diagnosticLeadingIcon = (
 );
 const shortcutsLeadingIcon = (
   <ThemedKeyboard size={ICON_SIZE.sm} uniProps={foregroundMutedColorMapping} />
-);
-const changelogLeadingIcon = (
-  <ThemedGift size={ICON_SIZE.sm} uniProps={foregroundMutedColorMapping} />
 );
 
 function HostVersionHint({ host }: { host: HostProfile }) {
@@ -105,13 +100,6 @@ export function SidebarHelpMenuItems() {
           {t("sidebar.help.shortcuts")}
         </DropdownMenuItem>
       ) : null}
-      <DropdownMenuItem
-        testID="sidebar-help-changelog"
-        leading={changelogLeadingIcon}
-        onSelect={openChangelog}
-      >
-        {t("sidebar.help.whatsNew")}
-      </DropdownMenuItem>
       <DropdownMenuItem
         testID="sidebar-help-diagnostics"
         leading={diagnosticLeadingIcon}

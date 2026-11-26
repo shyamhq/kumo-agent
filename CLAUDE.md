@@ -47,6 +47,13 @@ How it runs under Kumo:
   built-in plugins baked in, `cli`) and attaches them to the GitHub Release `vX.Y.Z-kumo.N`. Kumo's
   apps catalogue installs all seven in one `npm install`, and puts the CLI on the computer's PATH
   as `kumo-agent` (a second bin of `packages/cli`), so it never takes over upstream Paseo's `paseo`.
+- A person sees **Kumo Agent**, never Paseo: the app's name, icons and in-app mark
+  (`packages/app/src/components/icons/kumo-logo.tsx`) are Kumo's, and text a person reads says
+  Kumo Agent in every locale (`i18n/resources.test.ts` fails on "Paseo"), and so does what the
+  daemon sends for the app to show. Real names stay (`paseo.json`, the `paseo` command,
+  `@getpaseo/*`, `PASEO_*`). On phone and web the app links to none of Paseo's docs, and "What's
+  new" (Paseo's changelog) has no entry point. When porting upstream copy or a docs link, rename
+  it or drop it.
 - Cut for Kumo, so don't port upstream work on them: the Usage view (plan limits; the context-window
   meter stays); Add host (direct connection, SSH, pairing link, QR scan) and Pair device, including
   the onboarding phone step (the phone's hosts are Kumo computers, below). Paseo's

@@ -506,12 +506,12 @@ try {
   await startDaemon(b);
   const listed = await run(b, ["terminal", "ls", "--all", "--json"]);
   assert.notEqual(listed.exitCode, 0, "terminal ls fails");
-  assert.match(listed.stdout + listed.stderr, /held by a newer Paseo \(v0\.98\.0/);
+  assert.match(listed.stdout + listed.stderr, /held by a newer Kumo Agent \(v0\.98\.0/);
   const created = await run(b, ["terminal", "create", "--cwd", workDir, "--json"]);
   assert.notEqual(created.exitCode, 0, "terminal create fails");
-  assert.match(created.stdout + created.stderr, /held by a newer Paseo/);
+  assert.match(created.stdout + created.stderr, /held by a newer Kumo Agent/);
   const status = await paseo(b, ["daemon", "status", "--home", paseoHome]);
-  assert.match(status.stdout, /terminals: Terminals are held by a newer Paseo/);
+  assert.match(status.stdout, /terminals: Terminals are held by a newer Kumo Agent/);
   assert(isAlive(newer.terminal.pid), "its program keeps running");
   assert.deepEqual(
     workerRecords().map((record) => record.pid),

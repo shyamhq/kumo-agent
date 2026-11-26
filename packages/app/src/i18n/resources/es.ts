@@ -384,7 +384,7 @@ export const es: TranslationResources = {
       details: "Detalles",
     },
     dictation: {
-      insecureContext: "Abre Paseo por HTTPS o en localhost para usar el micrófono.",
+      insecureContext: "Abre Kumo Agent por HTTPS o en localhost para usar el micrófono.",
       unsupported: "El dictado no está disponible en este navegador.",
       noMicrophone: "Conecta un micrófono e inténtalo de nuevo.",
       permissionDenied: "Permite el acceso al micrófono e inténtalo de nuevo.",
@@ -956,7 +956,7 @@ export const es: TranslationResources = {
           mergePrNoGithub:
             "FusionarPRno está disponible en este momento porqueGitHubno está conectado",
           archiveNotWorktree:
-            "El archivo no está disponible aquí porque este espacio de trabajo no se creó como un árbol de trabajoPaseo",
+            "El archivo no está disponible aquí porque este espacio de trabajo no se creó como un árbol de trabajo Kumo Agent",
           mergePrNoForge:
             "Fusionar {{noun}} no está disponible en este momento porque {{brand}} no está conectado",
           mergePrMissing:
@@ -1331,7 +1331,7 @@ export const es: TranslationResources = {
       diagnostics: "Ejecutar diagnóstico",
       shortcuts: "Atajos de teclado",
       whatsNew: "Novedades",
-      appName: "Paseo",
+      appName: "Kumo Agent",
     },
     sections: {
       sessions: "Historial",
@@ -1511,7 +1511,7 @@ export const es: TranslationResources = {
       close: "Cerrar ventana",
     },
     quitting: {
-      title: "Saliendo dePaseo...",
+      title: "Saliendo de Kumo Agent...",
       detail: "Deteniendo el demonio local.",
     },
     daemon: {
@@ -1526,20 +1526,20 @@ export const es: TranslationResources = {
       },
       management: {
         title: "Administrar demonio incorporado",
-        hint: "Deje quePaseoinicie y detenga el demonio incorporado",
+        hint: "Deje que Kumo Agent inicie y detenga el demonio incorporado",
         pauseTitle: "Pausar el demonio incorporado",
         pauseMessage:
           "Esto detendrá el demonio incorporado inmediatamente. Se detendrán los agentes en ejecución y los terminales conectados al demonio integrado.",
         pauseAndStop: "Pausa y para",
         registrationFailed:
-          "Built-in daemon started, but Paseo could not save the localhost connection. Toggle daemon management off and on again, or add localhost manually.",
+          "Built-in daemon started, but Kumo Agent could not save the localhost connection. Toggle daemon management off and on again, or add localhost manually.",
         pausedStopFailed:
-          "La gestión del demonio integrado se pausó, peroPaseono pudo detener el demonio.",
+          "La gestión del demonio integrado se pausó, pero Kumo Agent no pudo detener el demonio.",
         updateFailed: "No se puede actualizar la gestión de demonios integrada.",
       },
       keepRunning: {
         title: "Mantener el demonio en ejecución después de salir",
-        hint: "Daemonsigue ejecutándose cuando sales dePaseo",
+        hint: "Daemon sigue ejecutándose cuando sales de Kumo Agent",
       },
       logs: {
         title: "Archivo de registro",
@@ -1609,7 +1609,8 @@ export const es: TranslationResources = {
     },
     rosetta: {
       title: "Descargue la compilaciónApple Silicon",
-      runningIntel: "Estás ejecutando la compilaciónInteldePaseoenRosettaenApple Silicon.",
+      runningIntel:
+        "Estás ejecutando la compilación Intel de Kumo Agent en Rosetta en Apple Silicon.",
       highCpu:
         "Esto provoca un uso elevado de la CPU. Descargue la compilaciónApple Siliconpara solucionarlo.",
       download: "Descargar",
@@ -1656,7 +1657,7 @@ export const es: TranslationResources = {
         microphone: "El estado del micrófono aún no se ha comprobado.",
       },
       testNotification: {
-        title: "Prueba de notificaciónPaseo",
+        title: "Prueba de notificación Kumo Agent",
         body: "Si puede ver esto, las notificaciones de escritorio funcionan.",
         notDelivered:
           "La notificación no fue entregada. Verifique Configuración del sistema> Notificaciones.",
@@ -1666,15 +1667,15 @@ export const es: TranslationResources = {
     integrations: {
       cli: {
         statusFailed: "No se puede verificar el estado de instalación deCLI.",
-        installFailed: "No se puede instalar elPaseoCLI.",
-        uninstallFailed: "No se pudo desinstalar la CLI de Paseo.",
+        installFailed: "No se puede instalar el Kumo Agent CLI.",
+        uninstallFailed: "No se pudo desinstalar la CLI de Kumo Agent.",
         keptForeign:
-          "Se conservó un comando paseo que Paseo no instaló. Elimínalo tú mismo para desinstalarlo.",
+          "Se conservó un comando paseo que Kumo Agent no instaló. Elimínalo tú mismo para desinstalarlo.",
       },
     },
   },
   rootError: {
-    title: "Paseo tuvo un problema.",
+    title: "Kumo Agent tuvo un problema.",
     body: "Vuelve a intentarlo para recargar la app. Si sigue ocurriendo, incluye los detalles de abajo al reportarlo.",
     details: "Detalles",
   },
@@ -1788,7 +1789,7 @@ export const es: TranslationResources = {
   },
   onboarding: {
     setup: {
-      title: "Paseo",
+      title: "Kumo Agent",
       stepCounter: "Paso {{current}} de {{total}}",
       skip: "Omitir configuración",
       continue: "Continuar",
@@ -1796,13 +1797,13 @@ export const es: TranslationResources = {
       steps: {
         appearance: {
           label: "Apariencia",
-          title: "Te damos la bienvenida a Paseo",
+          title: "Te damos la bienvenida a Kumo Agent",
           description: "Empecemos por elegir una apariencia",
         },
         providers: {
           label: "Proveedores",
           title: "Tus proveedores",
-          description: "Paseo usa las CLI de agentes que ya están en este ordenador",
+          description: "Kumo Agent usa las CLI de agentes que ya están en este ordenador",
         },
         projects: {
           label: "Proyectos",
@@ -1822,12 +1823,12 @@ export const es: TranslationResources = {
         },
         orchestration: {
           label: "Orquestación",
-          title: "Deja que los agentes usen Paseo",
+          title: "Deja que los agentes usen Kumo Agent",
           description: "Deja que tus agentes creen espacios de trabajo y hablen con otros agentes",
         },
       },
     },
-    title: "Bienvenido aPaseo",
+    title: "Bienvenido a Kumo Agent",
     actions: {
       settings: "Ajustes",
     },
@@ -1935,7 +1936,7 @@ export const es: TranslationResources = {
   serviceUrl: {
     title: "Servicio abiertoURL",
     message: "¿Abrir{{url}}?",
-    inPaseo: "EnPaseo",
+    inPaseo: "En Kumo Agent",
     externalBrowser: "Navegador externo",
     dontAskAgain: "no vuelvas a preguntar",
   },
@@ -1989,7 +1990,7 @@ export const es: TranslationResources = {
         alwaysUseFilename: "Usar siempre para {{filename}}",
         option: "{{title}} — {{owner}}",
         builtin: {
-          owner: "Paseo",
+          owner: "Kumo Agent",
           markdown: "Markdown",
           html: "HTML",
           image: "Imagen",
@@ -2086,8 +2087,8 @@ export const es: TranslationResources = {
       other: "usó {{count}} herramientas adicionales",
     },
     paseoCalls: {
-      one: "llamó a Paseo {{count}} vez",
-      other: "llamó a Paseo {{count}} veces",
+      one: "llamó a Kumo Agent {{count}} vez",
+      other: "llamó a Kumo Agent {{count}} veces",
     },
     and: "y",
   },
@@ -2192,7 +2193,7 @@ export const es: TranslationResources = {
       send: "Enviar",
       sending: "Enviando...",
       sentTitle: "Notificación de prueba enviada",
-      sentDescription: "Paseo entregó la notificación al sistema operativo.",
+      sentDescription: "Kumo Agent entregó la notificación al sistema operativo.",
       sendFailedTitle: "No se pudo enviar la notificación de prueba",
     },
     hostSections: {
@@ -2211,14 +2212,14 @@ export const es: TranslationResources = {
     metadataGeneration: {
       title: "Generación de metadatos",
       description:
-        "Elige el modelo que Paseo usa para títulos de espacios de trabajo, nombres de ramas, mensajes de commit y borradores de pull requests",
+        "Elige el modelo que Kumo Agent usa para títulos de espacios de trabajo, nombres de ramas, mensajes de commit y borradores de pull requests",
       selection: "Selección de modelo",
       automatic: "Automática",
       preferred: "Manual",
-      automaticHint: "Paseo elige un modelo rápido disponible",
-      preferredHint: "Elige el modelo que usa Paseo",
+      automaticHint: "Kumo Agent elige un modelo rápido disponible",
+      preferredHint: "Elige el modelo que usa Kumo Agent",
       model: "Modelo",
-      modelHint: "Solo se usa este modelo. Si falla, Paseo no prueba otro modelo",
+      modelHint: "Solo se usa este modelo. Si falla, Kumo Agent no prueba otro modelo",
       docs: "Documentación",
       saveError: "No se pudo actualizar la generación de metadatos",
     },
@@ -2297,7 +2298,7 @@ export const es: TranslationResources = {
         title: "Datos del navegador",
         siteData: "Cookies y datos de sitios",
         description:
-          "Las pestañas del navegador comparten inicios de sesión y datos de sitios en Paseo.",
+          "Las pestañas del navegador comparten inicios de sesión y datos de sitios en Kumo Agent.",
         clear: "Borrar datos del navegador",
         clearing: "Borrando...",
         confirmTitle: "¿Borrar los datos del navegador?",
@@ -2340,7 +2341,7 @@ export const es: TranslationResources = {
       serviceUrls: {
         options: {
           ask: "Preguntar",
-          inApp: "EnPaseo",
+          inApp: "En Kumo Agent",
           external: "Navegador externo",
         },
       },
@@ -2421,7 +2422,7 @@ export const es: TranslationResources = {
         label: "Actualizaciones de aplicaciones",
         readyToInstall: "Listo para instalar:{{version}}",
         installTitle: "Instalar actualización de escritorio",
-        installMessage: "Esto actualizaPaseoen esta computadora.",
+        installMessage: "Esto actualiza Kumo Agent en esta computadora.",
         installConfirm: "Instalar actualización",
         update: "Actualizar",
         updateTo: "Actualización a{{version}}",
@@ -2598,7 +2599,7 @@ export const es: TranslationResources = {
       commandLine: {
         title: "línea de comando",
         description: "Agentes de control y script desde tu terminal",
-        accessibilityLabel: "Instalar la CLI de Paseo",
+        accessibilityLabel: "Instalar la CLI de Kumo Agent",
       },
     },
     permissions: {
@@ -2671,12 +2672,12 @@ export const es: TranslationResources = {
         ...en.settings.host.skills,
         sectionTitle: "Habilidades de orquestación",
         title: "Habilidades de orquestación",
-        description: "Enseña a tus agentes a usar las herramientas de Paseo",
+        description: "Enseña a tus agentes a usar las herramientas de Kumo Agent",
         updateAvailable: "Actualización disponible",
-        updateTitle: "¿Actualizar las habilidades dePaseo?",
-        uninstallTitle: "¿Desinstalar las habilidadesPaseo?",
+        updateTitle: "¿Actualizar las habilidades de Kumo Agent?",
+        uninstallTitle: "¿Desinstalar las habilidades Kumo Agent?",
         uninstallMessage:
-          "Elimina todas las habilidades de orquestación Paseo de ~/.agents, ~/.claude, ~/.codex y ~/.gemini/config.",
+          "Elimina todas las habilidades de orquestación Kumo Agent de ~/.agents, ~/.claude, ~/.codex y ~/.gemini/config.",
         choose: "Elegir habilidades",
         chooseAll: "Todas las habilidades",
         chooseAllHint:
@@ -2710,10 +2711,10 @@ export const es: TranslationResources = {
         title: "Orquestación",
         unavailable: "Conéctese a este host para administrar la orquestación",
         enableTools: {
-          title: "Habilitar herramientasPaseo",
+          title: "Habilitar herramientas Kumo Agent",
           hint: "Los agentes podrán gestionar árboles de trabajo, agentes y horarios.",
-          accessibilityLabel: "Inyectar herramientasPaseo",
-          updateFailed: "No se pudieron actualizar las herramientas de Paseo.",
+          accessibilityLabel: "Inyectar herramientas Kumo Agent",
+          updateFailed: "No se pudieron actualizar las herramientas de Kumo Agent.",
         },
         systemPrompt: {
           title: "Aviso del sistema",
@@ -2830,10 +2831,10 @@ export const es: TranslationResources = {
             "Este host no está conectado. Espere a que se conecte antes de reiniciar.",
           offlineTitle: "Hostfuera de línea",
           offlineMessage:
-            "Este anfitrión está desconectado.Paseose vuelve a conectar automáticamente; espere hasta que vuelva a estar en línea antes de reiniciar.",
+            "Este anfitrión está desconectado. Kumo Agent se vuelve a conectar automáticamente; espere hasta que vuelva a estar en línea antes de reiniciar.",
           requestFailedTitle: "Error",
           requestFailedMessage:
-            "No se pudo enviar la solicitud de reinicio.Paseose vuelve a conectar automáticamente; inténtelo nuevamente una vez que el host se muestre en línea.",
+            "No se pudo enviar la solicitud de reinicio. Kumo Agent se vuelve a conectar automáticamente; inténtelo nuevamente una vez que el host se muestre en línea.",
           closeTerminals: "Reiniciar y cerrar terminales",
           closeTerminalsHint:
             "Reinicia y además cierra todas las terminales abiertas en este host.",
@@ -2844,7 +2845,7 @@ export const es: TranslationResources = {
         },
         update: {
           desktopManagedHint:
-            "Este daemon está administrado por Paseo Desktop. Actualiza Paseo Desktop en el host.",
+            "Este daemon está administrado por Kumo Agent Desktop. Actualiza Kumo Agent Desktop en el host.",
           title: "Update daemon",
           hint: "Update the daemon to the latest version and restart it",
           confirm: "Update",
@@ -3043,7 +3044,7 @@ export const es: TranslationResources = {
         newScript: "Nuevo guión",
         editScript: "Editar{{name}}",
         runAsService: "Ejecutar como servicio",
-        serviceHint: "Paseosupervisa el proceso y asigna un puerto vía $PASEO_PORT",
+        serviceHint: "Kumo Agent supervisa el proceso y asigna un puerto vía $PASEO_PORT",
         actions: {
           add: "Agregar guión",
           edit: "Editar",
@@ -3052,7 +3053,7 @@ export const es: TranslationResources = {
       },
       metadata: {
         title: "Generación de metadatos",
-        info: "Instrucciones específicas del proyecto inyectadas en los mensajes de IA quePaseoutiliza para generar metadatos; úselas para hacer cumplir las convenciones de su equipo, como la denominación de ramas, el estilo de confirmación o el formatoPR.",
+        info: "Instrucciones específicas del proyecto inyectadas en los mensajes de IA que Kumo Agent utiliza para generar metadatos; úselas para hacer cumplir las convenciones de su equipo, como la denominación de ramas, el estilo de confirmación o el formatoPR.",
         branchName: "Nombres de sucursales",
         branchNamePlaceholder: "Prefijo ramas con feat/ o fix/, mb/ para ramas personales",
         commitMessage: "Confirmar mensajes",

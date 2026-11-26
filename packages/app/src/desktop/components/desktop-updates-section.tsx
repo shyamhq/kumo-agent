@@ -394,25 +394,12 @@ export function LocalDaemonSection() {
     [theme.iconSize.sm, theme.colors.foreground],
   );
 
-  const advancedSettingsLink = useMemo(
-    () => ({
-      href: ADVANCED_DAEMON_SETTINGS_URL,
-      label: t("desktop.daemon.advancedSettings"),
-      accessibilityLabel: t("desktop.daemon.openAdvancedSettings"),
-    }),
-    [t],
-  );
-
   if (!showSection) {
     return null;
   }
 
   return (
-    <SettingsSection
-      title={t("desktop.daemon.title")}
-      link={advancedSettingsLink}
-      testID="host-page-daemon-lifecycle-card"
-    >
+    <SettingsSection title={t("desktop.daemon.title")} testID="host-page-daemon-lifecycle-card">
       {isLoading || isLoadingSettings ? (
         <View style={[settingsStyles.card, styles.loadingCard]}>
           <LoadingSpinner size="small" color={theme.colors.foregroundMuted} />
@@ -481,8 +468,6 @@ export function LocalDaemonSection() {
     </SettingsSection>
   );
 }
-
-const ADVANCED_DAEMON_SETTINGS_URL = "https://paseo.sh/docs/configuration";
 
 const styles = StyleSheet.create((theme) => ({
   actionGroup: {

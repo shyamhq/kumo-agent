@@ -9,7 +9,6 @@ import { AdaptiveModalSheet, type SheetHeader } from "@/components/adaptive-moda
 import { SettingsCard, SettingsRow } from "@/components/settings";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "@/components/ui/external-link";
 import { Field, FormTextInput } from "@/components/ui/form-field";
 import { useToast } from "@/contexts/toast-api-context";
 import { useDaemonConfig } from "@/hooks/use-daemon-config";
@@ -18,7 +17,6 @@ import { pluginDisplayName } from "@/plugins/plugin-list";
 import { listingAuthor, listingSource, listingText, listingVersion } from "./listing";
 import { dismissFailedOperation, installPlugin, usePluginOperation } from "./operations";
 
-const PLUGIN_SOURCE_DOCS_URL = "https://paseo.sh/docs/plugins/reference#plugin-sources";
 const SOURCE_SUBJECT = "source";
 
 /** What the sheet installs: a directory listing, or a source the user types. */
@@ -122,10 +120,6 @@ export function InstallPluginSheet({
     ),
     [canInstall, close, confirm, sourceRunning, t],
   );
-  const docsLink = useMemo(
-    () => <ExternalLink href={PLUGIN_SOURCE_DOCS_URL} label={t("settings.plugins.docs")} />,
-    [t],
-  );
 
   return (
     <AdaptiveModalSheet
@@ -152,7 +146,7 @@ export function InstallPluginSheet({
             </SettingsRow>
           </SettingsCard>
         ) : (
-          <Field label={t("settings.plugins.sourceLabel")} trailing={docsLink}>
+          <Field label={t("settings.plugins.sourceLabel")}>
             <FormTextInput
               initialValue=""
               onChangeText={setSource}

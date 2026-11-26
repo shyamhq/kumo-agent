@@ -28,7 +28,7 @@ function resolveSecretFile(params) {
 
 const variants = {
   production: {
-    name: "kumo-agent",
+    name: "Kumo Agent",
     packageId: "sh.paseo",
     googleServicesFile: resolveSecretFile({
       envKey: "GOOGLE_SERVICES_FILE_PROD",
@@ -40,7 +40,7 @@ const variants = {
     }),
   },
   development: {
-    name: "kumo-agent Debug",
+    name: "Kumo Agent Debug",
     packageId: "sh.paseo.debug",
     googleServicesFile: resolveSecretFile({
       envKey: "GOOGLE_SERVICES_FILE_DEBUG",
@@ -81,7 +81,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        backgroundColor: "#000000",
+        backgroundColor: "#C2562F",
         foregroundImage: "./assets/images/android-icon-foreground.png",
       },
       edgeToEdgeEnabled: true,
@@ -137,7 +137,7 @@ export default {
         "expo-notifications",
         {
           icon: "./assets/images/notification-icon.png",
-          color: "#20744A",
+          color: "#C2562F",
         },
       ],
       "expo-audio",

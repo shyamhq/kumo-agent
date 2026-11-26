@@ -1679,7 +1679,7 @@ export default function contribute(plugin: unknown) {
       "Plugin entry points are missing",
     );
     await expect(service.installDirectory({ path: legacy })).rejects.toThrow(
-      "This plugin was made for an older version of Paseo and cannot run on Paseo v0.8. Ask its author to update it. Plugin authors can follow the migration guide: https://paseo.sh/docs/plugins/migration",
+      "This plugin was made for an older version of Kumo Agent and cannot run on Kumo Agent v0.8. Ask its author to update it.",
     );
     await expect(service.installDirectory({ path: startupFailure })).rejects.toThrow(
       "startup exploded",
@@ -1689,7 +1689,7 @@ export default function contribute(plugin: unknown) {
         id: "legacy-plugin",
         status: "failed",
         error:
-          "This plugin was made for an older version of Paseo and cannot run on Paseo v0.8. Ask its author to update it. Plugin authors can follow the migration guide: https://paseo.sh/docs/plugins/migration",
+          "This plugin was made for an older version of Kumo Agent and cannot run on Kumo Agent v0.8. Ask its author to update it.",
       }),
       expect.objectContaining({
         id: "missing-entry",

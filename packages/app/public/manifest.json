@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "kumo-agent",
-  "short_name": "kumo-agent",
+  "name": "Kumo Agent",
+  "short_name": "Kumo Agent",
   "description": "Monitor and control local AI coding agents from anywhere.",
   "start_url": "/",
   "scope": "/",
