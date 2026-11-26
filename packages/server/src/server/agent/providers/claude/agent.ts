@@ -13,6 +13,7 @@ import { LRUCache } from "lru-cache";
 import stripAnsi from "strip-ansi";
 import { createImportDescriptorScheduler } from "./import-descriptor-scheduler.js";
 import { bypassApprovesAsk } from "./bypass-approval.js";
+import { readUserMcpServers } from "./user-mcp-servers.js";
 import {
   type AgentDefinition,
   type CanUseTool,
@@ -2523,6 +2524,8 @@ class ClaudeAgentSession implements AgentSession {
   private compactionMarkerOpen = false;
   private queryPumpPromise: Promise<void> | null = null;
   private queryRestartNeeded = false;
+  /** The user MCP servers the running Claude started with (`readUserMcpServers`). */
+  private userMcpServers: string | null = null;
   /** True from the moment a query's launch options are copied until the query exists. */
   private queryStarting = false;
   private pendingInterruptAbort = false;
@@ -2739,6 +2742,11 @@ class ClaudeAgentSession implements AgentSession {
     this.notifySubscribers({ type: "turn_started", provider: "claude" });
 
     try {
+      // Kumo's worker writes its MCP entries (`kumo`, `kumo-connected-apps`) with a new port and
+      // token each time it restarts, and a running Claude keeps the dead ones. Changed servers
+      // restart Claude, which resumes this chat with the new ones.
+      // ponytail: the restart also ends this chat's background helpers, as a mode change does.
+      if (this.query && (await this.userMcpServersChanged())) this.queryRestartNeeded = true;
       await this.ensureQuery();
       if (cancelIssued) {
         // Stopped while Claude was still starting up: withdrawn by never sending it.
@@ -3826,6 +3834,7 @@ class ClaudeAgentSession implements AgentSession {
     let options: ClaudeOptions;
     try {
       options = await this.buildOptions(launchMode);
+      this.userMcpServers = await readUserMcpServers(this.buildSdkEnv());
       // Closure can finish while launch options are being prepared.
       if (this.closed) throw new Error("Claude session is closed");
     } catch (error) {
@@ -3865,6 +3874,12 @@ class ClaudeAgentSession implements AgentSession {
     // ensureQuery() (for listCommands()/setMode()), and sharing the same query
     // control plane can cause those calls to wait behind supportedModels().
     return this.query;
+  }
+
+  private async userMcpServersChanged(): Promise<boolean> {
+    if (this.userMcpServers === null) return false;
+    const now = await readUserMcpServers(this.buildSdkEnv());
+    return now !== null && now !== this.userMcpServers;
   }
 
   private async awaitWithTimeout(
