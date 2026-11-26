@@ -28,8 +28,11 @@ How it runs under Kumo:
 - Each time the worker starts, it writes Kumo's MCP servers into the agent CLIs' own config
   (e.g. `~/.claude.json`, `~/.codex/config.toml`): `kumo` always, `kumo-chrome` and
   `kumo-connected-apps` only when the computer has them. The `kumo` and `kumo-connected-apps`
-  entries' port and token change on every worker start, so an agent started before a worker restart
-  holds dead entries.
+  entries' port and token change on every worker start (on purpose: a kept token on a fixed port
+  could be collected by another local account). A Claude agent notices on its next message and
+  restarts, resuming the chat with the new entries; that ends its background shells and helpers
+  (`readUserMcpServers` in `providers/claude/`). Codex and OpenCode agents started before a worker
+  restart keep the dead entries.
 - The AI keys the owner saved in Kumo's Settings › AI are in `~/.kumo/ai-credentials.json`, which
   the worker rewrites. The built-in `kumo` plugin (`plugins/kumo/`) reads it every time a stock
   Claude or Codex agent opens and adds the keys to its env. Env set for that one agent wins. A
