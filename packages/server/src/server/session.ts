@@ -2970,7 +2970,7 @@ export class Session {
     if (!this.authorization.allowsOutbound(response)) return;
     if (!this.supports(CLIENT_CAPS.pluginBinaryPayloads) || this.onBinaryMessage === null)
       throw new Error(
-        `Update Paseo to receive the binary output of plugin RPC ${request.pluginId}.${request.method}`,
+        `Update Kumo Agent to receive the binary output of plugin RPC ${request.pluginId}.${request.method}`,
       );
     await this.emitBinaryReply(
       encodePluginOutputFrame(request.requestId, output),
@@ -9051,7 +9051,7 @@ export class Session {
                     timestamp: new Date().toISOString(),
                     item: {
                       type: "assistant_message",
-                      text: "Please upgrade the Paseo app to view this subagent conversation.",
+                      text: "Please upgrade the Kumo Agent app to view this subagent conversation.",
                     },
                   },
                 ],
@@ -9594,7 +9594,7 @@ export class Session {
       ...snapshot,
       status: "failed" as const,
       error:
-        "Workspace setup is blocked pending approval of code from a fork pull request. Update Paseo to review and run setup.",
+        "Workspace setup is blocked pending approval of code from a fork pull request. Update Kumo Agent to review and run setup.",
     };
     return message.type === "workspace_setup_progress"
       ? { ...message, payload: { ...message.payload, ...legacySnapshot } }

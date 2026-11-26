@@ -1621,7 +1621,7 @@ export const ar: TranslationResources = {
     integrations: {
       cli: {
         statusFailed: "غير قادر على التحقق من حالة تثبيت CLI.",
-        installFailed: "غير قادر على تثبيت PaseoCLI.",
+        installFailed: "غير قادر على تثبيت Kumo Agent CLI.",
         uninstallFailed: "تعذر إلغاء تثبيت Kumo Agent CLI.",
         keptForeign: "تم الإبقاء على أمر paseo لم يثبته Kumo Agent. احذفه بنفسك لإلغاء تثبيته.",
       },

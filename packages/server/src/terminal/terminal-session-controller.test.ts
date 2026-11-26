@@ -362,7 +362,7 @@ describe("terminal-session-controller legacy terminal creation", () => {
   });
 });
 
-describe("terminal-session-controller with terminals held by a newer Paseo", () => {
+describe("terminal-session-controller with terminals held by a newer Kumo Agent", () => {
   const incompatible = new TerminalWorkerIncompatibleError({
     paseoVersion: "9.9.9",
     protocolVersion: 7,

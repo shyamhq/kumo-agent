@@ -183,6 +183,16 @@ describe("translation resources", () => {
     expect(countMatchingEnglishStrings(zhCN)).toBeLessThan(maxFallbackStrings);
   });
 
+  // A person sees Kumo Agent, never Paseo. Lowercase `paseo` (the command, paseo.json) is a real name.
+  it("never names Paseo in any language", () => {
+    for (const resource of [en, ar, es, fr, ja, ko, ptBR, ru, zhCN]) {
+      const named = Object.entries(flattenStrings(resource)).filter(([, text]) =>
+        text.includes("Paseo"),
+      );
+      expect(named).toEqual([]);
+    }
+  });
+
   it("localizes the pull request empty state in every supported language", () => {
     for (const resource of [ar, es, fr, ja, ko, ptBR, ru, zhCN]) {
       expect(resource.panels.pullRequest.emptyTitle).not.toBe(en.panels.pullRequest.emptyTitle);

@@ -31,7 +31,7 @@ export interface RegisterBrowserToolsOptions {
 
 const HTTP_URL_ONLY_MESSAGE = "URL must use http/https only";
 const WORKSPACE_CONTEXT_MESSAGE =
-  "This browser tool needs a workspace. Start the agent from a Paseo workspace before calling browser_new_tab or browser_list_tabs.";
+  "This browser tool needs a workspace. Start the agent from a Kumo Agent workspace before calling browser_new_tab or browser_list_tabs.";
 const URL_WHITESPACE_PATTERN = /\s/;
 const NON_HTTP_EXPLICIT_SCHEME_PATTERN = /^(?!https?:\/\/)[a-z][a-z0-9+.-]*:\/\//i;
 

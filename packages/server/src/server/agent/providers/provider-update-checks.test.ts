@@ -258,7 +258,7 @@ const selfUpdatingClis = [
     version: "1.19.5",
     updateArgs: ["upgrade"],
     // OpenCode runs one server for every agent, which keeps the old version until restarted.
-    successMessage: expect.stringContaining("Restart the Paseo daemon"),
+    successMessage: expect.stringContaining("Restart the Kumo Agent daemon"),
     client: (argv: [string, string]) =>
       new OpenCodeRuntimeClient(createTestLogger(), { command: { mode: "replace", argv } }),
   },
