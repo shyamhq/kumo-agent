@@ -379,7 +379,7 @@ export const en = {
       details: "Details",
     },
     dictation: {
-      insecureContext: "Open Paseo over HTTPS or localhost to use the microphone.",
+      insecureContext: "Open Kumo Agent over HTTPS or localhost to use the microphone.",
       unsupported: "Dictation is unavailable in this browser.",
       noMicrophone: "Connect a microphone and try again.",
       permissionDenied: "Allow microphone access and try again.",
@@ -941,7 +941,7 @@ export const en = {
             "Update isn't available because this branch is already up to date with {{baseRef}}",
           mergePrNoGithub: "Merge PR isn't available right now because GitHub isn't connected",
           archiveNotWorktree:
-            "Archive isn't available here because this workspace was not created as a Paseo worktree",
+            "Archive isn't available here because this workspace was not created as a Kumo Agent worktree",
           mergePrNoForge:
             "Merge {{noun}} isn't available right now because {{brand}} isn't connected",
           mergePrMissing: "Merge PR isn't available because there isn't a pull request yet",
@@ -1306,7 +1306,7 @@ export const en = {
       diagnostics: "Run diagnostics",
       shortcuts: "Keyboard shortcuts",
       whatsNew: "What's new",
-      appName: "Paseo",
+      appName: "Kumo Agent",
     },
     sections: {
       sessions: "History",
@@ -1486,7 +1486,7 @@ export const en = {
       close: "Close window",
     },
     quitting: {
-      title: "Quitting Paseo...",
+      title: "Quitting Kumo Agent...",
       detail: "Stopping the local daemon.",
     },
     daemon: {
@@ -1517,20 +1517,20 @@ export const en = {
       },
       management: {
         title: "Manage built-in daemon",
-        hint: "Let Paseo start and stop the built-in daemon",
+        hint: "Let Kumo Agent start and stop the built-in daemon",
         pauseTitle: "Pause built-in daemon",
         pauseMessage:
           "This will stop the built-in daemon immediately. Running agents and terminals connected to the built-in daemon will be stopped.",
         pauseAndStop: "Pause and stop",
         registrationFailed:
-          "Built-in daemon started, but Paseo could not save the localhost connection. Toggle daemon management off and on again, or add localhost manually.",
+          "Built-in daemon started, but Kumo Agent could not save the localhost connection. Toggle daemon management off and on again, or add localhost manually.",
         pausedStopFailed:
-          "Built-in daemon management was paused, but Paseo could not stop the daemon.",
+          "Built-in daemon management was paused, but Kumo Agent could not stop the daemon.",
         updateFailed: "Unable to update built-in daemon management.",
       },
       keepRunning: {
         title: "Keep daemon running after quit",
-        hint: "Daemon keeps running when you quit Paseo",
+        hint: "Daemon keeps running when you quit Kumo Agent",
       },
       logs: {
         title: "Log file",
@@ -1597,7 +1597,7 @@ export const en = {
     },
     rosetta: {
       title: "Download the Apple Silicon build",
-      runningIntel: "You're running the Intel build of Paseo under Rosetta on Apple Silicon.",
+      runningIntel: "You're running the Intel build of Kumo Agent under Rosetta on Apple Silicon.",
       highCpu: "This causes high CPU usage. Download the Apple Silicon build to fix it.",
       download: "Download",
     },
@@ -1639,7 +1639,7 @@ export const en = {
         microphone: "Microphone status has not been checked yet.",
       },
       testNotification: {
-        title: "Paseo notification test",
+        title: "Kumo Agent notification test",
         body: "If you can see this, desktop notifications work.",
         notDelivered: "Notification was not delivered. Check System Settings > Notifications.",
         failed: "Failed to send notification.",
@@ -1648,15 +1648,15 @@ export const en = {
     integrations: {
       cli: {
         statusFailed: "Unable to check CLI install status.",
-        installFailed: "Unable to install the Paseo CLI.",
-        uninstallFailed: "Unable to uninstall the Paseo CLI.",
+        installFailed: "Unable to install the Kumo Agent CLI.",
+        uninstallFailed: "Unable to uninstall the Kumo Agent CLI.",
         keptForeign:
-          "Kept a paseo command that Paseo didn't install. Remove it yourself to uninstall it.",
+          "Kept a paseo command that Kumo Agent didn't install. Remove it yourself to uninstall it.",
       },
     },
   },
   rootError: {
-    title: "Paseo ran into a problem.",
+    title: "Kumo Agent ran into a problem.",
     body: "Try again to reload the app. If this keeps happening, include the details below when you report it.",
     details: "Details",
   },
@@ -1770,7 +1770,7 @@ export const en = {
   },
   onboarding: {
     setup: {
-      title: "Paseo",
+      title: "Kumo Agent",
       stepCounter: "Step {{current}} of {{total}}",
       skip: "Skip setup",
       continue: "Continue",
@@ -1778,13 +1778,13 @@ export const en = {
       steps: {
         appearance: {
           label: "Appearance",
-          title: "Welcome to Paseo",
+          title: "Welcome to Kumo Agent",
           description: "Let's start by picking a look",
         },
         providers: {
           label: "Providers",
           title: "Your providers",
-          description: "Paseo runs the agent CLIs already on this computer",
+          description: "Kumo Agent runs the agent CLIs already on this computer",
         },
         projects: {
           label: "Projects",
@@ -1804,12 +1804,12 @@ export const en = {
         },
         orchestration: {
           label: "Orchestration",
-          title: "Let agents use Paseo",
+          title: "Let agents use Kumo Agent",
           description: "Let your agents create workspaces and talk to other agents",
         },
       },
     },
-    title: "Welcome to Paseo",
+    title: "Welcome to Kumo Agent",
     actions: {
       settings: "Settings",
     },
@@ -1917,7 +1917,7 @@ export const en = {
   serviceUrl: {
     title: "Open service URL",
     message: "Open {{url}}?",
-    inPaseo: "In Paseo",
+    inPaseo: "In Kumo Agent",
     externalBrowser: "External browser",
     dontAskAgain: "Don't ask again",
   },
@@ -1971,7 +1971,7 @@ export const en = {
         alwaysUseFilename: "Always use for {{filename}}",
         option: "{{title}} — {{owner}}",
         builtin: {
-          owner: "Paseo",
+          owner: "Kumo Agent",
           markdown: "Markdown",
           html: "HTML",
           image: "Image",
@@ -2068,8 +2068,8 @@ export const en = {
       other: "used {{count}} other tools",
     },
     paseoCalls: {
-      one: "called Paseo {{count}} time",
-      other: "called Paseo {{count}} times",
+      one: "called Kumo Agent {{count}} time",
+      other: "called Kumo Agent {{count}} times",
     },
     and: "and",
   },
@@ -2212,7 +2212,7 @@ export const en = {
       send: "Send",
       sending: "Sending...",
       sentTitle: "Test notification sent",
-      sentDescription: "Paseo handed the notification to the operating system.",
+      sentDescription: "Kumo Agent handed the notification to the operating system.",
       sendFailedTitle: "Unable to send test notification",
     },
     hostSections: {
@@ -2296,14 +2296,14 @@ export const en = {
     metadataGeneration: {
       title: "Metadata generation",
       description:
-        "Choose the model Paseo uses for workspace titles, branch names, commit messages, and pull request drafts",
+        "Choose the model Kumo Agent uses for workspace titles, branch names, commit messages, and pull request drafts",
       selection: "Model selection",
       automatic: "Automatic",
       preferred: "Manual",
-      automaticHint: "Paseo picks a fast available model",
-      preferredHint: "Choose the model Paseo uses",
+      automaticHint: "Kumo Agent picks a fast available model",
+      preferredHint: "Choose the model Kumo Agent uses",
       model: "Model",
-      modelHint: "Only this model is used. If it fails, Paseo does not try another model",
+      modelHint: "Only this model is used. If it fails, Kumo Agent does not try another model",
       docs: "Docs",
       saveError: "Unable to update metadata generation",
     },
@@ -2381,7 +2381,7 @@ export const en = {
       browserData: {
         title: "Browser data",
         siteData: "Cookies and site data",
-        description: "Browser tabs share sign-ins and site data across Paseo.",
+        description: "Browser tabs share sign-ins and site data across Kumo Agent.",
         clear: "Clear browser data",
         clearing: "Clearing...",
         confirmTitle: "Clear browser data?",
@@ -2420,7 +2420,7 @@ export const en = {
       serviceUrls: {
         options: {
           ask: "Ask",
-          inApp: "In Paseo",
+          inApp: "In Kumo Agent",
           external: "External browser",
         },
       },
@@ -2500,7 +2500,7 @@ export const en = {
         label: "App updates",
         readyToInstall: "Ready to install: {{version}}",
         installTitle: "Install desktop update",
-        installMessage: "This updates Paseo on this computer",
+        installMessage: "This updates Kumo Agent on this computer",
         installConfirm: "Install update",
         update: "Update",
         updateTo: "Update to {{version}}",
@@ -2673,7 +2673,7 @@ export const en = {
       commandLine: {
         title: "Command line",
         description: "Control and script agents from your terminal",
-        accessibilityLabel: "Install the Paseo CLI",
+        accessibilityLabel: "Install the Kumo Agent CLI",
       },
     },
     permissions: {
@@ -2745,7 +2745,7 @@ export const en = {
       skills: {
         sectionTitle: "Orchestration skills",
         title: "Orchestration skills",
-        description: "Teach your agents how to use Paseo tools",
+        description: "Teach your agents how to use Kumo Agent tools",
         docs: "Skills",
         openDocs: "Open skills documentation",
         unavailable: "Connect to this host to manage orchestration skills",
@@ -2755,10 +2755,10 @@ export const en = {
         uninstallFailed: "Unable to uninstall orchestration skills.",
         saveSelectionFailed: "Unable to save the orchestration skills selection.",
         updateAvailable: "Update available",
-        updateTitle: "Update Paseo skills?",
-        uninstallTitle: "Uninstall Paseo skills?",
+        updateTitle: "Update Kumo Agent skills?",
+        uninstallTitle: "Uninstall Kumo Agent skills?",
         uninstallMessage:
-          "Removes all Paseo orchestration skills from ~/.agents, ~/.claude, ~/.codex, and ~/.gemini/config on this host.",
+          "Removes all Kumo Agent orchestration skills from ~/.agents, ~/.claude, ~/.codex, and ~/.gemini/config on this host.",
         choose: "Choose skills",
         chooseAll: "All skills",
         chooseAllHint: "Keep every bundled skill installed, including ones added later.",
@@ -2787,10 +2787,10 @@ export const en = {
         title: "Orchestration",
         unavailable: "Connect to this host to manage orchestration",
         enableTools: {
-          title: "Enable Paseo tools",
+          title: "Enable Kumo Agent tools",
           hint: "Agents will be able to manage worktrees, agents and schedules",
-          accessibilityLabel: "Inject Paseo tools",
-          updateFailed: "Unable to update Paseo tools.",
+          accessibilityLabel: "Inject Kumo Agent tools",
+          updateFailed: "Unable to update Kumo Agent tools.",
         },
         systemPrompt: {
           title: "System prompt",
@@ -2906,10 +2906,10 @@ export const en = {
             "This host is not connected. Wait for it to come online before restarting.",
           offlineTitle: "Host offline",
           offlineMessage:
-            "This host is offline. Paseo reconnects automatically-wait until it's back online before restarting.",
+            "This host is offline. Kumo Agent reconnects automatically-wait until it's back online before restarting.",
           requestFailedTitle: "Error",
           requestFailedMessage:
-            "Failed to send the restart request. Paseo reconnects automatically-try again once the host shows as online.",
+            "Failed to send the restart request. Kumo Agent reconnects automatically-try again once the host shows as online.",
           closeTerminals: "Restart and close terminals",
           closeTerminalsHint: "Restart and also close every terminal running on this host.",
           closeTerminalsConfirmMessage:
@@ -2918,7 +2918,7 @@ export const en = {
         },
         update: {
           desktopManagedHint:
-            "This daemon is managed by Paseo Desktop. Update Paseo Desktop on the host.",
+            "This daemon is managed by Kumo Agent Desktop. Update Kumo Agent Desktop on the host.",
           title: "Update daemon",
           hint: "Update the daemon to the latest version and restart it",
           confirm: "Update",
@@ -3117,7 +3117,7 @@ export const en = {
         newScript: "New script",
         editScript: "Edit {{name}}",
         runAsService: "Run as a service",
-        serviceHint: "Paseo supervises the process and assigns a port via $PASEO_PORT",
+        serviceHint: "Kumo Agent supervises the process and assigns a port via $PASEO_PORT",
         actions: {
           add: "Add script",
           edit: "Edit",
@@ -3126,7 +3126,7 @@ export const en = {
       },
       metadata: {
         title: "Metadata generation",
-        info: "Project-specific instructions injected into the AI prompts Paseo uses to generate metadata - use them to enforce your team's conventions like branch naming, commit style, or PR format",
+        info: "Project-specific instructions injected into the AI prompts Kumo Agent uses to generate metadata - use them to enforce your team's conventions like branch naming, commit style, or PR format",
         branchName: "Branch names",
         branchNamePlaceholder: "Prefix branches with feat/ or fix/, mb/ for personal branches",
         commitMessage: "Commit messages",

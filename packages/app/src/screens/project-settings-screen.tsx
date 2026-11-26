@@ -89,8 +89,6 @@ const METADATA_PROMPT_FIELDS: Record<MetadataPromptKey, MetadataPromptField> = {
   },
 };
 
-const WORKTREE_DOCS_URL = "https://paseo.sh/docs/worktrees";
-
 type ReadProjectConfigData = Awaited<ReturnType<DaemonClient["readProjectConfig"]>>;
 
 export interface ProjectSettingsScreenProps {
@@ -655,25 +653,6 @@ function ProjectConfigForm({
     [handleAddScript, t],
   );
 
-  const setupDocsLink = useMemo(
-    () => ({
-      href: WORKTREE_DOCS_URL,
-      label: t("settings.project.worktree.docs"),
-      tooltip: t("settings.project.worktree.docsTooltip"),
-      testID: "worktree-setup-docs-link",
-    }),
-    [t],
-  );
-  const teardownDocsLink = useMemo(
-    () => ({
-      href: WORKTREE_DOCS_URL,
-      label: t("settings.project.worktree.docs"),
-      tooltip: t("settings.project.worktree.docsTooltip"),
-      testID: "worktree-teardown-docs-link",
-    }),
-    [t],
-  );
-
   const isStale = writeError?.code === "stale_project_config";
   const isWriteFailed = writeError?.code === "write_failed";
   const saveDisabled = saveMutation.isPending || isStale || hasInvalidScripts;
@@ -688,7 +667,6 @@ function ProjectConfigForm({
         <SettingsSection
           title={t("settings.project.worktree.setup")}
           testID="worktree-setup-section"
-          link={setupDocsLink}
         >
           {hasUncommittedWorktreeSetupChanges ? (
             <Alert
@@ -710,7 +688,6 @@ function ProjectConfigForm({
         <SettingsSection
           title={t("settings.project.worktree.teardown")}
           testID="worktree-teardown-section"
-          link={teardownDocsLink}
           flush
         >
           <SettingsTextAreaCard

@@ -1,14 +1,10 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { Text, View } from "react-native";
-import { ExternalLink, Gift } from "lucide-react-native";
+import { Gift } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
-import {
-  AdaptiveModalSheet,
-  SheetHeaderIconButton,
-  type SheetHeader,
-} from "@/components/adaptive-modal-sheet";
+import { AdaptiveModalSheet, type SheetHeader } from "@/components/adaptive-modal-sheet";
 import { MarkdownRenderer } from "@/components/markdown/renderer";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,7 +12,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ICON_SIZE, type Theme } from "@/styles/theme";
 import { resolveAppVersion } from "@/utils/app-version";
-import { openExternalUrl } from "@/utils/open-external-url";
 import { useChangelog, type ChangelogState } from "./changelog-source";
 import { useRevealedReleases } from "./use-revealed-releases";
 import {
@@ -24,8 +19,6 @@ import {
   type ChangelogRelease,
   type ChangelogSection,
 } from "./parse-changelog";
-
-const WEBSITE_CHANGELOG_URL = "https://paseo.sh/changelog";
 
 const ThemedGift = withUnistyles(Gift);
 const ThemedLoadingSpinner = withUnistyles(LoadingSpinner);
@@ -42,24 +35,12 @@ export function ChangelogSheet({ visible, onClose }: ChangelogSheetProps) {
   const { state, reload } = useChangelog(visible);
   const { count, showMore } = useRevealedReleases(visible && state.status === "ready");
 
-  const handleOpenWebsite = useCallback(() => {
-    void openExternalUrl(WEBSITE_CHANGELOG_URL);
-  }, []);
-
   const header: SheetHeader = useMemo(
     () => ({
       title: t("changelog.title"),
       leading: sheetLeadingIcon,
-      actions: (
-        <SheetHeaderIconButton
-          icon={ExternalLink}
-          label={t("changelog.openWebsite")}
-          onPress={handleOpenWebsite}
-          testID="changelog-open-website"
-        />
-      ),
     }),
-    [handleOpenWebsite, t],
+    [t],
   );
 
   return (

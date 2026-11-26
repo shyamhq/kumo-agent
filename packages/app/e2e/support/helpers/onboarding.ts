@@ -138,7 +138,7 @@ export async function goToSetupStep(page: Page, label: string): Promise<void> {
 }
 
 export function paseoToolsSwitch(scope: Page | Locator): Locator {
-  return scope.getByRole("switch", { name: "Inject Paseo tools", exact: true });
+  return scope.getByRole("switch", { name: "Inject Kumo Agent tools", exact: true });
 }
 
 /** Whether the host gives its agents Paseo tools, read from the host itself. */

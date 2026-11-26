@@ -937,7 +937,7 @@ export const ko: TranslationResources = {
             "이 브랜치가 이미 {{baseRef}}와 최신 상태이므로 업데이트를 사용할 수 없습니다",
           mergePrNoGithub: "GitHub가 연결되어 있지 않아 지금은 PR 병합을 사용할 수 없습니다",
           archiveNotWorktree:
-            "이 워크스페이스가 Paseo 워크트리로 생성되지 않아 여기서 보관을 사용할 수 없습니다",
+            "이 워크스페이스가 Kumo Agent 워크트리로 생성되지 않아 여기서 보관을 사용할 수 없습니다",
           mergePrNoForge:
             "{{brand}}가 연결되어 있지 않기 때문에 지금은 {{noun}} 병합을 사용할 수 없습니다.",
           mergePrMissing: "아직 풀 리퀘스트가 없어 PR 병합을 사용할 수 없습니다",
@@ -1302,7 +1302,7 @@ export const ko: TranslationResources = {
       diagnostics: "진단 실행",
       shortcuts: "키보드 단축키",
       whatsNew: "새로운 소식",
-      appName: "Paseo",
+      appName: "Kumo Agent",
     },
     sections: {
       sessions: "기록",
@@ -1482,7 +1482,7 @@ export const ko: TranslationResources = {
       close: "창 닫기",
     },
     quitting: {
-      title: "Paseo 종료 중...",
+      title: "Kumo Agent 종료 중...",
       detail: "로컬 데몬을 중지하는 중입니다.",
     },
     daemon: {
@@ -1621,7 +1621,7 @@ export const ko: TranslationResources = {
         microphone: "마이크 상태를 아직 확인하지 않았습니다.",
       },
       testNotification: {
-        title: "Paseo 알림 테스트",
+        title: "Kumo Agent 알림 테스트",
         body: "이 메시지가 보이면 데스크톱 알림이 작동하는 것입니다.",
         notDelivered: "알림이 전달되지 않았습니다. 시스템 설정 > 알림을 확인하세요.",
         failed: "알림을 보내지 못했습니다.",
@@ -1630,8 +1630,8 @@ export const ko: TranslationResources = {
     integrations: {
       cli: {
         statusFailed: "CLI 설치 상태를 확인할 수 없습니다.",
-        installFailed: "Paseo CLI를 설치할 수 없습니다.",
-        uninstallFailed: "Paseo CLI를 제거할 수 없습니다.",
+        installFailed: "Kumo Agent CLI를 설치할 수 없습니다.",
+        uninstallFailed: "Kumo Agent CLI를 제거할 수 없습니다.",
         keptForeign:
           "Paseo가 설치하지 않은 paseo 명령은 그대로 두었습니다. 제거하려면 직접 삭제하세요.",
       },
@@ -1752,7 +1752,7 @@ export const ko: TranslationResources = {
   },
   onboarding: {
     setup: {
-      title: "Paseo",
+      title: "Kumo Agent",
       stepCounter: "{{total}}단계 중 {{current}}단계",
       skip: "설정 건너뛰기",
       continue: "계속",
@@ -1953,7 +1953,7 @@ export const ko: TranslationResources = {
         alwaysUseFilename: "{{filename}}에 항상 사용",
         option: "{{title}} — {{owner}}",
         builtin: {
-          owner: "Paseo",
+          owner: "Kumo Agent",
           markdown: "Markdown",
           html: "HTML",
           image: "이미지",
@@ -2260,7 +2260,7 @@ export const ko: TranslationResources = {
       browserData: {
         title: "브라우저 데이터",
         siteData: "쿠키 및 사이트 데이터",
-        description: "브라우저 탭은 Paseo 전체에서 로그인 및 사이트 데이터를 공유합니다.",
+        description: "브라우저 탭은 Kumo Agent 전체에서 로그인 및 사이트 데이터를 공유합니다.",
         clear: "브라우저 데이터 지우기",
         clearing: "삭제 중...",
         confirmTitle: "브라우저 데이터를 삭제하시겠습니까?",
@@ -2556,7 +2556,7 @@ export const ko: TranslationResources = {
       commandLine: {
         title: "명령줄",
         description: "터미널에서 에이전트를 제어하고 스크립팅합니다",
-        accessibilityLabel: "Paseo CLI 설치",
+        accessibilityLabel: "Kumo Agent CLI 설치",
       },
     },
     permissions: {
@@ -2629,12 +2629,12 @@ export const ko: TranslationResources = {
         ...en.settings.host.skills,
         sectionTitle: "오케스트레이션 스킬",
         title: "오케스트레이션 스킬",
-        description: "에이전트에게 Paseo 도구 사용법을 알려 줍니다",
+        description: "에이전트에게 Kumo Agent 도구 사용법을 알려 줍니다",
         updateAvailable: "업데이트 사용 가능",
-        updateTitle: "Paseo 스킬을 업데이트할까요?",
-        uninstallTitle: "Paseo 스킬을 제거할까요?",
+        updateTitle: "Kumo Agent 스킬을 업데이트할까요?",
+        uninstallTitle: "Kumo Agent 스킬을 제거할까요?",
         uninstallMessage:
-          "~/.agents, ~/.claude, ~/.codex, ~/.gemini/config에서 모든 Paseo 오케스트레이션 스킬을 제거합니다.",
+          "~/.agents, ~/.claude, ~/.codex, ~/.gemini/config에서 모든 Kumo Agent 오케스트레이션 스킬을 제거합니다.",
         choose: "스킬 선택",
         chooseAll: "모든 스킬",
         chooseAllHint: "나중에 추가되는 항목을 포함하여 모든 번들 스킬을 설치된 상태로 유지합니다.",
@@ -2667,10 +2667,10 @@ export const ko: TranslationResources = {
         title: "오케스트레이션",
         unavailable: "오케스트레이션을 관리하려면 이 호스트에 연결하세요",
         enableTools: {
-          title: "Paseo 도구 활성화",
+          title: "Kumo Agent 도구 활성화",
           hint: "에이전트가 워크트리, 에이전트, 일정을 관리할 수 있습니다",
-          accessibilityLabel: "Paseo 도구 주입",
-          updateFailed: "Paseo 도구를 업데이트할 수 없습니다.",
+          accessibilityLabel: "Kumo Agent 도구 주입",
+          updateFailed: "Kumo Agent 도구를 업데이트할 수 없습니다.",
         },
         systemPrompt: {
           title: "시스템 프롬프트",
@@ -2799,7 +2799,7 @@ export const ko: TranslationResources = {
         },
         update: {
           desktopManagedHint:
-            "이 데몬은 Paseo Desktop에서 관리됩니다. 호스트에서 Paseo 데스크톱을 업데이트합니다.",
+            "이 데몬은 Kumo Agent Desktop에서 관리됩니다. 호스트에서 Kumo Agent 데스크톱을 업데이트합니다.",
           title: "데몬 업데이트",
           hint: "데몬을 최신 버전으로 업데이트하고 다시 시작하세요.",
           confirm: "업데이트",

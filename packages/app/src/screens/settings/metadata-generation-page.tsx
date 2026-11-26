@@ -12,7 +12,6 @@ import { buildSelectableProviderSelectorProviders } from "@/provider-selection/p
 import { SettingsSection } from "@/components/settings/headings/settings-section";
 import { settingsStyles } from "@/styles/settings";
 
-const METADATA_GENERATION_DOCS_URL = "https://paseo.sh/docs/metadata-generation";
 type SelectionMode = "automatic" | "preferred";
 
 export function MetadataGenerationPage({ serverId }: { serverId: string }) {
@@ -91,10 +90,6 @@ export function MetadataGenerationPage({ serverId }: { serverId: string }) {
     (provider: AgentProvider) => snapshot.refresh([provider]),
     [snapshot],
   );
-  const docsLink = useMemo(
-    () => ({ href: METADATA_GENERATION_DOCS_URL, label: t("settings.metadataGeneration.docs") }),
-    [t],
-  );
 
   if (isConfigLoading || !config) {
     return (
@@ -108,7 +103,6 @@ export function MetadataGenerationPage({ serverId }: { serverId: string }) {
     <SettingsSection
       title={t("settings.metadataGeneration.title")}
       info={t("settings.metadataGeneration.description")}
-      link={docsLink}
       testID="metadata-generation-settings"
     >
       <View style={settingsStyles.card}>

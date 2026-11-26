@@ -5,7 +5,7 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { useRouter } from "expo-router";
 import { FolderOpen, Inbox, Plug } from "lucide-react-native";
-import { PaseoLogo } from "@/components/icons/paseo-logo";
+import { KumoLogo } from "@/components/icons/kumo-logo";
 import { MenuHeader } from "@/components/headers/menu-header";
 import { useOpenAddProject } from "@/hooks/use-open-add-project";
 import { useImportSession } from "@/hooks/use-import-session";
@@ -55,7 +55,7 @@ export function OpenProjectScreen() {
       >
         <View style={styles.content}>
           <View style={styles.logo}>
-            <PaseoLogo size={52} />
+            <KumoLogo size={52} />
           </View>
           {hosts.map((host) => (
             <HostError key={host.serverId} serverId={host.serverId} label={host.label} />

@@ -380,7 +380,7 @@ export const zhCN: TranslationResources = {
       details: "详情",
     },
     dictation: {
-      insecureContext: "请通过 HTTPS 或 localhost 打开 Paseo，以使用麦克风。",
+      insecureContext: "请通过 HTTPS 或 localhost 打开 Kumo Agent，以使用麦克风。",
       unsupported: "此浏览器无法使用听写。",
       noMicrophone: "请连接麦克风，然后重试。",
       permissionDenied: "请允许访问麦克风，然后重试。",
@@ -924,7 +924,7 @@ export const zhCN: TranslationResources = {
           updateDirty: "有本地变更时无法更新，请先 commit 或 stash",
           updateCurrent: "无法更新，因为此分支已与 {{baseRef}} 保持最新",
           mergePrNoGithub: "当前无法 merge PR，因为 GitHub 未连接",
-          archiveNotWorktree: "此处无法归档，因为此 workspace 不是作为 Paseo worktree 创建的",
+          archiveNotWorktree: "此处无法归档，因为此 workspace 不是作为 Kumo Agent worktree 创建的",
           mergePrNoForge: "当前无法 merge {{noun}}，因为 {{brand}} 未连接",
           mergePrMissing: "无法 merge PR，因为还没有 pull request",
           mergePrDraft: "无法 merge PR，因为 pull request 仍是 draft",
@@ -1287,7 +1287,7 @@ export const zhCN: TranslationResources = {
       diagnostics: "运行诊断",
       shortcuts: "键盘快捷键",
       whatsNew: "新功能",
-      appName: "Paseo",
+      appName: "Kumo Agent",
     },
     sections: {
       sessions: "历史",
@@ -1464,7 +1464,7 @@ export const zhCN: TranslationResources = {
       close: "关闭窗口",
     },
     quitting: {
-      title: "正在退出 Paseo...",
+      title: "正在退出 Kumo Agent...",
       detail: "正在停止本地 daemon。",
     },
     daemon: {
@@ -1479,19 +1479,19 @@ export const zhCN: TranslationResources = {
       },
       management: {
         title: "管理内置 daemon",
-        hint: "让 Paseo 启动和停止内置 daemon",
+        hint: "让 Kumo Agent 启动和停止内置 daemon",
         pauseTitle: "暂停内置 daemon",
         pauseMessage:
           "这会立即停止内置 daemon。连接到内置 daemon 的运行中 agents 和 terminals 会被停止。",
         pauseAndStop: "暂停并停止",
         registrationFailed:
-          "内置 daemon 已启动，但 Paseo 无法保存 localhost 连接。请关闭后重新开启 daemon 管理，或手动添加 localhost。",
-        pausedStopFailed: "内置 daemon 管理已暂停，但 Paseo 无法停止 daemon。",
+          "内置 daemon 已启动，但 Kumo Agent 无法保存 localhost 连接。请关闭后重新开启 daemon 管理，或手动添加 localhost。",
+        pausedStopFailed: "内置 daemon 管理已暂停，但 Kumo Agent 无法停止 daemon。",
         updateFailed: "无法更新内置 daemon 管理设置。",
       },
       keepRunning: {
         title: "退出后保持 daemon 运行",
-        hint: "退出 Paseo 后 daemon 会继续运行",
+        hint: "退出 Kumo Agent 后 daemon 会继续运行",
       },
       logs: {
         title: "日志文件",
@@ -1556,7 +1556,7 @@ export const zhCN: TranslationResources = {
     },
     rosetta: {
       title: "下载 Apple Silicon 构建",
-      runningIntel: "你正在 Apple Silicon 上通过 Rosetta 运行 Paseo 的 Intel 构建。",
+      runningIntel: "你正在 Apple Silicon 上通过 Rosetta 运行 Kumo Agent 的 Intel 构建。",
       highCpu: "这会导致较高 CPU 使用率。下载 Apple Silicon 构建即可修复。",
       download: "下载",
     },
@@ -1596,7 +1596,7 @@ export const zhCN: TranslationResources = {
         microphone: "尚未检查麦克风状态。",
       },
       testNotification: {
-        title: "Paseo 通知测试",
+        title: "Kumo Agent 通知测试",
         body: "如果你能看到这条通知，说明桌面通知可用。",
         notDelivered: "通知未送达。请检查 System Settings > Notifications。",
         failed: "发送通知失败。",
@@ -1605,14 +1605,14 @@ export const zhCN: TranslationResources = {
     integrations: {
       cli: {
         statusFailed: "无法检查 CLI 安装状态。",
-        installFailed: "无法安装 Paseo CLI。",
-        uninstallFailed: "无法卸载 Paseo CLI。",
-        keptForeign: "已保留一个不是由 Paseo 安装的 paseo 命令。如需卸载，请手动删除。",
+        installFailed: "无法安装 Kumo Agent CLI。",
+        uninstallFailed: "无法卸载 Kumo Agent CLI。",
+        keptForeign: "已保留一个不是由 Kumo Agent 安装的 paseo 命令。如需卸载，请手动删除。",
       },
     },
   },
   rootError: {
-    title: "Paseo 遇到了问题。",
+    title: "Kumo Agent 遇到了问题。",
     body: "请重试以重新加载应用。如果问题持续发生，请在报告时附上下面的详细信息。",
     details: "详情",
   },
@@ -1724,7 +1724,7 @@ export const zhCN: TranslationResources = {
   },
   onboarding: {
     setup: {
-      title: "Paseo",
+      title: "Kumo Agent",
       stepCounter: "第 {{current}} 步，共 {{total}} 步",
       skip: "跳过设置",
       continue: "继续",
@@ -1732,13 +1732,13 @@ export const zhCN: TranslationResources = {
       steps: {
         appearance: {
           label: "外观",
-          title: "欢迎使用 Paseo",
+          title: "欢迎使用 Kumo Agent",
           description: "先选择一个外观",
         },
         providers: {
           label: "提供方",
           title: "你的提供方",
-          description: "Paseo 使用这台电脑上已安装的代理 CLI",
+          description: "Kumo Agent 使用这台电脑上已安装的代理 CLI",
         },
         projects: {
           label: "项目",
@@ -1758,12 +1758,12 @@ export const zhCN: TranslationResources = {
         },
         orchestration: {
           label: "编排",
-          title: "让代理使用 Paseo",
+          title: "让代理使用 Kumo Agent",
           description: "让你的代理创建工作区并与其他代理对话",
         },
       },
     },
-    title: "欢迎使用 Paseo",
+    title: "欢迎使用 Kumo Agent",
     actions: {
       settings: "设置",
     },
@@ -1870,7 +1870,7 @@ export const zhCN: TranslationResources = {
   serviceUrl: {
     title: "打开服务 URL",
     message: "打开 {{url}}？",
-    inPaseo: "在 Paseo 中",
+    inPaseo: "在 Kumo Agent 中",
     externalBrowser: "外部浏览器",
     dontAskAgain: "不再询问",
   },
@@ -1924,7 +1924,7 @@ export const zhCN: TranslationResources = {
         alwaysUseFilename: "始终用于 {{filename}}",
         option: "{{title}} — {{owner}}",
         builtin: {
-          owner: "Paseo",
+          owner: "Kumo Agent",
           markdown: "Markdown",
           html: "HTML",
           image: "图片",
@@ -2021,8 +2021,8 @@ export const zhCN: TranslationResources = {
       other: "使用了 {{count}} 个其他工具",
     },
     paseoCalls: {
-      one: "调用了 Paseo {{count}} 次",
-      other: "调用了 Paseo {{count}} 次",
+      one: "调用了 Kumo Agent {{count}} 次",
+      other: "调用了 Kumo Agent {{count}} 次",
     },
     and: "并",
   },
@@ -2127,7 +2127,7 @@ export const zhCN: TranslationResources = {
       send: "发送",
       sending: "正在发送...",
       sentTitle: "测试通知已发送",
-      sentDescription: "Paseo 已将通知交给操作系统。",
+      sentDescription: "Kumo Agent 已将通知交给操作系统。",
       sendFailedTitle: "无法发送测试通知",
     },
     hostSections: {
@@ -2145,14 +2145,14 @@ export const zhCN: TranslationResources = {
     plugins: pluginSettings["zh-CN"],
     metadataGeneration: {
       title: "元数据生成",
-      description: "选择 Paseo 用于工作区标题、分支名称、提交消息和拉取请求草稿的模型",
+      description: "选择 Kumo Agent 用于工作区标题、分支名称、提交消息和拉取请求草稿的模型",
       selection: "模型选择",
       automatic: "自动",
       preferred: "手动",
-      automaticHint: "Paseo 会选择一个可用的快速模型",
-      preferredHint: "选择 Paseo 使用的模型",
+      automaticHint: "Kumo Agent 会选择一个可用的快速模型",
+      preferredHint: "选择 Kumo Agent 使用的模型",
       model: "模型",
-      modelHint: "只使用此模型。如果失败，Paseo 不会尝试其他模型",
+      modelHint: "只使用此模型。如果失败，Kumo Agent 不会尝试其他模型",
       docs: "文档",
       saveError: "无法更新元数据生成设置",
     },
@@ -2230,7 +2230,7 @@ export const zhCN: TranslationResources = {
       browserData: {
         title: "浏览器数据",
         siteData: "Cookie 和网站数据",
-        description: "浏览器标签页在 Paseo 中共享登录状态和网站数据。",
+        description: "浏览器标签页在 Kumo Agent 中共享登录状态和网站数据。",
         clear: "清除浏览器数据",
         clearing: "正在清除...",
         confirmTitle: "清除浏览器数据？",
@@ -2266,7 +2266,7 @@ export const zhCN: TranslationResources = {
       serviceUrls: {
         options: {
           ask: "询问",
-          inApp: "在 Paseo 中",
+          inApp: "在 Kumo Agent 中",
           external: "外部浏览器",
         },
       },
@@ -2346,7 +2346,7 @@ export const zhCN: TranslationResources = {
         label: "应用更新",
         readyToInstall: "可安装：{{version}}",
         installTitle: "安装桌面版更新",
-        installMessage: "这会更新此电脑上的 Paseo",
+        installMessage: "这会更新此电脑上的 Kumo Agent",
         installConfirm: "安装更新",
         update: "更新",
         updateTo: "更新到 {{version}}",
@@ -2517,7 +2517,7 @@ export const zhCN: TranslationResources = {
       commandLine: {
         title: "命令行",
         description: "从终端控制 Agent 并运行脚本",
-        accessibilityLabel: "安装 Paseo CLI",
+        accessibilityLabel: "安装 Kumo Agent CLI",
       },
     },
     permissions: {
@@ -2590,12 +2590,12 @@ export const zhCN: TranslationResources = {
         ...en.settings.host.skills,
         sectionTitle: "编排 skills",
         title: "编排 skills",
-        description: "教你的代理如何使用 Paseo 工具",
+        description: "教你的代理如何使用 Kumo Agent 工具",
         updateAvailable: "有更新可用",
-        updateTitle: "更新 Paseo skills？",
-        uninstallTitle: "卸载 Paseo skills？",
+        updateTitle: "更新 Kumo Agent skills？",
+        uninstallTitle: "卸载 Kumo Agent skills？",
         uninstallMessage:
-          "会从 ~/.agents、~/.claude、~/.codex、~/.gemini/config 移除所有 Paseo 编排 skills。",
+          "会从 ~/.agents、~/.claude、~/.codex、~/.gemini/config 移除所有 Kumo Agent 编排 skills。",
         choose: "选择 skills",
         chooseAll: "全部 skills",
         chooseAllHint: "保持安装所有内置 skills，包括以后新增的。",
@@ -2628,10 +2628,10 @@ export const zhCN: TranslationResources = {
         title: "编排",
         unavailable: "连接到这个 Host 以管理编排",
         enableTools: {
-          title: "启用 Paseo tools",
+          title: "启用 Kumo Agent tools",
           hint: "Agent 将能够管理 worktree、Agent 和计划",
-          accessibilityLabel: "注入 Paseo tools",
-          updateFailed: "无法更新 Paseo 工具。",
+          accessibilityLabel: "注入 Kumo Agent tools",
+          updateFailed: "无法更新 Kumo Agent 工具。",
         },
         systemPrompt: {
           title: "System prompt",
@@ -2743,9 +2743,10 @@ export const zhCN: TranslationResources = {
           unavailableTitle: "Host 不可用",
           unavailableMessage: "这个 Host 尚未连接。请等待它上线后再重启。",
           offlineTitle: "Host 离线",
-          offlineMessage: "这个 Host 已离线。Paseo 会自动重连，请等它恢复在线后再重启。",
+          offlineMessage: "这个 Host 已离线。Kumo Agent 会自动重连，请等它恢复在线后再重启。",
           requestFailedTitle: "错误",
-          requestFailedMessage: "发送重启请求失败。Paseo 会自动重连，请在 Host 显示在线后重试。",
+          requestFailedMessage:
+            "发送重启请求失败。Kumo Agent 会自动重连，请在 Host 显示在线后重试。",
           closeTerminals: "重启并关闭终端",
           closeTerminalsHint: "重启的同时关闭此主机上的所有终端。",
           closeTerminalsConfirmMessage:
@@ -2753,7 +2754,8 @@ export const zhCN: TranslationResources = {
           dialogFailedMessage: "无法打开重启确认对话框。",
         },
         update: {
-          desktopManagedHint: "此 Daemon 由 Paseo Desktop 管理。请在 Host 上更新 Paseo Desktop。",
+          desktopManagedHint:
+            "此 Daemon 由 Kumo Agent Desktop 管理。请在 Host 上更新 Kumo Agent Desktop。",
           title: "Update daemon",
           hint: "Update the daemon to the latest version and restart it",
           confirm: "Update",
@@ -2950,7 +2952,7 @@ export const zhCN: TranslationResources = {
         newScript: "新建 script",
         editScript: "编辑 {{name}}",
         runAsService: "作为服务运行",
-        serviceHint: "Paseo 会监管该进程，并通过 $PASEO_PORT 分配端口",
+        serviceHint: "Kumo Agent 会监管该进程，并通过 $PASEO_PORT 分配端口",
         actions: {
           add: "添加 script",
           edit: "编辑",
@@ -2959,7 +2961,7 @@ export const zhCN: TranslationResources = {
       },
       metadata: {
         title: "元数据生成",
-        info: "注入到 Paseo 用来生成元数据的 AI prompts 中的 Project 专属指令，可用于强制执行团队约定，例如分支命名、提交风格或 PR 格式",
+        info: "注入到 Kumo Agent 用来生成元数据的 AI prompts 中的 Project 专属指令，可用于强制执行团队约定，例如分支命名、提交风格或 PR 格式",
         branchName: "分支名称",
         branchNamePlaceholder: "分支以 feat/ 或 fix/ 开头，个人分支使用 mb/",
         commitMessage: "提交消息",

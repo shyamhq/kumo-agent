@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { resolveAppVersion } from "@/utils/app-version";
 import { formatVersionWithPrefix } from "@/desktop/updates/desktop-updates";
 import { buildOpenProjectRoute } from "@/utils/host-routes";
-import { PaseoLogo } from "@/components/icons/paseo-logo";
+import { KumoLogo } from "@/components/icons/kumo-logo";
 import { isWeb } from "@/constants/platform";
 import { KumoSection } from "@/kumo/section";
 
@@ -143,7 +143,7 @@ export function WelcomeScreen() {
         testID="welcome-screen"
       >
         <View style={styles.content}>
-          <PaseoLogo size={96} />
+          <KumoLogo size={96} />
           <View style={styles.copyBlock}>
             <Text style={styles.title}>
               {servedBy

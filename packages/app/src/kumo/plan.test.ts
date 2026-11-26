@@ -33,7 +33,7 @@ describe("kumoHandleOf", () => {
     expect(kumoHandleOf(direct(kumoEndpoint("noble-heron")))).toBe("noble-heron");
     expect(kumoHandleOf(direct("localhost:6767"))).toBeNull();
     expect(kumoHandleOf(direct("6868--a.b.staging.mykumo.xyz:443"))).toBeNull();
-    expect(kumoHandleOf(direct("6868--noble-heron.example.com:443"))).toBeNull();
+    expect(kumoHandleOf(direct("6868--noble-heron.example.co:443"))).toBeNull();
   });
 
   // The grant rides on this answer: it must never go over plain ws://.

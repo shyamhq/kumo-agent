@@ -384,7 +384,8 @@ export const ja: TranslationResources = {
       details: "詳細",
     },
     dictation: {
-      insecureContext: "マイクを使用するには、HTTPS または localhost で Paseo を開いてください。",
+      insecureContext:
+        "マイクを使用するには、HTTPS または localhost で Kumo Agent を開いてください。",
       unsupported: "このブラウザーでは音声入力を利用できません。",
       noMicrophone: "マイクを接続して、もう一度お試しください。",
       permissionDenied: "マイクへのアクセスを許可して、もう一度お試しください。",
@@ -1309,7 +1310,7 @@ export const ja: TranslationResources = {
       diagnostics: "診断を実行",
       shortcuts: "キーボードショートカット",
       whatsNew: "新着情報",
-      appName: "Paseo",
+      appName: "Kumo Agent",
     },
     sections: {
       sessions: "履歴",
@@ -1637,15 +1638,15 @@ export const ja: TranslationResources = {
     integrations: {
       cli: {
         statusFailed: "CLIのインストール状態を確認できません。",
-        installFailed: "Paseo CLIをインストールできません。",
-        uninstallFailed: "Paseo CLI をアンインストールできません。",
+        installFailed: "Kumo Agent CLIをインストールできません。",
+        uninstallFailed: "Kumo Agent CLI をアンインストールできません。",
         keptForeign:
           "Paseoがインストールしていないpaseoコマンドは残しました。アンインストールするには手動で削除してください。",
       },
     },
   },
   rootError: {
-    title: "Paseo で問題が発生しました。",
+    title: "Kumo Agent で問題が発生しました。",
     body: "アプリを再読み込みするにはもう一度お試しください。繰り返し発生する場合は、以下の詳細を添えて報告してください。",
     details: "詳細",
   },
@@ -1759,7 +1760,7 @@ export const ja: TranslationResources = {
   },
   onboarding: {
     setup: {
-      title: "Paseo",
+      title: "Kumo Agent",
       stepCounter: "ステップ {{current}}/{{total}}",
       skip: "セットアップをスキップ",
       continue: "続ける",
@@ -1767,13 +1768,14 @@ export const ja: TranslationResources = {
       steps: {
         appearance: {
           label: "外観",
-          title: "Paseo へようこそ",
+          title: "Kumo Agent へようこそ",
           description: "まずは外観を選びましょう",
         },
         providers: {
           label: "プロバイダー",
           title: "プロバイダー",
-          description: "Paseo はこのコンピューターにインストール済みのエージェント CLI を使います",
+          description:
+            "Kumo Agent はこのコンピューターにインストール済みのエージェント CLI を使います",
         },
         projects: {
           label: "プロジェクト",
@@ -1793,7 +1795,7 @@ export const ja: TranslationResources = {
         },
         orchestration: {
           label: "オーケストレーション",
-          title: "エージェントに Paseo を使わせる",
+          title: "エージェントに Kumo Agent を使わせる",
           description:
             "エージェントがワークスペースを作成し、ほかのエージェントとやり取りできるようにします",
         },
@@ -1961,7 +1963,7 @@ export const ja: TranslationResources = {
         alwaysUseFilename: "{{filename}} に常に使用",
         option: "{{title}} — {{owner}}",
         builtin: {
-          owner: "Paseo",
+          owner: "Kumo Agent",
           markdown: "Markdown",
           html: "HTML",
           image: "画像",
@@ -2166,7 +2168,7 @@ export const ja: TranslationResources = {
       send: "送信",
       sending: "送信中...",
       sentTitle: "テスト通知を送信しました",
-      sentDescription: "Paseo が通知をオペレーティングシステムに渡しました。",
+      sentDescription: "Kumo Agent が通知をオペレーティングシステムに渡しました。",
       sendFailedTitle: "テスト通知を送信できません",
     },
     hostSections: {
@@ -2189,10 +2191,10 @@ export const ja: TranslationResources = {
       selection: "モデル選択",
       automatic: "自動",
       preferred: "手動",
-      automaticHint: "Paseo が利用可能な高速モデルを選択します",
-      preferredHint: "Paseo が使用するモデルを選択します",
+      automaticHint: "Kumo Agent が利用可能な高速モデルを選択します",
+      preferredHint: "Kumo Agent が使用するモデルを選択します",
       model: "モデル",
-      modelHint: "このモデルのみを使用します。失敗しても、Paseo は別のモデルを試しません",
+      modelHint: "このモデルのみを使用します。失敗しても、Kumo Agent は別のモデルを試しません",
       docs: "ドキュメント",
       saveError: "メタデータ生成を更新できません",
     },
@@ -2565,7 +2567,7 @@ export const ja: TranslationResources = {
       commandLine: {
         title: "コマンドライン",
         description: "ターミナルからエージェントを制御し、スクリプトで操作",
-        accessibilityLabel: "Paseo CLI をインストール",
+        accessibilityLabel: "Kumo Agent CLI をインストール",
       },
     },
     permissions: {
@@ -2639,7 +2641,7 @@ export const ja: TranslationResources = {
         ...en.settings.host.skills,
         sectionTitle: "オーケストレーションスキル",
         title: "オーケストレーションスキル",
-        description: "エージェントに Paseo ツールの使い方を教えます",
+        description: "エージェントに Kumo Agent ツールの使い方を教えます",
         updateAvailable: "更新が利用可能",
         updateTitle: "Paseoスキルを更新しますか？",
         uninstallTitle: "Paseoスキルをアンインストールしますか？",
